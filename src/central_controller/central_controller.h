@@ -2,6 +2,7 @@
 #define ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H
 #include <stdint.h>
 #include <stdbool.h>
+#include <Arduino.h>
 
 typedef enum {
     SLAVE,

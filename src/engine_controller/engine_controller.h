@@ -2,6 +2,7 @@
 #define ATV_ENGINE_CONTROLLER_ENGINE_CONTROLLER_H
 #include <stdint.h>
 #include <stdbool.h>
+#include <Arduino.h>
 
 void turnLeft(uint16_t angle);
 void turnRight(uint16_t angle);
