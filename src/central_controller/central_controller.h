@@ -1,17 +1,19 @@
 #ifndef ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H
 #define ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H
+#include <stdint.h>
+#include <stdbool.h>
 
-enum drivingMode {
+typedef enum {
     SLAVE,
     CONTROLLED,
     AUTOMATIC
-};
+} drivingMode;
 
 bool togglePowerState();
-void setDistanceFromObject(int distance);
+void setDistanceFromObject(uint8_t distance);
 void setMode(drivingMode mode);
-void setActivationThreshold(int t);
-void setControllerTravel(int minX, int maxX, int minY, int maxY);
-void controllerState(int x, int y);
+void setActivationThreshold(uint8_t t);
+void setControllerTravel(uint16_t minX, uint16_t maxX, uint16_t minY, uint16_t maxY);
+void controllerState(uint8_t x, uint8_t y);
 
 #endif
