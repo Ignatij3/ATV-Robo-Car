@@ -1,6 +1,6 @@
 #include "central_controller.h"
 
-bool trigglePowerState()
+bool togglePowerState()
 {
 }
 
@@ -12,7 +12,7 @@ void setMode(drivingMode mode)
 {
 }
 
-void setActivationTreshold(int t)
+void setActivationThreshold(int t)
 {
 }
 
