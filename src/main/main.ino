@@ -6,13 +6,7 @@ extern "C" {
 }
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("TESTING");
 }
 
 void loop() {
-  initTEST();
-  delay(400);
-  digitalWrite(BUILTIN_LED, LOW);
-  delay(100);
 }

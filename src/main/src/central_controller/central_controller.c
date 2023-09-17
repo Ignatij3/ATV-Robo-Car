@@ -1,11 +1,6 @@
 #include "central_controller.h"
 #include "../constants/constants.h"
 
-void initTEST() {
-    pinMode(BUILTIN_LED, OUTPUT);
-    digitalWrite(BUILTIN_LED, HIGH);
-}
-
 bool togglePowerState()
 {
 }

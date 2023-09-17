@@ -1,6 +1,5 @@
 #ifndef ATV_CONSTANTS_CONSTANTS_H
 #define ATV_CONSTANTS_CONSTANTS_H
 
-#define BUILTIN_LED 20
 
 #endif

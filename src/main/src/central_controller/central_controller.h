@@ -13,7 +13,6 @@ typedef enum {
     AUTOMATIC
 } drivingMode;
 
-void initTEST();
 bool togglePowerState();
 void setDistanceFromObject(uint8_t distance);
 void setMode(drivingMode mode);
