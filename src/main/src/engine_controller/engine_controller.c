@@ -1,5 +1,13 @@
 #include "engine_controller.h"
 
+struct leftside { 
+    uint8_t speed; 
+};
+struct rightside {
+    uint8_t speed;
+};
+
+
 void turnLeft(uint16_t angle)
 {
 }
@@ -23,3 +31,4 @@ void increaseSpeed(uint8_t speed)
 void decreaseSpeed(uint8_t speed)
 {
 }
+
