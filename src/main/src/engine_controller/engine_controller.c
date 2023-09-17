@@ -12,7 +12,7 @@ void turnAround(uint16_t angle)
 {
 }
 
-void setSpeed(uint8_t speed, char reverse)
+void setSpeed(uint8_t speed, bool reverse)
 {
 }
 
