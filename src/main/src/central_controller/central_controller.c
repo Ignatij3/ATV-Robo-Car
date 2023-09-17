@@ -37,11 +37,4 @@ static void evadeCollision(void) {
 // setMode sets specified driving mode.
 void setMode(drivingMode mode) { vehicle.mode = mode; }
 
-void setActivationThreshold(uint8_t t) {}
-
-void setControllerTravel(uint16_t minX, uint16_t maxX, uint16_t minY,
-                         uint16_t maxY) {}
-
-void controllerState(uint8_t x, uint8_t y) {}
-
 void run() {}
