@@ -1,7 +1,7 @@
 extern "C" {
-#include "./central_controller/central_controller.h"
-#include "./engine_controller/engine_controller.h"
-#include "./serial_communication/serial_communication.h"
+#include "central_controller/central_controller.h"
+#include "engine_controller/engine_controller.h"
+#include "serial_communication/serial_communication.h"
 }
 
 #define BUILTIN_LED 20
