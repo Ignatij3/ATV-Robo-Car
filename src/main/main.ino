@@ -1,10 +1,9 @@
 extern "C" {
-#include "central_controller/central_controller.h"
-#include "engine_controller/engine_controller.h"
-#include "serial_communication/serial_communication.h"
+#include "src/central_controller/central_controller.h"
+#include "src/engine_controller/engine_controller.h"
+#include "src/serial_communication/serial_communication.h"
+#include "src/constants/constants.h"
 }
-
-#define BUILTIN_LED 20
 
 void setup() {
   Serial.begin(9600);

@@ -11,4 +11,5 @@ char isUsed();
 #ifdef __cplusplus
 }
 #endif
+
 #endif
