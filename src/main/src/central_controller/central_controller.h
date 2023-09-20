@@ -7,15 +7,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef enum { SLAVE, CONTROLLED, AUTOMATIC } drivingMode;
+typedef enum { NONE, SLAVE, CONTROLLED, AUTOMATIC } drivingMode;
 
-bool togglePowerState();
+void initializeVehicleControls(uint8_t minimalTolerableDistance);
+static bool isCollisionSoon(void);
+static void evadeCollision(void);
 void setDistanceFromObject(uint8_t distance);
 void setMode(drivingMode mode);
-void setActivationThreshold(uint8_t t);
-void setControllerTravel(uint16_t minX, uint16_t maxX, uint16_t minY,
-                         uint16_t maxY);
-void controllerState(uint8_t x, uint8_t y);
+static drivingMode readModeChange(void);
+static void accelerate(uint8_t step);
+static void decelerate(uint8_t step);
+void run(void);
 #ifdef __cplusplus
 }
 #endif
