@@ -7,10 +7,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void forward(void)
-void backwards(void)
-void left(void)
-void right(void) 
+static void forward(void);
+static void backwards(void);
+static void left(void);
+static void right(void);
 void initialisaion(void);
 void goForward(void);
 void turnLeft(uint16_t angle);
