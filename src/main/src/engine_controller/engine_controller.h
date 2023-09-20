@@ -1,8 +1,8 @@
 #ifndef ATV_ENGINE_CONTROLLER_ENGINE_CONTROLLER_H
 #define ATV_ENGINE_CONTROLLER_ENGINE_CONTROLLER_H
-#include <stdint.h>
-#include <stdbool.h>
 #include <Arduino.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,7 +11,7 @@ static void forward(void);
 static void backwards(void);
 static void left(void);
 static void right(void);
-void initialisaion(void);
+void initializeEngines(void);
 void goForward(void);
 void turnLeft(uint16_t angle);
 void turnRight(uint16_t angle);
