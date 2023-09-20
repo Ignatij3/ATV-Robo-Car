@@ -1,22 +1,22 @@
 #include "Arduino.h"
 #include "HCSR04.h"
 
+#define DISTANCE_SENSOR_TRIGGER_PIN 0
+#define DISTANCE_SENSOR_ECHO_PIN 0
+
 typedef struct {
     uint8_t triggerPin;
     uint8_t echoPin;
-    uint16_t maxTimeoutMicroSec;
 } distanceSensor;
 
 static distanceSensor sensor;
 
 // registerDistanceSensor initializes HCSR04 sensor.
-void registerDistanceSensor(uint8_t triggerPin, uint8_t echoPin,
-                            uint16_t maxTimeoutMicroSec) {
-    sensor.triggerPin = triggerPin;
-    sensor.echoPin = echoPin;
-    sensor.maxTimeoutMicroSec = maxTimeoutMicroSec;
-    pinMode(triggerPin, OUTPUT);
-    pinMode(echoPin, INPUT);
+void registerDistanceSensor(uint16_t maxTimeoutMicroSec) {
+    sensor.triggerPin = DISTANCE_SENSOR_TRIGGER_PIN;
+    sensor.echoPin = DISTANCE_SENSOR_ECHO_PIN;
+    pinMode(sensor.triggerPin, OUTPUT);
+    pinMode(sensor.echoPin, INPUT);
 }
 
 // measureDistanceCm return distance in cm from nearest object in front.
