@@ -7,9 +7,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+static void forward(void);
+static void backwards(void);
+static void left(void);
+static void right(void);
+void initialisaion(void);
+void goForward(void);
 void turnLeft(uint16_t angle);
 void turnRight(uint16_t angle);
-void turnAround(uint16_t angle);
+void turnAround(void);
 void setSpeed(uint8_t speed, bool reverse);
 void increaseSpeed(uint8_t speed);
 void decreaseSpeed(uint8_t speed);
