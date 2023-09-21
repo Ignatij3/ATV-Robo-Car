@@ -1,0 +1,4 @@
+{
+    "board": "atmel-avr-xminis:avr:atmega328p_xplained_mini",
+    "sketch": "src\\main\\main.ino"
+}
