@@ -21,6 +21,7 @@ void initializeVehicleControls(
     vehicle.minimalTolerableDistance = minimalTolerableDistance;
     vehicle.mode = NONE;
     initializeEngines();
+    serialInit(6900);
     registerDistanceSensor(0);
 }
 

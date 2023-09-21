@@ -5,6 +5,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+void serialInit(uint8_t ubrr);
 void writeSerial(const char* data);
 const char* readSerial();
 char isUsed();
