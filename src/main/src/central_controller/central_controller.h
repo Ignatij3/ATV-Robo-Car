@@ -7,7 +7,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef enum { NONE, SLAVE, CONTROLLED, AUTOMATIC, UNDEFINED } drivingMode;
+typedef enum { NONE, SLAVE, CONTROLLED, AUTOMATIC } drivingMode;
 
 void initializeVehicleControls(uint8_t minimalTolerableDistance);
 static bool isCollisionSoon(void);
