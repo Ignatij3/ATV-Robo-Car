@@ -1,4 +1,3 @@
-#include "../constants/constants.h"
 #include "../engine_controller/engine_controller.h"
 #include "central_controller.h"
 #include "distance_sensor/HCSR04.h"
@@ -21,7 +20,7 @@ void initializeVehicleControls(
     vehicle.minimalTolerableDistance = minimalTolerableDistance;
     vehicle.mode = NONE;
     initializeEngines();
-    registerDistanceSensor(0);
+    registerDistanceSensor();
 }
 
 // isCollision returns whether vehicle is about to collide with object in front.
@@ -107,7 +106,7 @@ void run(void) {
             break;
 
         case NONE:
-            printSerial("No mode is selected");
+            // Serial.println("No mode is selected");
             return;
         }
     }

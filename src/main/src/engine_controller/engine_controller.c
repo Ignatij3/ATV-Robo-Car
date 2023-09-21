@@ -21,8 +21,8 @@ struct carspeed {
 static struct carspeed car;
 
 void initializeEngines(void) {
-    pinmode(LEFT_TURN_SIGNAL, OUTPUT); // turn declaration
-    pinmode(RIGHT_TURN_SIGNAL, OUTPUT);
+    pinMode(LEFT_TURN_SIGNAL, OUTPUT); // turn declaration
+    pinMode(RIGHT_TURN_SIGNAL, OUTPUT);
 
     pinMode(IN1, OUTPUT); // declaration 4pins from H-Bridge to output
     pinMode(IN2, OUTPUT);
