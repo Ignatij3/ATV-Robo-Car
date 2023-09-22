@@ -1,10 +1,10 @@
 extern "C" {
 #include "src/central_controller/central_controller.h"
-#include "src/constants/constants.h"
-#include "src/engine_controller/engine_controller.h"
-#include "src/serial_communication/serial_communication.h"
 }
 
-void setup() {}
+void setup() { initializeModules(10); }
 
-void loop() {}
+void loop() {
+    setMode(AUTOMATIC);
+    run();
+}

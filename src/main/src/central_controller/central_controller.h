@@ -9,7 +9,7 @@ extern "C" {
 #endif
 typedef enum { NONE, SLAVE, CONTROLLED, AUTOMATIC } drivingMode;
 
-void initializeVehicleControls(uint8_t minimalTolerableDistance);
+void initializeModules(uint8_t minimalTolerableDistance);
 static bool isCollisionSoon(void);
 static void evadeCollision(void);
 void setDistanceFromObject(uint8_t distance);

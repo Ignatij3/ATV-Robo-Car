@@ -1,9 +1,12 @@
-#include "../constants/constants.h"
 #include "../engine_controller/engine_controller.h"
+#include "../serial_communication/serial_communication.h"
 #include "central_controller.h"
 #include "distance_sensor/HCSR04.h"
 
 #define MAX_SPEED 255
+#define FOSC 1843200 // Clock Speed
+#define BAUD 9600
+#define MYUBRR(baud) FOSC / 16 / baud - 1
 
 typedef struct {
     uint8_t minimalTolerableDistance;
@@ -16,12 +19,12 @@ static carControls vehicle;
 // initialize performs initialization of structures for the vehicle to operate.
 // minimalTolerableDistance is minimal distance between car and object in front,
 // to be able to safely evade collision.
-void initializeVehicleControls(
-    uint8_t minimalTolerableDistance /*, inputs SERIAL_INPUTS*/) {
+void initializeModules(uint8_t minimalTolerableDistance) {
     vehicle.minimalTolerableDistance = minimalTolerableDistance;
     vehicle.mode = NONE;
     initializeEngines();
-    registerDistanceSensor(0);
+    registerDistanceSensor();
+    serialInit(MYUBRR(BAUD));
 }
 
 // isCollision returns whether vehicle is about to collide with object in front.
@@ -107,7 +110,7 @@ void run(void) {
             break;
 
         case NONE:
-            printSerial("No mode is selected");
+            // Serial.println("No mode is selected");
             return;
         }
     }

@@ -12,7 +12,7 @@ typedef struct {
 static distanceSensor sensor;
 
 // registerDistanceSensor initializes HCSR04 sensor.
-void registerDistanceSensor(uint16_t maxTimeoutMicroSec) {
+void registerDistanceSensor(void) {
     sensor.triggerPin = DISTANCE_SENSOR_TRIGGER_PIN;
     sensor.echoPin = DISTANCE_SENSOR_ECHO_PIN;
     pinMode(sensor.triggerPin, OUTPUT);

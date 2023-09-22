@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-void registerDistanceSensor(uint16_t maxTimeoutMicroSec);
+void registerDistanceSensor(void);
 uint8_t measureDistanceCm(void);
 
 #endif
