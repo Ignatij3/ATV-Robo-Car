@@ -112,10 +112,18 @@ void setSpeed(
     }
     car.leftSideSpeed = speed;
     car.rightSideSpeed = speed; // setting the desired speed for the car
-    writeSerial("e\n");
+    writeByte('e');
+    writeByte('n');
+    writeByte('g');
+    writeByte('1');
+    writeByte('\n');
     analogWrite(ENA, car.leftSideSpeed);
     analogWrite(ENB, car.rightSideSpeed); // sending the speed to our engines
-    writeSerial("f\n");
+    writeByte('e');
+    writeByte('n');
+    writeByte('g');
+    writeByte('2');
+    writeByte('\n');
 }
 
 void increaseSpeed(
