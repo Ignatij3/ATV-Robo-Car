@@ -9,21 +9,32 @@
 #define CHUNK 16
 #define SERIAL_USAGE_INDICATOR 4
 
-void serialInit(uint8_t ubrr) {
-    UBRR0L = ubrr;
-    UBRR0H = (ubrr >> 8); // (ubrr >> 4)?
+// void serialInit(uint8_t ubrr) {
+//     UBRR0L = ubrr;
+//     UBRR0H = (ubrr >> 8); // (ubrr >> 4)?
+//
+//     UCSR0A &= ~_BV(U2X0);   // disable double transmission speed
+//     UCSR0B |= _BV(TXEN0);   // Turn on transmitter
+//     UCSR0B |= _BV(RXEN0);   // Turn on receiver
+//     UCSR0C = (3 << UCSZ00); // Set for async. operation, no parity, one stop
+//                             // bit, 8 data bits
+// }
 
-    UCSR0A &= ~_BV(U2X0);   // disable double transmission speed
-    UCSR0B |= _BV(TXEN0);   // Turn on transmitter
-    UCSR0B |= _BV(RXEN0);   // Turn on receiver
-    UCSR0C = (3 << UCSZ00); // Set for async. operation, no parity, one stop
-                            // bit, 8 data bits
+void serialInit(unsigned int ubrr) {
+    /*Set baud rate */
+    UBRR0H = (unsigned char)(ubrr >> 8);
+    UBRR0L = (unsigned char)(ubrr);
+    /*Enable receiver and transmitter */
+    UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+    /* Set frame format: 8data, 2stop bit */
+    UCSR0C = (1 << USBS0) | (3 << UCSZ00);
 }
 
-static void serialOut(uint8_t ch) {
-    while ((UCSR0A & (1 << UDRE0)) == 0) {
-        UDR0 = ch;
-    }
+static void serialOut(unsigned char ch) {
+    while (!(UCSR0A & (1 << UDRE0)))
+        ;
+
+    UDR0 = ch;
 }
 
 static char serialIn(void) {
@@ -35,9 +46,10 @@ static char serialIn(void) {
 
 void writeSerial(const char *data) {
     enableLED();
-    for (int i = 0; data[i] != '\0'; i++) {
+    for (int i = 0; data[i] != '\0' && data[i] != '\n'; i++) {
         serialOut(data[i]);
     }
+    serialOut('\n');
     disableLED();
 }
 

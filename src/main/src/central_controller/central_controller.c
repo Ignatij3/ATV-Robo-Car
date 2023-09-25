@@ -58,6 +58,7 @@ static drivingMode readModeChange(void) { return NONE; }
 
 // accelerate will gradually increase speed of the car until reaching maximum.
 static void accelerate(uint8_t step) {
+    writeSerial("accelerating\n");
     if (vehicle.speed == MAX_SPEED) {
         return;
     }
@@ -95,10 +96,11 @@ void run(void) {
         }
         switch (vehicle.mode) {
         case AUTOMATIC:
-            accelerate(5);
-            if (isCollisionSoon()) {
-                evadeCollision();
-            }
+            // accelerate(5);
+            // if (isCollisionSoon()) {
+            //     evadeCollision();
+            // }
+            setSpeed(255, false);
             break;
 
         case CONTROLLED:

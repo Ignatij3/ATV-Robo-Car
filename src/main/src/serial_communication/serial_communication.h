@@ -5,9 +5,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void serialInit(uint8_t ubrr);
+void serialInit(unsigned int ubrr);
 void writeSerial(const char *data);
 const char *readSerial();
+static void enableLED(void);
+static void disableLED(void);
 #ifdef __cplusplus
 }
 #endif
