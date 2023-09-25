@@ -1,8 +1,12 @@
 #include "../engine_controller/engine_controller.h"
+#include "../serial_communication/serial_communication.h"
 #include "central_controller.h"
 #include "distance_sensor/HCSR04.h"
 
 #define MAX_SPEED 255
+#define FOSC 1843200 // Clock Speed
+#define BAUD 9600
+#define MYUBRR(baud) FOSC / 16 / baud - 1
 
 typedef struct {
     uint8_t minimalTolerableDistance;
@@ -15,12 +19,12 @@ static carControls vehicle;
 // initialize performs initialization of structures for the vehicle to operate.
 // minimalTolerableDistance is minimal distance between car and object in front,
 // to be able to safely evade collision.
-void initializeVehicleControls(
-    uint8_t minimalTolerableDistance /*, inputs SERIAL_INPUTS*/) {
+void initializeModules(uint8_t minimalTolerableDistance) {
     vehicle.minimalTolerableDistance = minimalTolerableDistance;
     vehicle.mode = NONE;
     initializeEngines();
     registerDistanceSensor();
+    serialInit(MYUBRR(BAUD));
 }
 
 // isCollision returns whether vehicle is about to collide with object in front.
@@ -54,6 +58,7 @@ static drivingMode readModeChange(void) { return NONE; }
 
 // accelerate will gradually increase speed of the car until reaching maximum.
 static void accelerate(uint8_t step) {
+    writeSerial("accelerating\n");
     if (vehicle.speed == MAX_SPEED) {
         return;
     }
@@ -91,10 +96,11 @@ void run(void) {
         }
         switch (vehicle.mode) {
         case AUTOMATIC:
-            accelerate(5);
-            if (isCollisionSoon()) {
-                evadeCollision();
-            }
+            // accelerate(5);
+            // if (isCollisionSoon()) {
+            //     evadeCollision();
+            // }
+            setSpeed(255, false);
             break;
 
         case CONTROLLED:

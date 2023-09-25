@@ -1,3 +1,4 @@
+#include "../serial_communication/serial_communication.h"
 #include "engine_controller.h"
 
 struct carspeed {
@@ -111,8 +112,10 @@ void setSpeed(
     }
     car.leftSideSpeed = speed;
     car.rightSideSpeed = speed; // setting the desired speed for the car
+    writeSerial("e\n");
     analogWrite(ENA, car.leftSideSpeed);
     analogWrite(ENB, car.rightSideSpeed); // sending the speed to our engines
+    writeSerial("f\n");
 }
 
 void increaseSpeed(
