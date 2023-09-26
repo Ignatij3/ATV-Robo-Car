@@ -5,7 +5,13 @@
         "constants.h": "c",
         "engine_controller.h": "c",
         "stdint.h": "c",
-        "io.h": "c"
+        "io.h": "c",
+        "cstdint": "c",
+        "stdint-gcc.h": "c",
+        "hcsr04.h": "c",
+        "serial_communication.h": "c",
+        "delay.h": "c",
+        "iom328p.h": "c"
     },
     "C_Cpp.default.compilerPath": "/usr/bin/gcc",
     "C_Cpp.errorSquiggles": "enabled",

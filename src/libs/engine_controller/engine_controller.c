@@ -1,5 +1,7 @@
+#include "../ino_libs/ino_libs.h"
 #include "../serial_communication/serial_communication.h"
 #include "engine_controller.h"
+#include <stdint.h>
 
 struct carspeed {
     uint8_t leftSideSpeed;
@@ -20,6 +22,11 @@ struct carspeed {
 #define RIGHT_TURN_SIGNAL 3
 
 static struct carspeed car;
+
+static void forward(void);
+static void backwards(void);
+static void left(void);
+static void right(void);
 
 void initializeEngines(void) {
     pinMode(LEFT_TURN_SIGNAL, OUTPUT); // turn declaration
@@ -75,9 +82,9 @@ static void right(void) // switch pins to turn right
     digitalWrite(IN4, 1);
 }
 
-void turnLeft(uint16_t angle) // function gets the angle and rotates to the left
-                              // by the value to the left
-{
+// function gets the angle and rotates to the left
+// by the value to the left
+void turnLeft(uint16_t angle) {
     digitalWrite(LEFT_TURN_SIGNAL, 1); // turning on the left turn signal
     left();
     for (uint16_t i = 0; i < angle; i++) {
@@ -86,9 +93,9 @@ void turnLeft(uint16_t angle) // function gets the angle and rotates to the left
     digitalWrite(LEFT_TURN_SIGNAL, 0); // turning off the left turn signal
 }
 
-void turnRight(uint16_t angle) // function gets the angle and rotates to the
-                               // right by the value to the left
-{
+// function gets the angle and rotates to the
+// right by the value to the left
+void turnRight(uint16_t angle) {
     digitalWrite(RIGHT_TURN_SIGNAL, 1); // turning on the right turn signal
     right();
     for (uint16_t i = 0; i < angle; i++) {

@@ -2,11 +2,12 @@
 #include "../serial_communication/serial_communication.h"
 #include "central_controller.h"
 #include "distance_sensor/HCSR04.h"
+#include <util/delay.h>
 
 #define MAX_SPEED 255
-#define FOSC 1843200 // Clock Speed
+#define F_CPU 1843200 // Clock Speed
 #define BAUD 9600
-#define MYUBRR(baud) FOSC / 16 / baud - 1
+#define MYUBRR(baud) F_CPU / 16 / baud - 1
 
 typedef struct {
     uint8_t minimalTolerableDistance;
@@ -15,6 +16,12 @@ typedef struct {
 } carControls;
 
 static carControls vehicle;
+
+static bool isCollisionSoon(void);
+static void evadeCollision(void);
+static drivingMode readModeChange(void);
+static void accelerate(uint8_t step);
+static void decelerate(uint8_t step);
 
 // initialize performs initialization of structures for the vehicle to operate.
 // minimalTolerableDistance is minimal distance between car and object in front,
@@ -38,7 +45,7 @@ static bool isCollisionSoon(void) {
 static void evadeCollision(void) {
     while (vehicle.speed > 0) {
         decelerate(20);
-        delay(50);
+        _delay_ms(50);
     }
     while (isCollisionSoon()) {
         turnRight(5);
@@ -47,6 +54,7 @@ static void evadeCollision(void) {
 
 // setMode sets specified driving mode.
 void setMode(drivingMode mode) {
+#include <stdbool.h>
     if (mode != NONE) {
         vehicle.mode = mode;
     }
@@ -92,17 +100,17 @@ static void decelerate(uint8_t step) {
 // should be used. If mode is set to "NONE", function exits.
 void run(void) {
     while (1) {
-        delay(10); // not to change state too rapidly
+        _delay_ms(10); // not to change state too rapidly
         drivingMode newMode = readModeChange();
         if (newMode != NONE) {
             vehicle.mode = newMode;
         }
         switch (vehicle.mode) {
         case AUTOMATIC:
-            // accelerate(5);
-            // if (isCollisionSoon()) {
-            //     evadeCollision();
-            // }
+            accelerate(5);
+            if (isCollisionSoon()) {
+                evadeCollision();
+            }
             setSpeed(255, false);
             break;
 
