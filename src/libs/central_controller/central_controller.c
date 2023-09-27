@@ -30,7 +30,7 @@ void initializeModules(uint8_t minimalTolerableDistance) {
     vehicle.minimalTolerableDistance = minimalTolerableDistance;
     vehicle.mode = NONE;
     initializeEngines();
-    registerDistanceSensor();
+    // registerDistanceSensor();
     serialInit(MYUBRR(BAUD));
 }
 
@@ -54,7 +54,6 @@ static void evadeCollision(void) {
 
 // setMode sets specified driving mode.
 void setMode(drivingMode mode) {
-#include <stdbool.h>
     if (mode != NONE) {
         vehicle.mode = mode;
     }
@@ -62,7 +61,9 @@ void setMode(drivingMode mode) {
 
 // readModeChange reads input from onboard joystick, which will signal a new
 // mode being selected.
-static drivingMode readModeChange(void) { return NONE; }
+static drivingMode readModeChange(void) {
+    return NONE;
+}
 
 // accelerate will gradually increase speed of the car until reaching maximum.
 static void accelerate(uint8_t step) {
@@ -107,10 +108,10 @@ void run(void) {
         }
         switch (vehicle.mode) {
         case AUTOMATIC:
-            accelerate(5);
-            if (isCollisionSoon()) {
-                evadeCollision();
-            }
+            // accelerate(5);
+            // if (isCollisionSoon()) {
+            //     evadeCollision();
+            // }
             setSpeed(255, false);
             break;
 

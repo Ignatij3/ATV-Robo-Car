@@ -1,12 +1,12 @@
-#define __AVR_ATmega328P__
-
+#include "../ino_libs/ino_libs.h"
 #include "serial_communication.h"
+#include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #define CHUNK 16
-#define SERIAL_USAGE_INDICATOR 4
+#define SERIAL_USAGE_INDICATOR PIND4
 #define RX_BUFFER_SIZE 32
 
 volatile static uint8_t rx_buffer[RX_BUFFER_SIZE] = {0};
@@ -17,7 +17,6 @@ static void enableLED(void);
 static void disableLED(void);
 
 ISR(USART_RX_vect) {
-
     volatile static uint16_t rx_write_pos = 0;
 
     rx_buffer[rx_write_pos] = UDR0;
@@ -28,7 +27,9 @@ ISR(USART_RX_vect) {
     }
 }
 
-ISR(USART_TX_vect) { uart_tx_busy = 1; }
+ISR(USART_TX_vect) {
+    uart_tx_busy = 1;
+}
 
 // serialInit sets microchip's registers for serial communication.
 void serialInit(uint32_t ubrr) {
@@ -67,7 +68,9 @@ void writeString(uint8_t *c) {
 }
 
 // readCount returns amount of bytes left in the buffer.
-uint16_t readCount(void) { return rx_count; }
+uint16_t readCount(void) {
+    return rx_count;
+}
 
 // readByte reads single byte via serial interface.
 uint8_t readByte(void) {
@@ -86,7 +89,11 @@ uint8_t readByte(void) {
 }
 
 // enableLED lights up serial usage indicator LED.
-static void enableLED(void) { digitalWrite(SERIAL_USAGE_INDICATOR, 1); }
+static void enableLED(void) {
+    digitalWrite(&PORTD, SERIAL_USAGE_INDICATOR, HIGH);
+}
 
 // disableLED disables serial usage indicator LED.
-static void disableLED(void) { digitalWrite(SERIAL_USAGE_INDICATOR, 0); }
+static void disableLED(void) {
+    digitalWrite(&PORTD, SERIAL_USAGE_INDICATOR, LOW);
+}

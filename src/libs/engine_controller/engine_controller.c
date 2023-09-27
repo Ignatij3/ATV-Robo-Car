@@ -1,6 +1,7 @@
 #include "../ino_libs/ino_libs.h"
 #include "../serial_communication/serial_communication.h"
 #include "engine_controller.h"
+#include <avr/io.h>
 #include <stdint.h>
 
 struct carspeed {
@@ -8,18 +9,19 @@ struct carspeed {
     uint8_t rightSideSpeed;
 };
 
-// defining H-brige pins
-#define IN1 8
-#define IN2 9
-#define IN3 10
-#define IN4 11
-
-#define ENA 6
-#define ENB 5
+// right-side motor pins
+#define IN1 PINB0
+#define IN2 PINB1
+// left-side motor pins
+#define IN3 PINB2
+#define IN4 PINB3
+// PWM signal pins
+#define ENA PIND6
+#define ENB PIND5
 
 // defining LED turning pins
-#define LEFT_TURN_SIGNAL 2
-#define RIGHT_TURN_SIGNAL 3
+#define LEFT_TURN_LED_PIN PIND2
+#define RIGHT_TURN_LED_PIN PIND3
 
 static struct carspeed car;
 
@@ -29,16 +31,16 @@ static void left(void);
 static void right(void);
 
 void initializeEngines(void) {
-    pinMode(LEFT_TURN_SIGNAL, OUTPUT); // turn declaration
-    pinMode(RIGHT_TURN_SIGNAL, OUTPUT);
+    pinMode(&PORTD, LEFT_TURN_LED_PIN, OUTPUT);
+    pinMode(&PORTD, RIGHT_TURN_LED_PIN, OUTPUT);
 
-    pinMode(IN1, OUTPUT); // declaration 4pins from H-Bridge to output
-    pinMode(IN2, OUTPUT);
-    pinMode(IN3, OUTPUT);
-    pinMode(IN4, OUTPUT);
+    pinMode(&PORTB, IN1, OUTPUT);
+    pinMode(&PORTB, IN2, OUTPUT);
+    pinMode(&PORTB, IN3, OUTPUT);
+    pinMode(&PORTB, IN4, OUTPUT);
 
-    pinMode(ENA, OUTPUT);
-    pinMode(ENB, OUTPUT);
+    pinMode(&PORTD, ENA, OUTPUT);
+    pinMode(&PORTD, ENB, OUTPUT);
     car.leftSideSpeed = 0;
     car.rightSideSpeed = 0;
 }
@@ -50,82 +52,79 @@ void initializeEngines(void) {
 // High(1)	  High(1)	Motor OFF
 // same principle with IN3 and IN4
 
-static void forward(void) // switch pins to go forward
-{
-    digitalWrite(IN1, 1);
-    digitalWrite(IN2, 0); // the right side go forward
-    digitalWrite(IN3, 1); // the left side go forward
-    digitalWrite(IN4, 0);
+static void forward(void) {
+    digitalWrite(&PORTD, IN1, HIGH);
+    digitalWrite(&PORTD, IN2, LOW);
+    digitalWrite(&PORTD, IN3, HIGH);
+    digitalWrite(&PORTD, IN4, LOW);
 }
 
-static void backwards(void) // switch pins to go backwards
-{
-    digitalWrite(IN1, 0);
-    digitalWrite(IN2, 1); // the right side go backward
-    digitalWrite(IN3, 0); // the left side go backward
-    digitalWrite(IN4, 1);
+static void backwards(void) {
+    digitalWrite(&PORTD, IN1, LOW);
+    digitalWrite(&PORTD, IN2, HIGH);
+    digitalWrite(&PORTD, IN3, LOW);
+    digitalWrite(&PORTD, IN4, HIGH);
 }
 
-static void left(void) // switch pins to turn left
-{
-    digitalWrite(IN1, 0);
-    digitalWrite(IN2, 1); // the right side go backwards
-    digitalWrite(IN3, 1); // the left side go forward
-    digitalWrite(IN4, 0);
+static void left(void) {
+    digitalWrite(&PORTD, IN1, LOW);
+    digitalWrite(&PORTD, IN2, HIGH);
+    digitalWrite(&PORTD, IN3, HIGH);
+    digitalWrite(&PORTD, IN4, LOW);
 }
 
-static void right(void) // switch pins to turn right
-{
-    digitalWrite(IN1, 1);
-    digitalWrite(IN2, 0); // the right side go forward
-    digitalWrite(IN3, 0); // the left side go backwards
-    digitalWrite(IN4, 1);
+static void right(void) {
+    digitalWrite(&PORTD, IN1, HIGH);
+    digitalWrite(&PORTD, IN2, LOW);
+    digitalWrite(&PORTD, IN3, LOW);
+    digitalWrite(&PORTD, IN4, HIGH);
 }
 
 // function gets the angle and rotates to the left
 // by the value to the left
 void turnLeft(uint16_t angle) {
-    digitalWrite(LEFT_TURN_SIGNAL, 1); // turning on the left turn signal
     left();
+    digitalWrite(&PORTD, LEFT_TURN_LED_PIN, HIGH);
     for (uint16_t i = 0; i < angle; i++) {
         // here we need to somehow know how much degrees we need to turn
     }
-    digitalWrite(LEFT_TURN_SIGNAL, 0); // turning off the left turn signal
+    digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
+    forward();
 }
 
 // function gets the angle and rotates to the
 // right by the value to the left
 void turnRight(uint16_t angle) {
-    digitalWrite(RIGHT_TURN_SIGNAL, 1); // turning on the right turn signal
     right();
+    digitalWrite(&PORTD, RIGHT_TURN_LED_PIN, HIGH);
     for (uint16_t i = 0; i < angle; i++) {
         // here we need to somehow know how much degrees we need to turn
     }
-    digitalWrite(RIGHT_TURN_SIGNAL, 0); // turning off the right turn signal
+    digitalWrite(&PORTD, RIGHT_TURN_LED_PIN, LOW);
+    forward();
 }
 
-void turnAround(void) // function turn the car aroung(180 degrees)
-{
+void turnAround(void) {
     turnRight(180);
-    // maybe we need to add there some if from sensor
 }
 
-void setSpeed(
-    uint8_t speed,
-    bool reverse) // sets the right speed and reverse means the opposite side
-{
+void setSpeed(uint8_t speed, bool reverse) {
     if (reverse) {
         backwards();
+    } else {
+        forward();
     }
     car.leftSideSpeed = speed;
-    car.rightSideSpeed = speed; // setting the desired speed for the car
+    car.rightSideSpeed = speed;
     writeByte('e');
     writeByte('n');
     writeByte('g');
     writeByte('1');
     writeByte('\n');
-    analogWrite(ENA, car.leftSideSpeed);
-    analogWrite(ENB, car.rightSideSpeed); // sending the speed to our engines
+    // analogWrite(&PORTD, ENA, car.leftSideSpeed);
+    // analogWrite(&PORTD, ENB, car.rightSideSpeed);
+    digitalWrite(&PORTD, ENA, HIGH);
+    digitalWrite(&PORTD, ENB, HIGH);
     writeByte('e');
     writeByte('n');
     writeByte('g');
@@ -133,28 +132,26 @@ void setSpeed(
     writeByte('\n');
 }
 
-void increaseSpeed(
-    uint8_t speed) // a function that increases the speed of the car
+void increaseSpeed(uint8_t speed) // a function that increases the speed of the car
 {
-    if (255 - speed >=
-        car.leftSideSpeed) {     // checking for the overflow for left side
-        car.leftSideSpeed = 255; // set the maximum value for left side
+    if (255 - speed >= car.leftSideSpeed) { // checking for the overflow for left side
+        car.leftSideSpeed = 255;            // set the maximum value for left side
     } else {
         car.leftSideSpeed += speed; // set the needed value for left side
     }
 
-    if (255 - speed >=
-        car.rightSideSpeed) {     // checking for the overflow for right side
-        car.rightSideSpeed = 255; // set the maximum value for right side
+    if (255 - speed >= car.rightSideSpeed) { // checking for the overflow for right side
+        car.rightSideSpeed = 255;            // set the maximum value for right side
     } else {
         car.rightSideSpeed += speed; // set the needed value for right side
     }
-    analogWrite(ENA, car.leftSideSpeed);
-    analogWrite(ENB, car.rightSideSpeed); // sending the speed to our engines
+    // analogWrite(&PORTD, ENA, car.leftSideSpeed);
+    // analogWrite(&PORTD, ENB, car.rightSideSpeed);
+    digitalWrite(&PORTD, ENA, HIGH);
+    digitalWrite(&PORTD, ENB, HIGH);
 }
 
-void decreaseSpeed(
-    uint8_t speed) // a function that decreases the speed of the car
+void decreaseSpeed(uint8_t speed) // a function that decreases the speed of the car
 {
     if (speed > car.leftSideSpeed) { // checking for the underflow for left side
         car.leftSideSpeed = 0;       // set the minimum value for left side
@@ -162,12 +159,13 @@ void decreaseSpeed(
         car.leftSideSpeed -= speed; // set the needed value for left side
     }
 
-    if (speed >
-        car.rightSideSpeed) {   // checking for the underflow for right side
-        car.rightSideSpeed = 0; // set the minimum value for right side
+    if (speed > car.rightSideSpeed) { // checking for the underflow for right side
+        car.rightSideSpeed = 0;       // set the minimum value for right side
     } else {
         car.rightSideSpeed -= speed; // set the needed value for right side
     }
-    analogWrite(ENA, car.leftSideSpeed);
-    analogWrite(ENB, car.rightSideSpeed); // sending the speed to our engines
+    // analogWrite(&PORTD, ENA, car.leftSideSpeed);
+    // analogWrite(&PORTD, ENB, car.rightSideSpeed);
+    digitalWrite(&PORTD, ENA, HIGH);
+    digitalWrite(&PORTD, ENB, HIGH);
 }

@@ -11,14 +11,21 @@ OBJDUMP = avr-objdump
 AVRSIZE = avr-size
 AVRDUDE = avrdude
 
-TARGET = build/$(lastword $(subst /, ,$(CURDIR)))
-INCL_PATH = $(CURDIR)/libs
-INCLUDES = -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
+TARGET = $(BLDDIR)/$(lastword $(subst /, ,$(CURDIR)))
 
-SOURCES=main.c
-SOURCES+=$(wildcard libs/**/*.c)
-OBJECTS=$(SOURCES:.c=.o)
-HEADERS=$(SOURCES:.c=.h)
+OBJDIR = obj
+SRCDIR = libs
+BLDDIR = build
+
+# SOURCES = $(wildcard libs/**/*.c)
+# OBJECTS = $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SOURCES:.c=.o))
+# SOURCES += main.c
+# OBJECTS += $(OBJDIR)/main.o
+
+SOURCES = main.c
+SOURCES += $(shell find $(SRCDIR) -name '*.c')
+OBJECTS := $(patsubst %.c, ${OBJDIR}/%.o, $(notdir $(SOURCES)))
+HEADERS = $(SOURCES:.c=.h)
 
 # Compilation options, type man avr-gcc if you're curious.
 CPPFLAGS = -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) $(INCLUDES)
@@ -32,16 +39,24 @@ LDFLAGS = -Wl,-Map,$(TARGET).map
 LDFLAGS += -Wl,--gc-sections
 TARGET_ARCH = -mmcu=$(MCU)
 
-#* Explicit pattern rules:
+
+$(info "objs" $(OBJECTS))
+
+
+directories:
+	@mkdir -p $(BLDDIR)
+	@mkdir -p $(OBJDIR)
+
+# Explicit pattern rules:
 # To make .o files from .c files
-%.o: %.c $(HEADERS) Makefile
-	 $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<;
+$(OBJDIR)/%.o: %.c $(HEADERS) Makefile
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<;
 
 $(TARGET).elf: $(OBJECTS)
 	$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LDLIBS) -o $@
 
 %.hex: %.elf
-	 $(OBJCOPY) -j .text -j .data -O ihex $< $@
+	$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
 %.eeprom: %.elf
 	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O ihex $< $@
@@ -56,6 +71,7 @@ all: $(TARGET).hex
 debug:
 	@echo
 	@echo "Source files:"   $(SOURCES)
+	@echo "Objects:"   $(OBJECTS)
 	@echo "MCU, F_CPU, BAUD:"  $(MCU), $(F_CPU), $(BAUD)
 	@echo	
 
@@ -68,7 +84,7 @@ size:  $(TARGET).elf
 	$(AVRSIZE) -C --mcu=$(MCU) $(TARGET).elf
 
 clean:
-	rm -f *.elf *.hex *.obj *.o *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom
+	rm -f $(BLDDIR)/* $(OBJDIR)/*
 
 flash: $(TARGET).hex
 	$(AVRDUDE) $(PROGRAMMER_ARGS) -Uflash:w:$<:i
