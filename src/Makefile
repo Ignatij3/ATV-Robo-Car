@@ -21,7 +21,6 @@ TARGET := $(BLDDIR)/robocar_atv
 SOURCES := main.c
 SOURCES += $(wildcard libs/**/*.c)
 OBJECTS := $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
-# OBJECTS := $(addprefix $(OBJDIR)/,$(notdir $(SOURCES:%.c=%.o)))
 HEADERS := $(SOURCES:.c=.h)
 
 # Compilation options, type man avr-gcc if you're curious.
@@ -50,12 +49,6 @@ $(TARGET).elf: $(OBJECTS) | $(BLDDIR)
 
 %.hex: %.elf
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
-
-%.eeprom: %.elf
-	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O ihex $< $@
-
-%.lst: %.elf
-	$(OBJDUMP) -S $< > $@
 
 .PHONY: all debug clean flash fuses
 

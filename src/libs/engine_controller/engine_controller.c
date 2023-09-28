@@ -53,31 +53,31 @@ void initializeEngines(void) {
 // same principle with IN3 and IN4
 
 static void forward(void) {
-    digitalWrite(&PORTD, IN1, HIGH);
-    digitalWrite(&PORTD, IN2, LOW);
-    digitalWrite(&PORTD, IN3, HIGH);
-    digitalWrite(&PORTD, IN4, LOW);
+    digitalWrite(&PORTB, IN1, HIGH);
+    digitalWrite(&PORTB, IN2, LOW);
+    digitalWrite(&PORTB, IN3, HIGH);
+    digitalWrite(&PORTB, IN4, LOW);
 }
 
 static void backwards(void) {
-    digitalWrite(&PORTD, IN1, LOW);
-    digitalWrite(&PORTD, IN2, HIGH);
-    digitalWrite(&PORTD, IN3, LOW);
-    digitalWrite(&PORTD, IN4, HIGH);
+    digitalWrite(&PORTB, IN1, LOW);
+    digitalWrite(&PORTB, IN2, HIGH);
+    digitalWrite(&PORTB, IN3, LOW);
+    digitalWrite(&PORTB, IN4, HIGH);
 }
 
 static void left(void) {
-    digitalWrite(&PORTD, IN1, LOW);
-    digitalWrite(&PORTD, IN2, HIGH);
-    digitalWrite(&PORTD, IN3, HIGH);
-    digitalWrite(&PORTD, IN4, LOW);
+    digitalWrite(&PORTB, IN1, LOW);
+    digitalWrite(&PORTB, IN2, HIGH);
+    digitalWrite(&PORTB, IN3, HIGH);
+    digitalWrite(&PORTB, IN4, LOW);
 }
 
 static void right(void) {
-    digitalWrite(&PORTD, IN1, HIGH);
-    digitalWrite(&PORTD, IN2, LOW);
-    digitalWrite(&PORTD, IN3, LOW);
-    digitalWrite(&PORTD, IN4, HIGH);
+    digitalWrite(&PORTB, IN1, HIGH);
+    digitalWrite(&PORTB, IN2, LOW);
+    digitalWrite(&PORTB, IN3, LOW);
+    digitalWrite(&PORTB, IN4, HIGH);
 }
 
 // function gets the angle and rotates to the left
