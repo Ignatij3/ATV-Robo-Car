@@ -30,7 +30,7 @@ void initializeModules(uint8_t minimalTolerableDistance) {
     vehicle.minimalTolerableDistance = minimalTolerableDistance;
     vehicle.mode = NONE;
     initializeEngines();
-    // registerDistanceSensor();
+    registerDistanceSensor();
     serialInit(MYUBRR(BAUD));
 }
 
@@ -67,10 +67,6 @@ static drivingMode readModeChange(void) {
 
 // accelerate will gradually increase speed of the car until reaching maximum.
 static void accelerate(uint8_t step) {
-    writeByte('a');
-    writeByte('c');
-    writeByte('c');
-    writeByte('\n');
     if (vehicle.speed == MAX_SPEED) {
         return;
     }

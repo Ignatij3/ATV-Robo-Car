@@ -116,20 +116,10 @@ void setSpeed(uint8_t speed, bool reverse) {
     }
     car.leftSideSpeed = speed;
     car.rightSideSpeed = speed;
-    writeByte('e');
-    writeByte('n');
-    writeByte('g');
-    writeByte('1');
-    writeByte('\n');
     // analogWrite(&PORTD, ENA, car.leftSideSpeed);
     // analogWrite(&PORTD, ENB, car.rightSideSpeed);
     digitalWrite(&PORTD, ENA, HIGH);
     digitalWrite(&PORTD, ENB, HIGH);
-    writeByte('e');
-    writeByte('n');
-    writeByte('g');
-    writeByte('2');
-    writeByte('\n');
 }
 
 void increaseSpeed(uint8_t speed) // a function that increases the speed of the car
