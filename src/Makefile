@@ -19,7 +19,7 @@ OBJDIR := obj
 TARGET := $(BLDDIR)/robocar_atv
 
 SOURCES := main.c
-SOURCES += $(wildcard libs/**/*.c)
+SOURCES += $(shell find libs/ -type f -name '*.c')
 OBJECTS := $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
 HEADERS := $(SOURCES:.c=.h)
 

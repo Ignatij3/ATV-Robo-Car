@@ -108,11 +108,10 @@ void run(void) {
         }
         switch (vehicle.mode) {
         case AUTOMATIC:
-            // accelerate(5);
-            // if (isCollisionSoon()) {
-            //     evadeCollision();
-            // }
-            setSpeed(255, false);
+            accelerate(5);
+            if (isCollisionSoon()) {
+                evadeCollision();
+            }
             break;
 
         case CONTROLLED:
