@@ -1,4 +1,3 @@
 src/.vscode/**
-*.o
-obj/**
-build/**
+src/obj/**
+src/build/**
