@@ -19,8 +19,10 @@ void pinMode(volatile uint8_t *PORT, uint8_t pin, uint8_t mode) {
 
 void digitalWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     uint8_t gate = *DDx(PORT) & _BV(pin);
-    *PORT &= ~_BV(pin) | ~gate;  // if the pin is input, don't clear bit
-    *PORT |= (value & 1) & gate; // if pin is input, write nothing, else 1 or 0
+    // if the pin is input, don't clear bit
+    *PORT &= ~_BV(pin) | ~gate;
+    // if pin is input, write nothing, else 1 or 0
+    *PORT |= ((value & 1) & (gate >> pin)) << pin;
 }
 
 void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {}
