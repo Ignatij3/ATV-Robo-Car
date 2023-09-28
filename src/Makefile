@@ -2,8 +2,8 @@ MCU   = atmega328p
 F_CPU = 16000000UL
 BAUD  = 9600UL
 
-PROGRAMMER_TYPE = arduino
-PROGRAMMER_ARGS = -C/etc/avrdude.conf -v -p$(MCU) -c$(PROGRAMMER_TYPE) -P/dev/ttyACM0 -b57600
+PROGRAMMER_TYPE = xplainedmini
+PROGRAMMER_ARGS = -C/etc/avrdude.conf -v -p$(MCU) -c$(PROGRAMMER_TYPE) -b57600
 
 CC = avr-gcc
 OBJCOPY = avr-objcopy
