@@ -22,7 +22,7 @@ void digitalWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     // if the pin is input, don't clear bit
     *PORT &= ~_BV(pin) | ~gate;
     // if pin is input, write nothing, else 1 or 0
-    *PORT |= ((value << pin) & gate);
+    *PORT |= value & gate;
 }
 
 void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {}
