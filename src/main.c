@@ -14,8 +14,11 @@ int main(void) {
 
     pinMode(&PORTB, PINB7, INPUT_PULLUP);
 
-    PCICR |= PCIE0; // port b
-    PCMSK0 |= PCINT7;
+    EICRA |= _BV(ISC01);
+    EIMSK |= _BV(INT0);
+    PCICR |= _BV(PCIE0); // port b
+    PCMSK0 |= _BV(PCINT7);
+    sei(); // enable interrupts
 
     while (1) {
         run();

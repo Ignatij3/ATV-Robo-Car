@@ -40,7 +40,7 @@ void initializeModules(uint8_t minimalTolerableDistance) {
 
 // togglePower turns on or off power to the engines and returns current state
 bool togglePower(void) {
-    vehicle.poweredOn = !vehicle.poweredOn;
+    vehicle.poweredOn = (vehicle.poweredOn-1)&1;
     return vehicle.poweredOn;
 }
 
