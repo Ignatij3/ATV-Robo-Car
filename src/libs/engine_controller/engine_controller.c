@@ -131,8 +131,13 @@ void setSpeed(uint8_t speed, bool reverse) {
 
     // analogWrite(&PORTD, ENA, car.leftSideSpeed);
     // analogWrite(&PORTD, ENB, car.rightSideSpeed);
-    digitalWrite(&PORTD, ENA, HIGH);
-    digitalWrite(&PORTD, ENB, HIGH);
+    if (speed == 0) {
+        digitalWrite(&PORTD, ENA, LOW);
+        digitalWrite(&PORTD, ENB, LOW);
+    } else {
+        digitalWrite(&PORTD, ENA, HIGH);
+        digitalWrite(&PORTD, ENB, HIGH);
+    }
 }
 
 void increaseSpeed(uint8_t speed) // a function that increases the speed of the car

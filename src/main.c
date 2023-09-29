@@ -1,18 +1,22 @@
 #include "libs/central_controller/central_controller.h"
 #include "libs/ino_libs/ino_libs.h"
 #include <avr/interrupt.h>
-#include <avr/io.h>
 
 ISR(PCINT0_vect) {
-    togglePower();
+    volatile static uint8_t state = 1;
+
+    state = (state - 1) & 1;
+    if (!state) {
+        togglePower();
+    }
 }
 
 int main(void) {
     initializeModules(10);
-    sei(); // enable interrupts
     setMode(AUTOMATIC);
 
     pinMode(&PORTB, PINB7, INPUT_PULLUP);
+    pinMode(&PORTB, PINB5, OUTPUT);
 
     EICRA |= _BV(ISC01);
     EIMSK |= _BV(INT0);

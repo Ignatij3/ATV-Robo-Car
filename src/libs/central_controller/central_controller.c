@@ -1,7 +1,9 @@
 #include "../engine_controller/engine_controller.h"
+#include "../ino_libs/ino_libs.h"
 #include "../serial_communication/serial_communication.h"
 #include "central_controller.h"
 #include "distance_sensor/HCSR04.h"
+#include <avr/io.h>
 #include <util/delay.h>
 
 #define MAX_SPEED 255
@@ -40,7 +42,7 @@ void initializeModules(uint8_t minimalTolerableDistance) {
 
 // togglePower turns on or off power to the engines and returns current state
 bool togglePower(void) {
-    vehicle.poweredOn = (vehicle.poweredOn-1)&1;
+    vehicle.poweredOn = (vehicle.poweredOn - 1) & 1;
     return vehicle.poweredOn;
 }
 
@@ -115,10 +117,10 @@ void run(void) {
         switch (vehicle.mode) {
         case AUTOMATIC:
             setSpeed(255, false);
-            accelerate(5);
-            if (isCollisionSoon()) {
-                evadeCollision();
-            }
+            // accelerate(5);
+            // if (isCollisionSoon()) {
+            //     evadeCollision();
+            // }
             break;
 
         case CONTROLLED:
@@ -131,7 +133,10 @@ void run(void) {
 
         case NONE:
             // Serial.println("No mode is selected");
-            return;
+            goto exit;
         }
     }
+
+exit:
+    setSpeed(0, false);
 }
