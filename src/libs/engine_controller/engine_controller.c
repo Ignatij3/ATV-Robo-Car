@@ -7,6 +7,7 @@
 struct carspeed {
     uint8_t leftSideSpeed;
     uint8_t rightSideSpeed;
+    bool reverse;
 };
 
 // right-side motor pins
@@ -29,6 +30,7 @@ static void forward(void);
 static void backwards(void);
 static void left(void);
 static void right(void);
+static powerEngines(void);
 
 void initializeEngines(void) {
     pinMode(&PORTD, LEFT_TURN_LED_PIN, OUTPUT);
@@ -43,6 +45,13 @@ void initializeEngines(void) {
     pinMode(&PORTD, ENB, OUTPUT);
     car.leftSideSpeed = 0;
     car.rightSideSpeed = 0;
+    car.reverse = false;
+
+    powerEngines();
+    // analogWrite(&PORTD, ENA, car.leftSideSpeed);
+    // analogWrite(&PORTD, ENB, car.rightSideSpeed);
+    digitalWrite(&PORTD, ENA, LOW);
+    digitalWrite(&PORTD, ENB, LOW);
 }
 
 // IN1	      IN2	    Spinning Direction
@@ -80,6 +89,14 @@ static void right(void) {
     digitalWrite(&PORTB, IN4, HIGH);
 }
 
+static powerEngines(void) {
+    if (car.reverse) {
+        backwards();
+    } else {
+        forward();
+    }
+}
+
 // function gets the angle and rotates to the left
 // by the value to the left
 void turnLeft(uint16_t angle) {
@@ -89,7 +106,6 @@ void turnLeft(uint16_t angle) {
         // here we need to somehow know how much degrees we need to turn
     }
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
-    forward();
 }
 
 // function gets the angle and rotates to the
@@ -101,7 +117,6 @@ void turnRight(uint16_t angle) {
         // here we need to somehow know how much degrees we need to turn
     }
     digitalWrite(&PORTD, RIGHT_TURN_LED_PIN, LOW);
-    forward();
 }
 
 void turnAround(void) {
@@ -109,13 +124,11 @@ void turnAround(void) {
 }
 
 void setSpeed(uint8_t speed, bool reverse) {
-    if (reverse) {
-        backwards();
-    } else {
-        forward();
-    }
     car.leftSideSpeed = speed;
     car.rightSideSpeed = speed;
+    car.reverse = reverse;
+    powerEngines();
+
     // analogWrite(&PORTD, ENA, car.leftSideSpeed);
     // analogWrite(&PORTD, ENB, car.rightSideSpeed);
     digitalWrite(&PORTD, ENA, HIGH);

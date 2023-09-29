@@ -6,7 +6,7 @@
 typedef enum { NONE, SLAVE, CONTROLLED, AUTOMATIC } drivingMode;
 
 void initializeModules(uint8_t minimalTolerableDistance);
-void setDistanceFromObject(uint8_t distance);
+bool togglePower(void);
 void setMode(drivingMode mode);
 void run(void);
 

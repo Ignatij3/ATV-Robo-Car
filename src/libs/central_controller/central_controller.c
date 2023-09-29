@@ -13,6 +13,7 @@ typedef struct {
     uint8_t minimalTolerableDistance;
     drivingMode mode;
     uint8_t speed;
+    bool poweredOn;
 } carControls;
 
 static carControls vehicle;
@@ -29,9 +30,18 @@ static void decelerate(uint8_t step);
 void initializeModules(uint8_t minimalTolerableDistance) {
     vehicle.minimalTolerableDistance = minimalTolerableDistance;
     vehicle.mode = NONE;
+    vehicle.speed = 0;
+    vehicle.poweredOn = false;
+
     initializeEngines();
     registerDistanceSensor();
     serialInit(MYUBRR(BAUD));
+}
+
+// togglePower turns on or off power to the engines and returns current state
+bool togglePower(void) {
+    vehicle.poweredOn = !vehicle.poweredOn;
+    return vehicle.poweredOn;
 }
 
 // isCollision returns whether vehicle is about to collide with object in front.
@@ -76,7 +86,7 @@ static void accelerate(uint8_t step) {
     } else {
         vehicle.speed = MAX_SPEED;
     }
-    setSpeed(vehicle.speed, false);
+    increaseSpeed(step);
 }
 
 // decelerate will gradually decrease speed of the car until reaching 0.
@@ -90,13 +100,13 @@ static void decelerate(uint8_t step) {
     } else {
         vehicle.speed = 0;
     }
-    setSpeed(vehicle.speed, false);
+    decreaseSpeed(step);
 }
 
 // run moves the car in whatever mode is set. To change mode, onboard joystick
 // should be used. If mode is set to "NONE", function exits.
 void run(void) {
-    while (1) {
+    while (vehicle.poweredOn) {
         _delay_ms(10); // not to change state too rapidly
         drivingMode newMode = readModeChange();
         if (newMode != NONE) {
@@ -104,6 +114,7 @@ void run(void) {
         }
         switch (vehicle.mode) {
         case AUTOMATIC:
+            setSpeed(255, false);
             accelerate(5);
             if (isCollisionSoon()) {
                 evadeCollision();

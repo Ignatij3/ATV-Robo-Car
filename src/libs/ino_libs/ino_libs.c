@@ -1,5 +1,6 @@
 #include "ino_libs.h"
 #include <avr/cpufunc.h>
+#include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <stdint.h>
 
@@ -7,9 +8,22 @@
 #define DDx(port) (port - 0x01)
 #define PINx(port) (port - 0x02)
 
+#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 #define clockCyclesPerMicrosecond() (F_CPU / 1000000L)
 #define clockCyclesToMicroseconds(a) ((a) / clockCyclesPerMicrosecond())
 #define microsecondsToClockCycles(a) ((a)*clockCyclesPerMicrosecond())
+
+#define NOT_ON_TIMER 0
+#define TIMER0A 1
+#define TIMER0B 2
+#define TIMER1A 3
+#define TIMER1B 4
+#define TIMER2A 7
+#define TIMER2B 8
+
+static void startConversion(void);
+static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
+static uint8_t pinToTimer(volatile uint8_t *PORT, uint8_t pin);
 
 void pinMode(volatile uint8_t *PORT, uint8_t pin, uint8_t mode) {
     // mode&1 used in case pullup mode passed, to be left with only first bit
@@ -50,7 +64,8 @@ uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
     // to 0 (the default).
     ADMUX = _BV(6) | (pin & 0x07);
 
-    startConversion();
+    // start conversion
+    sbi(ADCSRA, ADSC);
 
     // ADSC is cleared when the conversion finishes
     while (bit_is_set(ADCSRA, ADSC))
@@ -96,4 +111,69 @@ unsigned long pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, unsign
     // and the start of the loop. There will be some error introduced by
     // the interrupt handlers.
     return clockCyclesToMicroseconds(width * 21 + 16);
+}
+
+static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
+    switch (pinToTimer(PORT, pin)) {
+    case TIMER0A:
+        // connect pwm to pin on timer 0, channel A
+        sbi(TCCR0A, COM0A1);
+        OCR0A = value; // set pwm duty
+        break;
+
+    case TIMER0B:
+        // connect pwm to pin on timer 0, channel B
+        sbi(TCCR0A, COM0B1);
+        OCR0B = value; // set pwm duty
+        break;
+
+    case TIMER1A:
+        // connect pwm to pin on timer 1, channel A
+        sbi(TCCR1A, COM1A1);
+        OCR1A = value; // set pwm duty
+        break;
+
+    case TIMER1B:
+        // connect pwm to pin on timer 1, channel B
+        sbi(TCCR1A, COM1B1);
+        OCR1B = value; // set pwm duty
+        break;
+
+    case TIMER2A:
+        // connect pwm to pin on timer 2, channel A
+        sbi(TCCR2A, COM2A1);
+        OCR2A = value; // set pwm duty
+        break;
+
+    case TIMER2B:
+        // connect pwm to pin on timer 2, channel B
+        sbi(TCCR2A, COM2B1);
+        OCR2B = value; // set pwm duty
+        break;
+
+    case NOT_ON_TIMER:
+        digitalWrite(PORT, pin, HIGH & (value >> 7)); // 0 if <128
+    }
+}
+
+static uint8_t pinToTimer(volatile uint8_t *PORT, uint8_t pin) {
+    if (PORT == &PORTB) {
+        if (pin == PINB1) {
+            return TIMER1A;
+        } else if (pin == PINB2) {
+            return TIMER1B;
+        } else if (pin == PINB3) {
+            return TIMER2A;
+        }
+    } else if (PORT == &PORTD) {
+        if (pin == PIND3) {
+            return TIMER2B;
+        } else if (pin == PIND5) {
+            return TIMER0B;
+        } else if (pin == PIND6) {
+            return TIMER0A;
+        }
+    }
+
+    return NOT_ON_TIMER;
 }

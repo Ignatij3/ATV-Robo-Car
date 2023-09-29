@@ -16,7 +16,4 @@ uint8_t digitalRead(volatile uint8_t *PORT, uint8_t pin);
 uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin);
 unsigned long pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, unsigned long timeout);
 
-static void startConversion(void);
-static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
-
 #endif
