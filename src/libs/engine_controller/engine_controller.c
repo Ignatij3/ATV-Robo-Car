@@ -49,6 +49,9 @@ void initializeEngines(void) {
 
     pinMode(&PORTD, ENA, OUTPUT);
     pinMode(&PORTD, ENB, OUTPUT);
+    car.leftSideSpeed = 0;
+    car.rightSideSpeed = 0;
+    car.reverse = true; // temporary override
 
     car.speed = MIN_SPEED;
     car.reverse = false;

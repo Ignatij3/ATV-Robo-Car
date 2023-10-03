@@ -1,39 +1,32 @@
-MCU   := atmega328p
-F_CPU := 16000000UL
-BAUD  := 9600UL
-
-CC      := avr-gcc
-OBJCOPY := avr-objcopy
-OBJDUMP := avr-objdump
-AVRSIZE := avr-size
-AVRDUDE := avrdude
+MCU   = atmega328p
+F_CPU = 16000000UL
+BAUD  = 9600UL
 
 PROGRAMMER_TYPE := xplainedmini
-PROGRAMMER_ARGS := -C/etc/avrdude.conf -v -p$(MCU) -c$(PROGRAMMER_TYPE) -b57600
+PROGRAMMER_ARGS := -v -p $(MCU) -c $(PROGRAMMER_TYPE) -b 57600
 
-INCL_PATH := $(CURDIR)/libs
-INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
+CC      = avr-gcc
+OBJCOPY = avr-objcopy
+OBJDUMP = avr-objdump
+AVRSIZE = avr-size
+AVRDUDE = avrdude
 
-BLDDIR := build
-OBJDIR := obj
-TARGET := $(BLDDIR)/robocar_atv
+INCL_PATH = libs
+INCLUDES  = -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
 
-SOURCES := main.c
-SOURCES += $(shell find libs/ -type f -name '*.c')
-OBJECTS := $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
-HEADERS := $(SOURCES:.c=.h)
+BLDDIR = build
+OBJDIR = obj
+TARGET = $(BLDDIR)/robocar_atv
 
 # Compilation options, type man avr-gcc if you're curious.
 CPPFLAGS    := -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) $(INCLUDES)
 CFLAGS      := -Os -g -std=gnu99 -Wall
 # Use short (8-bit) data types
 CFLAGS      += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
-# Splits up object files per function
 CFLAGS      += -ffunction-sections -fdata-sections
-LDFLAGS     := -Wl,-Map,$(TARGET).map
-# Optional, but often ends up with smaller code
+LDFLAGS     = -Wl,-Map,$(TARGET).map
 LDFLAGS     += -Wl,--gc-sections
-TARGET_ARCH := -mmcu=$(MCU)
+TARGET_ARCH = -mmcu=$(MCU)
 
 all: $(TARGET).hex
 
@@ -57,15 +50,14 @@ debug:
 	@echo "Source files:"   $(SOURCES)
 	@echo "Object files:"   $(OBJECTS)
 	@echo "MCU, F_CPU, BAUD:"  $(MCU), $(F_CPU), $(BAUD)
-	@echo	
+	@echo
 
 clean:
-	cd $(BLDDIR) && rm -f *.elf *.hex *.map
-	cd $(OBJDIR) && rm -rf ./*
-	rmdir $(BLDDIR) $(OBJDIR)
+	rmdir /s /q $(BLDDIR)
+	rmdir /s /q $(OBJDIR)
 
 flash: $(TARGET).hex
-	$(AVRDUDE) $(PROGRAMMER_ARGS) -Uflash:w:$<:i
+	$(AVRDUDE) $(PROGRAMMER_ARGS) -U flash:w:$<:i
 
 # Mega 48, 88, 168, 328 default values
 LFUSE = 0xE0
