@@ -36,6 +36,7 @@ void initializeModules(uint8_t minimalTolerableDistance) {
 
     // initialize other modules
     initPWMTimers();
+    enablePWM();
     initializeEngines();
     registerDistanceSensor();
     serialInit(MYUBRR(BAUD));
