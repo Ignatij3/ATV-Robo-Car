@@ -1,10 +1,10 @@
+#include "../global_constants/global_constants.h"
 #include "ino_libs.h"
 #include <avr/cpufunc.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <stdint.h>
 
-#define F_CPU 1843200 // Clock Speed
 #define DDx(port) (port - 0x01)
 #define PINx(port) (port - 0x02)
 

@@ -1,3 +1,4 @@
+#include "../global_constants/global_constants.h"
 #include "../ino_libs/ino_libs.h"
 #include "engine_controller.h"
 #include <avr/io.h>
@@ -26,8 +27,6 @@ struct carspeed {
 // defining LED turning pins
 #define LEFT_TURN_LED_PIN PIND2
 #define RIGHT_TURN_LED_PIN PIND3
-
-#define MAX_SPEED 255
 
 static struct carspeed car;
 

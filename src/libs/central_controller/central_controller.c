@@ -1,12 +1,11 @@
 #include "../engine_controller/engine_controller.h"
+#include "../global_constants/global_constants.h"
 #include "../ino_libs/ino_libs.h"
 #include "../serial_communication/serial_communication.h"
 #include "central_controller.h"
 #include "distance_sensor/HCSR04.h"
 #include <util/delay.h>
 
-#define MAX_SPEED 255
-#define F_CPU 1843200 // Clock Speed
 #define BAUD 9600
 #define MYUBRR(baud) F_CPU / 16 / baud - 1
 
