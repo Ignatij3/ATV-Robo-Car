@@ -1,14 +1,18 @@
+#include "../global_constants/global_constants.h"
 #include "../ino_libs/ino_libs.h"
-#include "../serial_communication/serial_communication.h"
 #include "engine_controller.h"
 #include <avr/io.h>
-#include <stdint.h>
 
 struct carspeed {
-    uint8_t leftSideSpeed;
-    uint8_t rightSideSpeed;
+    uint8_t speed;
     bool reverse;
 };
+
+// IN1/IN3	  IN2/IN4	Spinning Direction
+// Low(0)	  Low(0)	Motor OFF
+// High(1)	  Low(0)	Forward
+// Low(0)	  High(1)	Backward
+// High(1)	  High(1)	Motor OFF
 
 // right-side motor pins
 #define IN1 PINB0
@@ -30,8 +34,10 @@ static void forward(void);
 static void backwards(void);
 static void left(void);
 static void right(void);
-static powerEngines(void);
+static void setDutyCycle(void);
 
+// initializeEngines sets up input and enable pins.
+// After setting up, the function makes sure engines do not move.
 void initializeEngines(void) {
     pinMode(&PORTD, LEFT_TURN_LED_PIN, OUTPUT);
     pinMode(&PORTD, RIGHT_TURN_LED_PIN, OUTPUT);
@@ -43,24 +49,15 @@ void initializeEngines(void) {
 
     pinMode(&PORTD, ENA, OUTPUT);
     pinMode(&PORTD, ENB, OUTPUT);
-    car.leftSideSpeed = 0;
-    car.rightSideSpeed = 0;
-    car.reverse = false;
 
-    powerEngines();
-    // analogWrite(&PORTD, ENA, car.leftSideSpeed);
-    // analogWrite(&PORTD, ENB, car.rightSideSpeed);
-    digitalWrite(&PORTD, ENA, LOW);
-    digitalWrite(&PORTD, ENB, LOW);
+    car.speed = 0;
+    car.reverse = false;
+    // stops the car, to be sure it doesn't move
+    turnOffEngines();
+    setSpeed(0, car.reverse);
 }
 
-// IN1	      IN2	    Spinning Direction
-// Low(0)	  Low(0)	Motor OFF
-// High(1)	  Low(0)	Forward
-// Low(0)	  High(1)	Backward
-// High(1)	  High(1)	Motor OFF
-// same principle with IN3 and IN4
-
+// forward configures engines to turn forward.
 static void forward(void) {
     digitalWrite(&PORTB, IN1, HIGH);
     digitalWrite(&PORTB, IN2, LOW);
@@ -68,6 +65,7 @@ static void forward(void) {
     digitalWrite(&PORTB, IN4, LOW);
 }
 
+// backwards configures engines to turn backwards.
 static void backwards(void) {
     digitalWrite(&PORTB, IN1, LOW);
     digitalWrite(&PORTB, IN2, HIGH);
@@ -75,6 +73,7 @@ static void backwards(void) {
     digitalWrite(&PORTB, IN4, HIGH);
 }
 
+// left configures left engines to turn backwards and right engines to turn forward.
 static void left(void) {
     digitalWrite(&PORTB, IN1, LOW);
     digitalWrite(&PORTB, IN2, HIGH);
@@ -82,6 +81,7 @@ static void left(void) {
     digitalWrite(&PORTB, IN4, LOW);
 }
 
+// right configures left engines to turn forward and right engines to turn backwards.
 static void right(void) {
     digitalWrite(&PORTB, IN1, HIGH);
     digitalWrite(&PORTB, IN2, LOW);
@@ -89,7 +89,9 @@ static void right(void) {
     digitalWrite(&PORTB, IN4, HIGH);
 }
 
-static powerEngines(void) {
+// setTorqueDirection configures engines to turn either forward or backwards, depending on reverse flag.
+// User must call this function first for motor to turn.
+void setTorqueDirection(void) {
     if (car.reverse) {
         backwards();
     } else {
@@ -97,78 +99,93 @@ static powerEngines(void) {
     }
 }
 
-// function gets the angle and rotates to the left
-// by the value to the left
-void turnLeft(uint16_t angle) {
+// turnOffEngines configures engines to not turn even if power is applied.
+void turnOffEngines(void) {
+    digitalWrite(&PORTB, IN1, LOW);
+    digitalWrite(&PORTB, IN2, LOW);
+    digitalWrite(&PORTB, IN3, LOW);
+    digitalWrite(&PORTB, IN4, LOW);
+}
+
+// turnLeft stops the car to perform tank turn.
+// The function will constantly call cancelFunc until it returns false.
+// Once cancelFunc returns false, the function restores engine torque vector.
+// On function exit, car remains stationary.
+void turnLeft(bool (*cancelFunc)(void)) {
+    setSpeed(0, car.reverse);
     left();
+
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, HIGH);
-    for (uint16_t i = 0; i < angle; i++) {
-        // here we need to somehow know how much degrees we need to turn
+    setSpeed(255, car.reverse); // set engine power to maximum, to turn
+    while (cancelFunc()) {
     }
+    setSpeed(0, car.reverse);
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
+
+    setTorqueDirection();
 }
 
-// function gets the angle and rotates to the
-// right by the value to the left
-void turnRight(uint16_t angle) {
+// turnRight stops the car to perform tank turn.
+// The function will constantly call cancelFunc until it returns false.
+// Once cancelFunc returns false, the function restores engine torque vector.
+// On function exit, car remains stationary.
+void turnRight(bool (*cancelFunc)(void)) {
+    setSpeed(0, car.reverse);
     right();
-    digitalWrite(&PORTD, RIGHT_TURN_LED_PIN, HIGH);
-    for (uint16_t i = 0; i < angle; i++) {
-        // here we need to somehow know how much degrees we need to turn
+
+    digitalWrite(&PORTD, LEFT_TURN_LED_PIN, HIGH);
+    setSpeed(255, car.reverse); // set engine power to maximum, to turn
+    while (cancelFunc()) {
     }
-    digitalWrite(&PORTD, RIGHT_TURN_LED_PIN, LOW);
+    setSpeed(0, car.reverse);
+    digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
+
+    setTorqueDirection();
 }
 
-void turnAround(void) {
-    turnRight(180);
+// setDutyCycle sets motor duty cycle equivalent to speed of the car.
+static void setDutyCycle(void) {
+    analogWrite(&PORTD, ENA, car.speed);
+    analogWrite(&PORTD, ENB, car.speed);
 }
 
+// setSpeed sets desired speed and direction of movement.
+// It changes speed instantly.
 void setSpeed(uint8_t speed, bool reverse) {
-    car.leftSideSpeed = speed;
-    car.rightSideSpeed = speed;
-    car.reverse = reverse;
-    powerEngines();
-
-    // analogWrite(&PORTD, ENA, car.leftSideSpeed);
-    // analogWrite(&PORTD, ENB, car.rightSideSpeed);
-    digitalWrite(&PORTD, ENA, HIGH);
-    digitalWrite(&PORTD, ENB, HIGH);
+    car.speed = speed;
+    if (reverse != car.reverse) {
+        car.reverse = reverse;
+        setTorqueDirection();
+    }
+    setDutyCycle();
 }
 
-void increaseSpeed(uint8_t speed) // a function that increases the speed of the car
-{
-    if (255 - speed >= car.leftSideSpeed) { // checking for the overflow for left side
-        car.leftSideSpeed = 255;            // set the maximum value for left side
-    } else {
-        car.leftSideSpeed += speed; // set the needed value for left side
+// increaseSpeed increases speed by 'step'.
+// If the speed is at maximum, it does nothing.
+void increaseSpeed(uint8_t step) {
+    if (car.speed == MAX_SPEED) {
+        return;
     }
 
-    if (255 - speed >= car.rightSideSpeed) { // checking for the overflow for right side
-        car.rightSideSpeed = 255;            // set the maximum value for right side
+    if (car.speed < MAX_SPEED - step) {
+        car.speed += step;
     } else {
-        car.rightSideSpeed += speed; // set the needed value for right side
+        car.speed = MAX_SPEED;
     }
-    // analogWrite(&PORTD, ENA, car.leftSideSpeed);
-    // analogWrite(&PORTD, ENB, car.rightSideSpeed);
-    digitalWrite(&PORTD, ENA, HIGH);
-    digitalWrite(&PORTD, ENB, HIGH);
+    setDutyCycle();
 }
 
-void decreaseSpeed(uint8_t speed) // a function that decreases the speed of the car
-{
-    if (speed > car.leftSideSpeed) { // checking for the underflow for left side
-        car.leftSideSpeed = 0;       // set the minimum value for left side
-    } else {
-        car.leftSideSpeed -= speed; // set the needed value for left side
+// decreaseSpeed decreases speed by 'step'.
+// If the speed is 0, it does nothing.
+void decreaseSpeed(uint8_t step) {
+    if (car.speed == 0) {
+        return;
     }
 
-    if (speed > car.rightSideSpeed) { // checking for the underflow for right side
-        car.rightSideSpeed = 0;       // set the minimum value for right side
+    if (step > car.speed) {
+        car.speed = 0;
     } else {
-        car.rightSideSpeed -= speed; // set the needed value for right side
+        car.speed -= step;
     }
-    // analogWrite(&PORTD, ENA, car.leftSideSpeed);
-    // analogWrite(&PORTD, ENB, car.rightSideSpeed);
-    digitalWrite(&PORTD, ENA, HIGH);
-    digitalWrite(&PORTD, ENB, HIGH);
+    setDutyCycle();
 }

@@ -26,7 +26,7 @@ HEADERS := $(SOURCES:.c=.h)
 # Compilation options, type man avr-gcc if you're curious.
 CPPFLAGS    := -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) $(INCLUDES)
 CFLAGS      := -Os -g -std=gnu99 -Wall
-# Use short (8-bit) data types 
+# Use short (8-bit) data types
 CFLAGS      += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 # Splits up object files per function
 CFLAGS      += -ffunction-sections -fdata-sections
@@ -42,7 +42,7 @@ $(OBJDIR) $(BLDDIR):
 
 $(OBJECTS): $(OBJDIR)/%.o: %.c | $(OBJDIR)
 	mkdir -p "$(dir $@)"
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<;
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
 
 $(TARGET).elf: $(OBJECTS) | $(BLDDIR)
 	$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LDLIBS) -o $@
@@ -68,9 +68,9 @@ flash: $(TARGET).hex
 	$(AVRDUDE) $(PROGRAMMER_ARGS) -Uflash:w:$<:i
 
 # Mega 48, 88, 168, 328 default values
-LFUSE = 0x62
-HFUSE = 0xdf
-EFUSE = 0x00
+LFUSE = 0xE0
+HFUSE = 0xDE
+EFUSE = 0xFC
 
 # Generic
 FUSE_STRING = -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m

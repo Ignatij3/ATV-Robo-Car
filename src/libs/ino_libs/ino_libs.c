@@ -1,10 +1,10 @@
+#include "../global_constants/global_constants.h"
 #include "ino_libs.h"
 #include <avr/cpufunc.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <stdint.h>
 
-#define F_CPU 1843200 // Clock Speed
 #define DDx(port) (port - 0x01)
 #define PINx(port) (port - 0x02)
 
@@ -22,9 +22,33 @@
 #define TIMER2B 8
 
 static void startConversion(void);
-static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 static uint8_t pinToTimer(volatile uint8_t *PORT, uint8_t pin);
 
+// initPWMTimers initializes timers 0, 1, 2 for phase Correct PWM signal.
+void initPWMTimers(void) {
+    TCCR0A |= _BV(WGM00) | _BV(COM0A1);
+    TCCR1A |= _BV(WGM00) | _BV(COM1A1);
+    TCCR2A |= _BV(WGM00) | _BV(COM2A1);
+}
+
+// enablePWM turns on waveform generators.
+void enablePWM(void) {
+    TCCR0B |= _BV(CS01);
+    TCCR1B |= _BV(CS11);
+    TCCR2B |= _BV(CS21);
+}
+
+// disablePWM turns off waveform generators.
+void disablePWM(void) {
+    TCCR0B &= ~_BV(CS01);
+    TCCR1B &= ~_BV(CS11);
+    TCCR2B &= ~_BV(CS21);
+}
+
+// pinMode configures pin at specified port to one of three possible configurations.
+// PORT parameter must be a pointer to the according port register defined in avr/io.h.
+// PORT must represent port at which desired pin exists.
+// It is advised to use only INPUT, OUTPUT, INPUT_PULLUP as 'mode' parameter, to prevent bugs.
 void pinMode(volatile uint8_t *PORT, uint8_t pin, uint8_t mode) {
     // mode&1 used in case pullup mode passed, to be left with only first bit
     *DDx(PORT) &= ~_BV(pin);         // clear bit
@@ -33,9 +57,14 @@ void pinMode(volatile uint8_t *PORT, uint8_t pin, uint8_t mode) {
     // setting pullup setting to PORT address/*
     *PORT &= ~_BV(pin);          // clear bit
     *PORT |= (mode >> 1) << pin; // write either 1 or 0 (pullup bit)
+
     _NOP();
 }
 
+// digitalWrite writes either HIGH or LOW to pin at specified PORT.
+// PORT parameter must be a pointer to the according port register defined in avr/io.h.
+// PORT must represent port at which desired pin exists.
+// It is advised to use only HIGH and LOW as 'value' parameter, otherwise function may show unexpected behaviour.
 void digitalWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     uint8_t mask = *DDx(PORT) & _BV(pin);
     // if the pin is input, don't clear bit
@@ -44,76 +73,18 @@ void digitalWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     *PORT |= (value << pin) & mask;
 }
 
+// digitalRead reads either 1 or 0 from pin at specified PORT.
+// PORT parameter must be a pointer to the according port register defined in avr/io.h.
+// PORT must represent port at which desired pin exists.
 uint8_t digitalRead(volatile uint8_t *PORT, uint8_t pin) {
     return (*PINx(PORT) >> pin) & 1;
 }
 
+// analogWrite writes PWM waveform generator duty cycle length (value) to pin connected to PWM at specified PORT.
+// PORT parameter must be a pointer to the according port register defined in avr/io.h.
+// PORT must represent port at which desired pin exists.
+// If passed pin is not PWM pin, function writes value/255 rounded to the nearest integer.
 void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
-    if (value == 0) {
-        digitalWrite(PORT, pin, LOW);
-    } else if (value == 255) {
-        digitalWrite(PORT, pin, HIGH);
-    } else {
-        writeToTimer(PORT, pin, value);
-    }
-}
-
-uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
-    // set the analog reference (high two bits of ADMUX) and select the
-    // channel (low 4 bits).  this also sets ADLAR (left-adjust result)
-    // to 0 (the default).
-    ADMUX = _BV(6) | (pin & 0x07);
-
-    // start conversion
-    sbi(ADCSRA, ADSC);
-
-    // ADSC is cleared when the conversion finishes
-    while (bit_is_set(ADCSRA, ADSC))
-        ;
-
-    // ADC macro takes care of reading ADC register.
-    // avr-gcc implements the proper reading order: ADCL is read first.
-    return ADC;
-}
-
-unsigned long pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, unsigned long timeout) {
-    // cache the port and bit of the pin in order to speed up the
-    // pulse width measuring loop and achieve finer resolution.  calling
-    // digitalRead() instead yields much coarser resolution.
-    uint8_t bit = *PORT & _BV(pin);
-    uint8_t stateMask = bit & (state << pin);
-    unsigned long width = 0; // keep initialization out of time critical area
-
-    // convert the timeout from microseconds to a number of times through
-    // the initial loop; it takes 16 clock cycles per iteration.
-    unsigned long numloops = 0;
-    unsigned long maxloops = microsecondsToClockCycles(timeout) / 16;
-
-    // wait for any previous pulse to end
-    while ((*PORT & bit) == stateMask)
-        if (numloops++ == maxloops)
-            return 0;
-
-    // wait for the pulse to start
-    while ((*PORT & bit) != stateMask)
-        if (numloops++ == maxloops)
-            return 0;
-
-    // wait for the pulse to stop
-    while ((*PORT & bit) == stateMask) {
-        if (numloops++ == maxloops)
-            return 0;
-        width++;
-    }
-
-    // convert the reading to microseconds. The loop has been determined
-    // to be 20 clock cycles long and have about 16 clocks between the edge
-    // and the start of the loop. There will be some error introduced by
-    // the interrupt handlers.
-    return clockCyclesToMicroseconds(width * 21 + 16);
-}
-
-static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     switch (pinToTimer(PORT, pin)) {
     case TIMER0A:
         // connect pwm to pin on timer 0, channel A
@@ -156,6 +127,74 @@ static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     }
 }
 
+// analogRead reads PWM waveform generator duty cycle length from pin at specified PORT.
+// PORT parameter must be a pointer to the according port register defined in avr/io.h.
+// PORT must represent port at which desired pin exists.
+uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
+    // set the analog reference (high two bits of ADMUX) and select the
+    // channel (low 4 bits).  this also sets ADLAR (left-adjust result)
+    // to 0 (the default).
+    ADMUX = _BV(6) | (pin & 0x07);
+
+    // start conversion
+    sbi(ADCSRA, ADSC);
+
+    // ADSC is cleared when the conversion finishes
+    while (bit_is_set(ADCSRA, ADSC))
+        ;
+
+    // ADC macro takes care of reading ADC register.
+    // avr-gcc implements the proper reading order: ADCL is read first.
+    return ADC;
+}
+
+// pulseIn waits for state change of pin at specified PORT.
+// pulseIn should be used to monitor time it takes for sent pulse to come back,
+// which will be singalled by pin changing state.
+// PORT parameter must be a pointer to the according port register defined in avr/io.h.
+// PORT must represent port at which desired pin exists.
+// If function times out, it returns UINT8_MAX. Otherwise, it returns time it took pulse to return in microseconds.
+uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout) {
+    // cache the port and bit of the pin in order to speed up the
+    // pulse width measuring loop and achieve finer resolution.  calling
+    // digitalRead() instead yields much coarser resolution.
+    uint8_t bit = *PORT & _BV(pin);
+    uint8_t stateMask = bit & (state << pin);
+    uint32_t width = 0; // keep initialization out of time critical area
+
+    // convert the timeout from microseconds to a number of times through
+    // the initial loop; it takes 16 clock cycles per iteration.
+    uint32_t numloops = 0;
+    uint32_t maxloops = microsecondsToClockCycles(timeout) / 16;
+
+    // wait for any previous pulse to end
+    while ((*PORT & bit) == stateMask)
+        if (numloops++ == maxloops)
+            return UINT8_MAX;
+
+    // wait for the pulse to start
+    while ((*PORT & bit) != stateMask)
+        if (numloops++ == maxloops)
+            return UINT8_MAX;
+
+    // wait for the pulse to stop
+    while ((*PORT & bit) == stateMask) {
+        if (numloops++ == maxloops)
+            return UINT8_MAX;
+        width++;
+    }
+
+    // convert the reading to microseconds. The loop has been determined
+    // to be 20 clock cycles long and have about 16 clocks between the edge
+    // and the start of the loop. There will be some error introduced by
+    // the interrupt handlers.
+    return clockCyclesToMicroseconds(width * 21 + 16);
+}
+
+// pinToTimer matches pin at specific port with PWM timer.
+// PORT parameter must be a pointer to the according port register defined in avr/io.h.
+// PORT must represent port at which desired pin exists.
+// If no timer exists for the pin, the function returns NOT_ON_TIMER.
 static uint8_t pinToTimer(volatile uint8_t *PORT, uint8_t pin) {
     if (PORT == &PORTB) {
         if (pin == PINB1) {
@@ -174,6 +213,5 @@ static uint8_t pinToTimer(volatile uint8_t *PORT, uint8_t pin) {
             return TIMER0A;
         }
     }
-
     return NOT_ON_TIMER;
 }

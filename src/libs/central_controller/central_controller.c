@@ -1,11 +1,11 @@
 #include "../engine_controller/engine_controller.h"
+#include "../global_constants/global_constants.h"
+#include "../ino_libs/ino_libs.h"
 #include "../serial_communication/serial_communication.h"
 #include "central_controller.h"
 #include "distance_sensor/HCSR04.h"
 #include <util/delay.h>
 
-#define MAX_SPEED 255
-#define F_CPU 1843200 // Clock Speed
 #define BAUD 9600
 #define MYUBRR(baud) F_CPU / 16 / baud - 1
 
@@ -20,62 +20,62 @@ static carControls vehicle;
 
 static bool isCollisionSoon(void);
 static void evadeCollision(void);
-static drivingMode readModeChange(void);
+static drivingMode readNewMode(void);
 static void accelerate(uint8_t step);
 static void decelerate(uint8_t step);
 
-// initialize performs initialization of structures for the vehicle to operate.
+// initializeModules performs initialization of structures for the vehicle to operate.
 // minimalTolerableDistance is minimal distance between car and object in front,
-// to be able to safely evade collision.
+// to be able to evade collision, imperatively calculated.
 void initializeModules(uint8_t minimalTolerableDistance) {
     vehicle.minimalTolerableDistance = minimalTolerableDistance;
     vehicle.mode = NONE;
     vehicle.speed = 0;
     vehicle.poweredOn = false;
 
+    // initialize other modules
+    initPWMTimers();
+    enablePWM();
     initializeEngines();
     registerDistanceSensor();
     serialInit(MYUBRR(BAUD));
 }
 
-// togglePower turns on or off power to the engines and returns current state
+// togglePower turns on or off car's controls and returns current state.
 bool togglePower(void) {
-    vehicle.poweredOn = !vehicle.poweredOn;
+    vehicle.poweredOn = (vehicle.poweredOn - 1) & 1;
     return vehicle.poweredOn;
 }
 
 // isCollision returns whether vehicle is about to collide with object in front.
+// This is done by comparing closest object distance with minimal tolerable distance.
 static bool isCollisionSoon(void) {
-    uint8_t distance = measureDistanceCm();
-    return distance < vehicle.minimalTolerableDistance;
+    return measureDistanceCm() < vehicle.minimalTolerableDistance;
 }
 
-// evadeCollision will tank turn clockwise until there is no object in front of
-// the car.
+// evadeCollision will tank turn clockwise until there is no objects in front of the car.
 static void evadeCollision(void) {
-    while (vehicle.speed > 0) {
-        decelerate(20);
-        _delay_ms(50);
-    }
-    while (isCollisionSoon()) {
-        turnRight(5);
-    }
+    setSpeed(0, false);
+    vehicle.speed = 0;
+    turnRight(isCollisionSoon);
 }
 
-// setMode sets specified driving mode.
+// setMode sets passed driving mode.
+// If driving mode is NONE, car wouldn't move.
 void setMode(drivingMode mode) {
     if (mode != NONE) {
         vehicle.mode = mode;
     }
 }
 
-// readModeChange reads input from onboard joystick, which will signal a new
-// mode being selected.
-static drivingMode readModeChange(void) {
-    return NONE;
+// readNewMode reads signal from joystick that is it pushed.
+// It returns selected driving mode.
+static drivingMode readNewMode(void) {
+    return AUTOMATIC;
 }
 
-// accelerate will gradually increase speed of the car until reaching maximum.
+// accelerate will increase speed of the car by 'step'.
+// Once speed is at allowed maximum, accelerate does not change it.
 static void accelerate(uint8_t step) {
     if (vehicle.speed == MAX_SPEED) {
         return;
@@ -89,7 +89,8 @@ static void accelerate(uint8_t step) {
     increaseSpeed(step);
 }
 
-// decelerate will gradually decrease speed of the car until reaching 0.
+// decelerate will decrease speed of the car by 'step'.
+// Once speed is 0, decelerate does not change it.
 static void decelerate(uint8_t step) {
     if (vehicle.speed == 0) {
         return;
@@ -103,35 +104,44 @@ static void decelerate(uint8_t step) {
     decreaseSpeed(step);
 }
 
-// run moves the car in whatever mode is set. To change mode, onboard joystick
-// should be used. If mode is set to "NONE", function exits.
+// run drives the car in according to driving mode, blocks on execution.
+// If mode is set to "NONE" or vehicle power is switched off, the function exits.
 void run(void) {
+    setTorqueDirection();
     while (vehicle.poweredOn) {
-        _delay_ms(10); // not to change state too rapidly
-        drivingMode newMode = readModeChange();
-        if (newMode != NONE) {
-            vehicle.mode = newMode;
-        }
+        // update driving mode
+        vehicle.mode = readNewMode();
+
         switch (vehicle.mode) {
+        // in automatic mode, car drives forward until colliding
+        // afterwards, it turns around and continues forward
         case AUTOMATIC:
-            setSpeed(255, false);
-            accelerate(5);
-            if (isCollisionSoon()) {
-                evadeCollision();
-            }
+            accelerate(1);
+            // if (isCollisionSoon()) {
+            //     evadeCollision();
+            // }
             break;
 
+        // in controlled mode, car receives and executes commands from DualShock PS4 controller
         case CONTROLLED:
             /* code */
             break;
 
+        // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it
         case SLAVE:
             /* code */
             break;
 
+        // if NONE mode is chosen, the car must halt
         case NONE:
-            // Serial.println("No mode is selected");
-            return;
+            goto exit;
         }
+        // delay not to change state too rapidly
+        _delay_ms(10);
     }
+
+exit:
+    setSpeed(0, false);
+    vehicle.speed = 0;
+    turnOffEngines();
 }
