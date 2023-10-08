@@ -37,6 +37,7 @@ void serialInit(uint32_t ubrr) {
     UBRR0L = (ubrr & 0x00FF);
 
     UCSR0B |= _BV(TXEN0) | _BV(RXEN0) | _BV(TXCIE0) | _BV(RXCIE0);
+    sei();
 }
 
 // writeByte writes single byte via serial interface.
