@@ -21,7 +21,6 @@
 #define TIMER2A 7
 #define TIMER2B 8
 
-static void startConversion(void);
 static uint8_t pinToTimer(volatile uint8_t *PORT, uint8_t pin);
 
 // initPWMTimers initializes timers 0, 1, 2 for phase Correct PWM signal.
