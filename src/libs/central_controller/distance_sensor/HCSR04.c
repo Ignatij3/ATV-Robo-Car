@@ -1,4 +1,5 @@
 #include "../../ino_libs/ino_libs.h"
+#include "../global_constants/global_constants.h"
 #include "HCSR04.h"
 #include <avr/io.h>
 #include <util/delay.h>
@@ -23,14 +24,14 @@ uint8_t measureDistanceCm(void) {
     digitalWrite(&PORTB, TRIGGER_PIN, LOW);
 
     // Compute max delay based on max distance with 25% margin in microseconds
-    // 18586.0035551 = 2.5 * 255 / 0.0343000042
+    // 18586.0035551 = 2.5 * MAX_DISTANCE / 0.0343000042
 
     // Measure the length of echo signal, which is equal to the time needed for sound to go there and back.
     // Using timeout since we can't measure beyond max distance.
     uint32_t durationMicroSec = pulseIn(&PORTB, ECHO_PIN, HIGH, 18586);
 
     uint32_t distanceCm = (uint32_t)(durationMicroSec * (uint32_t)(1715)) / (uint32_t)(100000);
-    if (distanceCm == 0 || distanceCm > 255) {
+    if (distanceCm == 0 || distanceCm > MAX_DISTANCE) {
         return UINT8_MAX;
     }
 

@@ -50,11 +50,11 @@ void initializeEngines(void) {
     pinMode(&PORTD, ENA, OUTPUT);
     pinMode(&PORTD, ENB, OUTPUT);
 
-    car.speed = 0;
+    car.speed = MIN_SPEED;
     car.reverse = false;
     // stops the car, to be sure it doesn't move
     turnOffEngines();
-    setSpeed(0, car.reverse);
+    setSpeed(MIN_SPEED, car.reverse);
 }
 
 // forward configures engines to turn forward.
@@ -112,7 +112,7 @@ void turnOffEngines(void) {
 // Once cancelFunc returns false, the function restores engine torque vector.
 // On function exit, car remains stationary.
 void turnLeft(bool (*cancelFunc)(void)) {
-    setSpeed(0, car.reverse);
+    setSpeed(MIN_SPEED, car.reverse);
     left();
     bool preserveReverse = car.reverse;
 
@@ -121,7 +121,7 @@ void turnLeft(bool (*cancelFunc)(void)) {
     setSpeed(MAX_SPEED, true);
     while (cancelFunc()) {
     }
-    setSpeed(0, true);
+    setSpeed(MIN_SPEED, true);
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
 
     car.reverse = preserveReverse;
@@ -133,7 +133,7 @@ void turnLeft(bool (*cancelFunc)(void)) {
 // Once cancelFunc returns false, the function restores engine torque vector.
 // On function exit, car remains stationary.
 void turnRight(bool (*cancelFunc)(void)) {
-    setSpeed(0, car.reverse);
+    setSpeed(MIN_SPEED, car.reverse);
     right();
     bool preserveReverse = car.reverse;
 
@@ -142,7 +142,7 @@ void turnRight(bool (*cancelFunc)(void)) {
     setSpeed(MAX_SPEED, true);
     while (cancelFunc()) {
     }
-    setSpeed(0, true);
+    setSpeed(MIN_SPEED, true);
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
 
     car.reverse = preserveReverse;
@@ -184,12 +184,12 @@ void increaseSpeed(uint8_t step) {
 // decreaseSpeed decreases speed by 'step'.
 // If the speed is 0, it does nothing.
 void decreaseSpeed(uint8_t step) {
-    if (car.speed == 0) {
+    if (car.speed == MIN_SPEED) {
         return;
     }
 
     if (step > car.speed) {
-        car.speed = 0;
+        car.speed = MIN_SPEED;
     } else {
         car.speed -= step;
     }
