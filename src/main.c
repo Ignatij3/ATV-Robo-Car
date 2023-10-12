@@ -6,13 +6,22 @@
 #include <util/delay.h>
 
 #define BAUD 9600
-#define F_CPU 16000000UL
-#define MYUBRR(baud) F_CPU / 16 / baud - 1
+#define FQ_CPU 16000000UL
+#define MYUBRR(baud) FQ_CPU / 16 / baud - 1
 
 int main(void) {
     registerDistanceSensor();
     serialInit(MYUBRR(BAUD));
-    uint8_t distance = measureDistanceCm();
-    writeString(intToStr(distance));
+
+    char str[5];
+    while (1) {
+        intToStr(measureDistanceCm(), str);
+        writeString(" distance:");
+        writeString(str);
+        writeByte('\n');
+        writeByte('\r');
+
+        _delay_ms(1000);
+    }
     return 0;
 }

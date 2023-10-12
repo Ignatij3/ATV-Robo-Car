@@ -26,10 +26,8 @@
 static uint8_t pinToTimer(volatile uint8_t *PORT, uint8_t pin);
 static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 
-char *intToStr(uint8_t num) {
-    char str[(int)((ceil(log10(num)) + 1) * sizeof(char))];
+void intToStr(uint8_t num, char *str) {
     sprintf(str, "%d", num);
-    return str;
 }
 
 // initPWMTimers initializes timers 0, 1, 2 for phase Correct PWM signal.
@@ -119,7 +117,6 @@ void intToString(uint8_t num, char* str) {
 
 char* decimalToBinary(int decimal) {
     int i = 0;
-    char *binary;
     while (decimal > 0) {
         binary[i] = (decimal % 2) + '0'; // Convert the remainder to a character
         decimal /= 2;                    // Move to the next bit
@@ -139,8 +136,6 @@ char* decimalToBinary(int decimal) {
         left++;
         right--;
     }
-
-    return binary;
 }
 
 static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
@@ -218,39 +213,64 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
     // pulse width measuring loop and achieve finer resolution.  calling
     // digitalRead() instead yields much coarser resolution.
     uint8_t bit = *PORT & _BV(pin);
-    uint8_t stateMask = bit & (state << pin);
+    // uint8_t stateMask = bit & (state << pin);
+    uint8_t stateMask = (state ? bit : 0);
     uint32_t width = 0; // keep initialization out of time critical area
 
-    writeString(decimalToBinary(*PORT));
-    writeByte('\n');
-    writeString(decimalToBinary(bit));
-    writeByte('\n');
-    writeString(decimalToBinary(state));
-    writeByte('\n');
-    writeString(decimalToBinary(stateMask));
-    writeByte('\n');
+    char portStr[10];
+    char bitStr[10];
+    char stateStr[10];
+    char stateMaskStr[10];
+
+    decimalToBinary(*PORT, portStr);
+    decimalToBinary(bit, bitStr);
+    decimalToBinary(state, stateStr);
+    decimalToBinary(stateMask, stateMaskStr);
+
+    writeString(" portmask:");
+    writeString(portStr);
+    writeString(" bitmask:");
+    writeString(bitStr);
+    writeString(" portmask:");
+    writeString(stateMaskStr);
 
     // convert the timeout from microseconds to a number of times through
     // the initial loop; it takes 16 clock cycles per iteration.
     uint32_t numloops = 0;
     uint32_t maxloops = microsecondsToClockCycles(timeout) / 16;
 
+    decimalToBinary(*PINx(PORT), portStr);
+    writeString(" 0pinmask:");
+    writeString(portStr);
+
     // wait for any previous pulse to end
-    while ((*PORT & bit) == stateMask)
+    while ((*PINx(PORT) & bit) == stateMask)
         if (numloops++ == maxloops)
             return UINT8_MAX;
+
+    decimalToBinary(*PINx(PORT), portStr);
+    writeString(" 1pinmask:");
+    writeString(portStr);
 
     // wait for the pulse to start
-    while ((*PORT & bit) != stateMask)
+    while ((*PINx(PORT) & bit) != stateMask)
         if (numloops++ == maxloops)
             return UINT8_MAX;
 
+    decimalToBinary(*PINx(PORT), portStr);
+    writeString(" 2pinmask:");
+    writeString(portStr);
+
     // wait for the pulse to stop
-    while ((*PORT & bit) == stateMask) {
+    while ((*PINx(PORT) & bit) == stateMask) {
         if (numloops++ == maxloops)
             return UINT8_MAX;
         width++;
     }
+
+    decimalToBinary(*PINx(PORT), portStr);
+    writeString(" 3pinmask:");
+    writeString(portStr);
 
     // convert the reading to microseconds. The loop has been determined
     // to be 20 clock cycles long and have about 16 clocks between the edge
