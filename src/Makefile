@@ -3,7 +3,7 @@ F_CPU = 16000000UL
 BAUD  = 9600UL
 
 PROGRAMMER_TYPE := xplainedmini
-PROGRAMMER_ARGS := -v -p $(MCU) -c $(PROGRAMMER_TYPE) -b 57600
+PROGRAMMER_ARGS := -v -p $(MCU) -c $(PROGRAMMER_TYPE) -b 57600 
 
 CC      = avr-gcc
 OBJCOPY = avr-objcopy
@@ -12,16 +12,23 @@ AVRSIZE = avr-size
 AVRDUDE = avrdude
 
 INCL_PATH = libs
-INCLUDES  = -IC:\msys64\mingw64\include -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
+INCLUDES  = -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/oled -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
 
 BLDDIR = build
 OBJDIR = obj
 TARGET = $(BLDDIR)/robocar_atv
 
-# Compilation options, type man avr-gcc if you're curious.
-CPPFLAGS    := -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) $(INCLUDES)
-CFLAGS      := -Os -g -std=gnu99 -Wall
-# Use short (8-bit) data types
+SOURCES = main.c
+SOURCES += $(wildcard libs/**/*.c)
+SOURCES += $(wildcard libs/**/**/*.c)
+$(info LIB_C_FILES: $(LIB_C_FILES))
+
+OBJECTS = $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
+HEADERS = $(SOURCES:.c=.h)
+
+
+CPPFLAGS    = -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) $(INCLUDES)
+CFLAGS      = -Os -g -std=gnu99 -Wall
 CFLAGS      += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 CFLAGS      += -ffunction-sections -fdata-sections
 LDFLAGS     = -Wl,-Map,$(TARGET).map
@@ -53,16 +60,16 @@ debug:
 	@echo
 
 clean:
-	rmdir /s /q $(BLDDIR)
-	rmdir /s /q $(OBJDIR)
+	rm -rf $(OBJDIR)
+	rm -rf $(BLDDIR)
 
 flash: $(TARGET).hex
 	$(AVRDUDE) $(PROGRAMMER_ARGS) -U flash:w:$<:i
 
 # Mega 48, 88, 168, 328 default values
-LFUSE = 0xE0
-HFUSE = 0xDE
-EFUSE = 0xFC
+LFUSE = 0x62
+HFUSE = 0xdf
+EFUSE = 0x00
 
 # Generic
 FUSE_STRING = -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m
