@@ -3,10 +3,12 @@
 #include "engine_controller.h"
 #include <avr/io.h>
 
-struct carspeed {
+typedef struct {
     uint8_t speed;
     bool reverse;
-};
+} carspeed;
+
+static carspeed car;
 
 // IN1/IN3	  IN2/IN4	Spinning Direction
 // Low(0)	  Low(0)	Motor OFF
@@ -28,8 +30,6 @@ struct carspeed {
 #define LEFT_TURN_LED_PIN PIND2
 #define RIGHT_TURN_LED_PIN PIND3
 
-static struct carspeed car;
-
 static void forward(void);
 static void backwards(void);
 static void left(void);
@@ -50,11 +50,11 @@ void initializeEngines(void) {
     pinMode(&PORTD, ENA, OUTPUT);
     pinMode(&PORTD, ENB, OUTPUT);
 
-    car.speed = 0;
+    car.speed = MIN_SPEED;
     car.reverse = false;
     // stops the car, to be sure it doesn't move
     turnOffEngines();
-    setSpeed(0, car.reverse);
+    setSpeed(MIN_SPEED, car.reverse);
 }
 
 // forward configures engines to turn forward.
@@ -89,13 +89,13 @@ static void right(void) {
     digitalWrite(&PORTB, IN4, HIGH);
 }
 
-// setTorqueDirection configures engines to turn either forward or backwards, depending on reverse flag.
-// User must call this function first for motor to turn.
-void setTorqueDirection(void) {
-    if (car.reverse) {
-        backwards();
-    } else {
+// setEnginesDirection configures engines to turn either forward or backwards, depending on forward flag.
+// This function must be called first for engines tor.
+void setEnginesDirection(bool isForward) {
+    if (isForward) {
         forward();
+    } else {
+        backwards();
     }
 }
 
@@ -112,7 +112,7 @@ void turnOffEngines(void) {
 // Once cancelFunc returns false, the function restores engine torque vector.
 // On function exit, car remains stationary.
 void turnLeft(bool (*cancelFunc)(void)) {
-    setSpeed(0, car.reverse);
+    setSpeed(MIN_SPEED, car.reverse);
     left();
     bool preserveReverse = car.reverse;
 
@@ -121,11 +121,11 @@ void turnLeft(bool (*cancelFunc)(void)) {
     setSpeed(MAX_SPEED, true);
     while (cancelFunc()) {
     }
-    setSpeed(0, true);
+    setSpeed(MIN_SPEED, true);
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
 
     car.reverse = preserveReverse;
-    setTorqueDirection();
+    setEnginesDirection(car.reverse);
 }
 
 // turnRight stops the car to perform tank turn.
@@ -133,7 +133,7 @@ void turnLeft(bool (*cancelFunc)(void)) {
 // Once cancelFunc returns false, the function restores engine torque vector.
 // On function exit, car remains stationary.
 void turnRight(bool (*cancelFunc)(void)) {
-    setSpeed(0, car.reverse);
+    setSpeed(MIN_SPEED, car.reverse);
     right();
     bool preserveReverse = car.reverse;
 
@@ -142,11 +142,11 @@ void turnRight(bool (*cancelFunc)(void)) {
     setSpeed(MAX_SPEED, true);
     while (cancelFunc()) {
     }
-    setSpeed(0, true);
+    setSpeed(MIN_SPEED, true);
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
 
     car.reverse = preserveReverse;
-    setTorqueDirection();
+    setEnginesDirection(car.reverse);
 }
 
 // setDutyCycle sets motor duty cycle equivalent to speed of the car.
@@ -161,37 +161,33 @@ void setSpeed(uint8_t speed, bool reverse) {
     car.speed = speed;
     if (reverse != car.reverse) {
         car.reverse = reverse;
-        setTorqueDirection();
+        setEnginesDirection(car.reverse);
     }
     setDutyCycle();
 }
 
 // increaseSpeed increases speed by 'step'.
 // If the speed is at maximum, it does nothing.
+// The functions does not perform overflow checks.
 void increaseSpeed(uint8_t step) {
-    if (car.speed == MAX_SPEED) {
-        return;
-    }
-
-    if (car.speed < MAX_SPEED - step) {
-        car.speed += step;
-    } else {
-        car.speed = MAX_SPEED;
-    }
+    car.speed += step;
     setDutyCycle();
 }
 
 // decreaseSpeed decreases speed by 'step'.
 // If the speed is 0, it does nothing.
+// The functions does not perform underflow checks.
 void decreaseSpeed(uint8_t step) {
-    if (car.speed == 0) {
-        return;
-    }
-
-    if (step > car.speed) {
-        car.speed = 0;
-    } else {
-        car.speed -= step;
-    }
+    car.speed -= step;
     setDutyCycle();
+}
+
+// getSpeed returns engines' speed.
+uint8_t getSpeed(void) {
+    return car.speed;
+}
+
+// isReverse returns whether engines are turning direction opposite to forward.
+bool isReverse(void) {
+    return car.reverse;
 }

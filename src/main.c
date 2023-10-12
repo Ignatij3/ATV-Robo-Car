@@ -1,6 +1,8 @@
 #include "libs/central_controller/central_controller.h"
-#include "libs/engine_controller/engine_controller.h"
 #include <avr/interrupt.h>
+#include <util/delay.h>
+
+bool poweredOn = false;
 
 // captures interrupt from switch pin, switches power to the wheels on or off.
 ISR(PCINT0_vect) {
@@ -10,7 +12,7 @@ ISR(PCINT0_vect) {
     state = (state - 1) & 1;
     // We don't want to toggle power mode on release
     if (!state) {
-        togglePower();
+        poweredOn = !poweredOn;
     }
 }
 
@@ -28,9 +30,43 @@ int main(void) {
     initializeModules(10);
     setMode(AUTOMATIC);
     setUpInterrupts();
+    enableCar();
 
     while (1) {
-        run();
+        // halt while car is turned off
+        while (!poweredOn) {
+        }
+
+        setMode(readNewMode());
+
+        switch (getMode()) {
+        // in automatic mode, car drives forward until colliding
+        // afterwards, it turns around and continues forward
+        case AUTOMATIC:
+            accelerate(1);
+            if (isCollisionSoon()) {
+                evadeCollision();
+            }
+            break;
+
+        // in controlled mode, car receives and executes commands from DualShock PS4 controller
+        case CONTROLLED:
+            /* code */
+            break;
+
+        // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it
+        case SLAVE:
+            /* code */
+            break;
+
+        // if NONE mode is chosen, the car must halt
+        case NONE:
+            return 1;
+        }
+        // delay not to change state too rapidly
+        _delay_ms(10);
     }
+
+    disableCar();
     return 0;
 }

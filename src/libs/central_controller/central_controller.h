@@ -6,8 +6,16 @@
 typedef enum { NONE, SLAVE, CONTROLLED, AUTOMATIC } drivingMode;
 
 void initializeModules(uint8_t minimalTolerableDistance);
-bool togglePower(void);
+void enableCar(void);
+void disableCar(void);
+bool isCollisionSoon(void);
+void evadeCollision(void);
+drivingMode readNewMode(void);
+void accelerate(uint8_t step);
+void decelerate(uint8_t step);
+void setEngineSpeed(uint8_t speed);
+void reverseEngines(void);
 void setMode(drivingMode mode);
-void run(void);
+drivingMode getMode(void);
 
 #endif
