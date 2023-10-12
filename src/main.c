@@ -70,3 +70,44 @@ int main(void) {
     disableCar();
     return 0;
 }
+#include "libs/ino_libs/ino_libs.h"
+#include "libs/distance_sensor/HCSR04.h"
+#include <avr/interrupt.h>
+#include <avr/io.h>
+#include "libs/oled/ssd1306.h"
+#include <stdio.h>
+
+int main(void)
+{
+  uint8_t addr = SSD1306_ADDR;
+
+  // init ssd1306
+  SSD1306_Init (addr);
+
+  // clear screen
+  SSD1306_ClearScreen ();
+  // draw line
+  SSD1306_DrawLine (0, MAX_X, 4, 4);
+  // set position
+  SSD1306_SetPosition (7, 1);
+  // draw string
+  SSD1306_DrawString ("SSD1306 OLED DRIVER");
+  // draw line
+  SSD1306_DrawLine (0, MAX_X, 18, 18);
+  // set position
+  SSD1306_SetPosition (40, 3);
+  // draw string
+  SSD1306_DrawString ("MATIS");
+  SSD1306_UpdateScreen (addr);
+  // set position
+  SSD1306_SetPosition (53, 5);
+  // draw string
+  uint8_t distance = measureDistanceCm();
+  char str[4]; 
+  sprintf(str, "%u", distance); 
+  SSD1306_DrawString (str);
+  SSD1306_UpdateScreen (addr);
+
+  // return value
+  return 0;
+}
