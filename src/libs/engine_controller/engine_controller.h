@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 void initializeEngines(void);
-void setTorqueDirection(void);
+void turnOnEngines(bool reverse);
 void turnOffEngines(void);
 void turnLeft(bool (*cancelFunc)(void));
 void turnRight(bool (*cancelFunc)(void));

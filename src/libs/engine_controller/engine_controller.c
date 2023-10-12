@@ -89,10 +89,10 @@ static void right(void) {
     digitalWrite(&PORTB, IN4, HIGH);
 }
 
-// setTorqueDirection configures engines to turn either forward or backwards, depending on reverse flag.
-// User must call this function first for motor to turn.
-void setTorqueDirection(void) {
-    if (car.reverse) {
+// turnOnEngines configures engines to turn either forward or backwards, depending on reverse flag.
+// This function must be called first for engines tor.
+void turnOnEngines(bool reverse) {
+    if (reverse) {
         backwards();
     } else {
         forward();
@@ -125,7 +125,7 @@ void turnLeft(bool (*cancelFunc)(void)) {
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
 
     car.reverse = preserveReverse;
-    setTorqueDirection();
+    turnOnEngines(car.reverse);
 }
 
 // turnRight stops the car to perform tank turn.
@@ -146,7 +146,7 @@ void turnRight(bool (*cancelFunc)(void)) {
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
 
     car.reverse = preserveReverse;
-    setTorqueDirection();
+    turnOnEngines(car.reverse);
 }
 
 // setDutyCycle sets motor duty cycle equivalent to speed of the car.
@@ -161,7 +161,7 @@ void setSpeed(uint8_t speed, bool reverse) {
     car.speed = speed;
     if (reverse != car.reverse) {
         car.reverse = reverse;
-        setTorqueDirection();
+        turnOnEngines(car.reverse);
     }
     setDutyCycle();
 }
