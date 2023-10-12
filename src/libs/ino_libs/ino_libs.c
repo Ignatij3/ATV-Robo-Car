@@ -208,11 +208,11 @@ uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
 // PORT parameter must be a pointer to the according port register defined in avr/io.h.
 // PORT must represent port at which desired pin exists.
 // If function times out, it returns UINT8_MAX. Otherwise, it returns time it took pulse to return in microseconds.
-uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout) {
+uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*timeTravel)()) {
     // cache the port and bit of the pin in order to speed up the
     // pulse width measuring loop and achieve finer resolution.  calling
     // digitalRead() instead yields much coarser resolution.
-    uint8_t bit = *PORT & _BV(pin);
+    uint8_t bit = _BV(pin);
     // uint8_t stateMask = bit & (state << pin);
     uint8_t stateMask = (state ? bit : 0);
     uint32_t width = 0; // keep initialization out of time critical area
@@ -227,16 +227,8 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
     decimalToBinary(state, stateStr);
     decimalToBinary(stateMask, stateMaskStr);
 
-    writeString(" portmask:");
-    writeString(portStr);
-    writeString(" bitmask:");
-    writeString(bitStr);
-    writeString(" portmask:");
-    writeString(stateMaskStr);
-
     // convert the timeout from microseconds to a number of times through
     // the initial loop; it takes 16 clock cycles per iteration.
-    uint32_t numloops = 0;
     uint32_t maxloops = microsecondsToClockCycles(timeout) / 16;
 
     decimalToBinary(*PINx(PORT), portStr);
@@ -244,32 +236,23 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
     writeString(portStr);
 
     // wait for any previous pulse to end
-    while ((*PINx(PORT) & bit) == stateMask)
-        if (numloops++ == maxloops)
-            return UINT8_MAX;
+
+    while ((*PINx(PORT) & bit) == stateMask) {
+    }
 
     decimalToBinary(*PINx(PORT), portStr);
     writeString(" 1pinmask:");
     writeString(portStr);
-
+    timeTravel();
     // wait for the pulse to start
-    while ((*PINx(PORT) & bit) != stateMask)
-        if (numloops++ == maxloops)
-            return UINT8_MAX;
-
-    decimalToBinary(*PINx(PORT), portStr);
-    writeString(" 2pinmask:");
-    writeString(portStr);
-
-    // wait for the pulse to stop
-    while ((*PINx(PORT) & bit) == stateMask) {
-        if (numloops++ == maxloops)
-            return UINT8_MAX;
+    while ((*PINx(PORT) & bit) != stateMask) {
+        if (maxloops-- == 0) {
+            return 0;
+        }
         width++;
     }
-
     decimalToBinary(*PINx(PORT), portStr);
-    writeString(" 3pinmask:");
+    writeString(" 2pinmask:");
     writeString(portStr);
 
     // convert the reading to microseconds. The loop has been determined
