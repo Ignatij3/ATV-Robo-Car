@@ -6,10 +6,6 @@
 #include <stdint.h>
 #include "../oled/ssd1306.h"
 
-<<<<<<< HEAD
-=======
-#define F_CPU 16000000UL // Clock Speed
->>>>>>> 49dade3 (sensor test)
 #define DDx(port) (port - 0x01)
 #define PINx(port) (port - 0x02)
 
@@ -155,7 +151,7 @@ void decimalToBinary(int decimal, char* binary) {
 }
 
 
-uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, unsigned long timeout) {
+uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout) {
     // cache the port and bit of the pin in order to speed up the
     // pulse width measuring loop and achieve finer resolution.  calling
     // digitalRead() instead yields much coarser resolution.
