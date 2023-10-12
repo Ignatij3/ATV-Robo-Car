@@ -3,10 +3,12 @@
 #include "engine_controller.h"
 #include <avr/io.h>
 
-struct carspeed {
+typedef struct {
     uint8_t speed;
     bool reverse;
-};
+} carspeed;
+
+static carspeed car;
 
 // IN1/IN3	  IN2/IN4	Spinning Direction
 // Low(0)	  Low(0)	Motor OFF
@@ -27,8 +29,6 @@ struct carspeed {
 // defining LED turning pins
 #define LEFT_TURN_LED_PIN PIND2
 #define RIGHT_TURN_LED_PIN PIND3
-
-static struct carspeed car;
 
 static void forward(void);
 static void backwards(void);
@@ -89,13 +89,13 @@ static void right(void) {
     digitalWrite(&PORTB, IN4, HIGH);
 }
 
-// turnOnEngines configures engines to turn either forward or backwards, depending on reverse flag.
+// setEnginesDirection configures engines to turn either forward or backwards, depending on forward flag.
 // This function must be called first for engines tor.
-void turnOnEngines(bool reverse) {
-    if (reverse) {
-        backwards();
-    } else {
+void setEnginesDirection(bool isForward) {
+    if (isForward) {
         forward();
+    } else {
+        backwards();
     }
 }
 
@@ -125,7 +125,7 @@ void turnLeft(bool (*cancelFunc)(void)) {
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
 
     car.reverse = preserveReverse;
-    turnOnEngines(car.reverse);
+    setEnginesDirection(car.reverse);
 }
 
 // turnRight stops the car to perform tank turn.
@@ -146,7 +146,7 @@ void turnRight(bool (*cancelFunc)(void)) {
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
 
     car.reverse = preserveReverse;
-    turnOnEngines(car.reverse);
+    setEnginesDirection(car.reverse);
 }
 
 // setDutyCycle sets motor duty cycle equivalent to speed of the car.
@@ -161,37 +161,33 @@ void setSpeed(uint8_t speed, bool reverse) {
     car.speed = speed;
     if (reverse != car.reverse) {
         car.reverse = reverse;
-        turnOnEngines(car.reverse);
+        setEnginesDirection(car.reverse);
     }
     setDutyCycle();
 }
 
 // increaseSpeed increases speed by 'step'.
 // If the speed is at maximum, it does nothing.
+// The functions does not perform overflow checks.
 void increaseSpeed(uint8_t step) {
-    if (car.speed == MAX_SPEED) {
-        return;
-    }
-
-    if (car.speed < MAX_SPEED - step) {
-        car.speed += step;
-    } else {
-        car.speed = MAX_SPEED;
-    }
+    car.speed += step;
     setDutyCycle();
 }
 
 // decreaseSpeed decreases speed by 'step'.
 // If the speed is 0, it does nothing.
+// The functions does not perform underflow checks.
 void decreaseSpeed(uint8_t step) {
-    if (car.speed == MIN_SPEED) {
-        return;
-    }
-
-    if (step > car.speed) {
-        car.speed = MIN_SPEED;
-    } else {
-        car.speed -= step;
-    }
+    car.speed -= step;
     setDutyCycle();
+}
+
+// getSpeed returns engines' speed.
+uint8_t getSpeed(void) {
+    return car.speed;
+}
+
+// isReverse returns whether engines are turning direction opposite to forward.
+bool isReverse(void) {
+    return car.reverse;
 }
