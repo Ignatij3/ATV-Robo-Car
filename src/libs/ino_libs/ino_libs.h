@@ -10,10 +10,10 @@
 #define INPUT_PULLUP 2
 
 void initPWMTimers(void);
+char *intToStr(uint8_t num);
 void enablePWM(void);
 void disablePWM(void);
-void intToString(uint8_t num, char* str);
-void decimalToBinary(int decimal, char* binary);
+char *decimalToBinary(int decimal);
 void pinMode(volatile uint8_t *PORT, uint8_t pin, uint8_t mode);
 void digitalWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value);

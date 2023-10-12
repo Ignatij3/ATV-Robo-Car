@@ -1,10 +1,11 @@
 #include "../global_constants/global_constants.h"
+#include "../oled/ssd1306.h"
+#include "../serial_communication/serial_communication.h"
 #include "ino_libs.h"
 #include <avr/cpufunc.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <stdint.h>
-#include "../oled/ssd1306.h"
 
 #define DDx(port) (port - 0x01)
 #define PINx(port) (port - 0x02)
@@ -24,6 +25,12 @@
 
 static uint8_t pinToTimer(volatile uint8_t *PORT, uint8_t pin);
 static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
+
+char *intToStr(uint8_t num) {
+    char str[(int)((ceil(log10(num)) + 1) * sizeof(char))];
+    sprintf(str, "%d", num);
+    return str;
+}
 
 // initPWMTimers initializes timers 0, 1, 2 for phase Correct PWM signal.
 void initPWMTimers(void) {
@@ -110,11 +117,12 @@ void intToString(uint8_t num, char* str) {
     }
 }
 
-void decimalToBinary(int decimal, char* binary) {
+char* decimalToBinary(int decimal) {
     int i = 0;
+    char *binary;
     while (decimal > 0) {
         binary[i] = (decimal % 2) + '0'; // Convert the remainder to a character
-        decimal /= 2; // Move to the next bit
+        decimal /= 2;                    // Move to the next bit
         i++;
     }
     if (i == 0) {
@@ -131,91 +139,8 @@ void decimalToBinary(int decimal, char* binary) {
         left++;
         right--;
     }
-}
 
-
-uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout) {
-    // cache the port and bit of the pin in order to speed up the
-    // pulse width measuring loop and achieve finer resolution.  calling
-    // digitalRead() instead yields much coarser resolution.
-    char bitstring[10];
-    char statestring[10];
-    char port[10];
-    uint8_t addr = SSD1306_ADDR;
- SSD1306_Init (addr);
-
- SSD1306_ClearScreen ();
-
-    uint8_t bit = _BV(pin);
-    uint8_t stateMask = (state ? bit : 0); 
-    //uint8_t stateMask = bit & (state << pin);
-    unsigned long width = 0; // keep initialization out of time critical area
-
-    // convert the timeout from microseconds to a number of times through
-    // the initial loop; it takes 16 clock cycles per iteration.
-    unsigned long numloops = 0;
-    unsigned long maxloops = microsecondsToClockCycles(timeout) / 16;
-            SSD1306_SetPosition (1, 1);
-            decimalToBinary(pin, port);
-            SSD1306_DrawString (port);
-            SSD1306_DrawString ("bit");
-            SSD1306_SetPosition (1, 2);
-            decimalToBinary(stateMask, port);
-            SSD1306_DrawString (port);
-            SSD1306_DrawString ("mask");
-            SSD1306_UpdateScreen (addr);
-    //wait for any previous pulse to end
-    while ((*PINx(PORT) & bit) == stateMask){
-
-        if (numloops++ == maxloops){
-            SSD1306_SetPosition (1, 6);
-            SSD1306_DrawString ("first");
-            SSD1306_UpdateScreen (addr);
-            return 1;
-        }
-    }
-    SSD1306_SetPosition (1, 6);
-            SSD1306_DrawString ("ret");
-            SSD1306_UpdateScreen (addr);
-    // wait for the pulse to start
-    while ((*PINx(PORT) & bit) != stateMask){
-
-        if (numloops++ == maxloops){
-            return 2;
-        }
-    }
-    SSD1306_SetPosition (1, 6);
-            SSD1306_DrawString ("second");
-            SSD1306_UpdateScreen (addr);
-
-    // wait for the pulse to stop
-    while ((*PINx(PORT) & bit) == stateMask) {
-   
-        if (numloops++ == maxloops){
-
-            return 3;
-        }
-        width++;
-    }
-                    SSD1306_SetPosition (1, 8);
-            SSD1306_DrawString ("6");
-            SSD1306_UpdateScreen (addr);
-
-    // convert the reading to microseconds. The loop has been determined
-    // to be 20 clock cycles long and have about 16 clocks between the edge
-    // and the start of the loop. There will be some error introduced by
-    // the interrupt handlers.
-    
-    SSD1306_SetPosition (1, 6);
-            SSD1306_DrawString ("7");
-            SSD1306_UpdateScreen (addr);
-            //return 4;
-
-    SSD1306_ClearScreen (); 
-    decimalToBinary((clockCyclesToMicroseconds(width * 21 + 16))*(uint32_t)(1715) / (uint32_t)(100000), port);
-    SSD1306_DrawString (port);
-    SSD1306_UpdateScreen (addr);
-    return 0;
+    return binary;
 }
 
 static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
@@ -281,7 +206,58 @@ uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
     // avr-gcc implements the proper reading order: ADCL is read first.
     return ADC;
 }
-    
+
+// pulseIn waits for state change of pin at specified PORT.
+// pulseIn should be used to monitor time it takes for sent pulse to come back,
+// which will be singalled by pin changing state.
+// PORT parameter must be a pointer to the according port register defined in avr/io.h.
+// PORT must represent port at which desired pin exists.
+// If function times out, it returns UINT8_MAX. Otherwise, it returns time it took pulse to return in microseconds.
+uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout) {
+    // cache the port and bit of the pin in order to speed up the
+    // pulse width measuring loop and achieve finer resolution.  calling
+    // digitalRead() instead yields much coarser resolution.
+    uint8_t bit = *PORT & _BV(pin);
+    uint8_t stateMask = bit & (state << pin);
+    uint32_t width = 0; // keep initialization out of time critical area
+
+    writeString(decimalToBinary(*PORT));
+    writeByte('\n');
+    writeString(decimalToBinary(bit));
+    writeByte('\n');
+    writeString(decimalToBinary(state));
+    writeByte('\n');
+    writeString(decimalToBinary(stateMask));
+    writeByte('\n');
+
+    // convert the timeout from microseconds to a number of times through
+    // the initial loop; it takes 16 clock cycles per iteration.
+    uint32_t numloops = 0;
+    uint32_t maxloops = microsecondsToClockCycles(timeout) / 16;
+
+    // wait for any previous pulse to end
+    while ((*PORT & bit) == stateMask)
+        if (numloops++ == maxloops)
+            return UINT8_MAX;
+
+    // wait for the pulse to start
+    while ((*PORT & bit) != stateMask)
+        if (numloops++ == maxloops)
+            return UINT8_MAX;
+
+    // wait for the pulse to stop
+    while ((*PORT & bit) == stateMask) {
+        if (numloops++ == maxloops)
+            return UINT8_MAX;
+        width++;
+    }
+
+    // convert the reading to microseconds. The loop has been determined
+    // to be 20 clock cycles long and have about 16 clocks between the edge
+    // and the start of the loop. There will be some error introduced by
+    // the interrupt handlers.
+    return clockCyclesToMicroseconds(width * 21 + 16);
+}
 
 // pinToTimer matches pin at specific port with PWM timer.
 // PORT parameter must be a pointer to the according port register defined in avr/io.h.
