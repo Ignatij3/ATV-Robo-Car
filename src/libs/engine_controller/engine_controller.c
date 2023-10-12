@@ -114,14 +114,17 @@ void turnOffEngines(void) {
 void turnLeft(bool (*cancelFunc)(void)) {
     setSpeed(0, car.reverse);
     left();
+    bool preserveReverse = car.reverse;
 
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, HIGH);
-    setSpeed(255, car.reverse); // set engine power to maximum, to turn
+    // set engine power to maximum, to turn
+    setSpeed(MAX_SPEED, true);
     while (cancelFunc()) {
     }
-    setSpeed(0, car.reverse);
+    setSpeed(0, true);
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
 
+    car.reverse = preserveReverse;
     setTorqueDirection();
 }
 
@@ -132,14 +135,17 @@ void turnLeft(bool (*cancelFunc)(void)) {
 void turnRight(bool (*cancelFunc)(void)) {
     setSpeed(0, car.reverse);
     right();
+    bool preserveReverse = car.reverse;
 
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, HIGH);
-    setSpeed(255, car.reverse); // set engine power to maximum, to turn
+    // set engine power to maximum, to turn
+    setSpeed(MAX_SPEED, true);
     while (cancelFunc()) {
     }
-    setSpeed(0, car.reverse);
+    setSpeed(0, true);
     digitalWrite(&PORTD, LEFT_TURN_LED_PIN, LOW);
 
+    car.reverse = preserveReverse;
     setTorqueDirection();
 }
 
