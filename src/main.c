@@ -1,5 +1,5 @@
 #include "libs/ino_libs/ino_libs.h"
-#include "libs/distance_sensor/HCSR04.h"
+//#include "libs/distance_sensor/HCSR04.h"
 #include <avr/io.h>
 #include "libs/oled/ssd1306.h"
 #include <stdio.h>
@@ -46,10 +46,10 @@ int main(void)
 //   }
   // return value
 
- while(1){
+ //while(1){
     uint8_t distance = measureDistanceCm();
-    delay(1000);
- } 
+  // delay(100000);
+ //} 
   return 0;
 }
 

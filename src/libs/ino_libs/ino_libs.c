@@ -157,15 +157,18 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
     // digitalRead() instead yields much coarser resolution.
     char bitstring[10];
     char statestring[10];
+    
     uint8_t addr = SSD1306_ADDR;
     uint8_t bit = *PINx(PORT) & _BV(pin);
-
     uint8_t stateMask = bit & (state << pin);
+
+    decimalToBinary(bit, bitstring);
+    decimalToBinary(stateMask, statestring);
     SSD1306_Init (addr);
     SSD1306_ClearScreen (); 
     SSD1306_SetPosition (1, 1);
     SSD1306_DrawString (bitstring);
-    SSD1306_SetPosition (30, 5);
+    SSD1306_SetPosition (1, 5);
     SSD1306_DrawString (statestring);
     SSD1306_UpdateScreen (addr);
 
@@ -181,8 +184,8 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
     //wait for any previous pulse to end
     while ((*PINx(PORT) & bit) == stateMask)
         if (numloops++ == maxloops)
-            SSD1306_SetPosition (53, 10);
-            SSD1306_DrawString ("1");
+            SSD1306_SetPosition (1, 10);
+            SSD1306_DrawString ("4");
             SSD1306_UpdateScreen (addr);
             return 1;
 

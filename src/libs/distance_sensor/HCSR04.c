@@ -29,10 +29,10 @@ uint8_t measureDistanceCm(void) {
     // Measure the length of echo signal, which is equal to the time needed for
     // sound to go there and back.
     uint32_t durationMicroSec = pulseIn(&PORTB, ECHO_PIN, HIGH, 18586); // can't measure beyond max distance
-    uint32_t distanceCm = durationMicroSec;
+    //uint32_t distanceCm = durationMicroSec;
        // uint8_t distanceCm = (uint8_t)((durationMicroSec * (uint32_t)(1715)) / (uint32_t)(100000));
 
-   // uint16_t distanceCm = (uint16_t)((durationMicroSec * 0.0343) / 2);
+    uint16_t distanceCm = (uint16_t)((durationMicroSec * 0.0343) / 2);
     // if (distanceCm == 0 || distanceCm > 255) {
     //     return UINT8_MAX;
   //  }
