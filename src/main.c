@@ -76,9 +76,11 @@ int main(void) {
 #include <avr/io.h>
 #include "libs/oled/ssd1306.h"
 #include <stdio.h>
+#include <util/delay.h>
 
 int main(void)
 {
+    char str[20];
   uint8_t addr = SSD1306_ADDR;
 
   // init ssd1306
@@ -97,17 +99,29 @@ int main(void)
   // set position
   SSD1306_SetPosition (40, 3);
   // draw string
-  SSD1306_DrawString ("MATIS");
+  SSD1306_DrawString ("MATIS23432");
   SSD1306_UpdateScreen (addr);
   // set position
   SSD1306_SetPosition (53, 5);
   // draw string
-  uint8_t distance = measureDistanceCm();
-  char str[4]; 
-  sprintf(str, "%u", distance); 
-  SSD1306_DrawString (str);
-  SSD1306_UpdateScreen (addr);
-
+  registerDistanceSensor();
+//   while(1){
+//     SSD1306_ClearScreen ();
+//     SSD1306_SetPosition (53, 5);
+//     for (int i=0; i<10; i++){
+//       uint8_t distance = measureDistanceCm();
+//       char str[3]; 
+//       sprintf(str, "%u", distance); 
+//       SSD1306_DrawString (str);
+//       SSD1306_UpdateScreen (addr);
+//       _delay_us(100000);
+//     }
+//   }
   // return value
+
+ while(1){
+    uint8_t distance = measureDistanceCm();
+    delay(1000);
+ } 
   return 0;
 }

@@ -203,6 +203,9 @@
    *
    * @return  uint8_t
    */
+
+  void SSD1306_ReDrawString (char *str);
+  
   uint8_t SSD1306_DrawPixel (uint8_t, uint8_t);
 
   /**

@@ -4,7 +4,12 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <stdint.h>
+#include "../oled/ssd1306.h"
 
+<<<<<<< HEAD
+=======
+#define F_CPU 16000000UL // Clock Speed
+>>>>>>> 49dade3 (sensor test)
 #define DDx(port) (port - 0x01)
 #define PINx(port) (port - 0x02)
 
@@ -84,6 +89,128 @@ uint8_t digitalRead(volatile uint8_t *PORT, uint8_t pin) {
 // PORT must represent port at which desired pin exists.
 // If passed pin is not PWM pin, function writes value/255 rounded to the nearest integer.
 void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
+    if (value == 0) {
+        digitalWrite(PORT, pin, LOW);
+    } else if (value == 255) {
+        digitalWrite(PORT, pin, HIGH);
+    } else {
+        writeToTimer(PORT, pin, value);
+    }
+}
+
+uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
+    // set the analog reference (high two bits of ADMUX) and select the
+    // channel (low 4 bits).  this also sets ADLAR (left-adjust result)
+    // to 0 (the default).
+    ADMUX = _BV(6) | (pin & 0x07);
+
+    // start conversion
+    sbi(ADCSRA, ADSC);
+
+    // ADSC is cleared when the conversion finishes
+    while (bit_is_set(ADCSRA, ADSC))
+        ;
+
+    // ADC macro takes care of reading ADC register.
+    // avr-gcc implements the proper reading order: ADCL is read first.
+    return ADC;
+}
+
+void intToString(uint8_t num, char* str) {
+    int i = 0;
+    do {
+        str[i++] = num % 10 + '0';
+        num /= 10;
+    } while (num > 0);
+    str[i] = '\0';
+    int len = i;
+    for (int j = 0; j < len / 2; j++) {
+        char temp = str[j];
+        str[j] = str[len - j - 1];
+        str[len - j - 1] = temp;
+    }
+}
+
+void decimalToBinary(int decimal, char* binary) {
+    int i = 0;
+    while (decimal > 0) {
+        binary[i] = (decimal % 2) + '0'; // Convert the remainder to a character
+        decimal /= 2; // Move to the next bit
+        i++;
+    }
+    if (i == 0) {
+        binary[i] = '0';
+        i++;
+    }
+    binary[i] = '\0';
+    int left = 0;
+    int right = i - 1;
+    while (left < right) {
+        char temp = binary[left];
+        binary[left] = binary[right];
+        binary[right] = temp;
+        left++;
+        right--;
+    }
+}
+
+
+uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, unsigned long timeout) {
+    // cache the port and bit of the pin in order to speed up the
+    // pulse width measuring loop and achieve finer resolution.  calling
+    // digitalRead() instead yields much coarser resolution.
+    char bitstring[10];
+    char statestring[10];
+    uint8_t addr = SSD1306_ADDR;
+    uint8_t bit = *PINx(PORT) & _BV(pin);
+
+    uint8_t stateMask = bit & (state << pin);
+    SSD1306_Init (addr);
+    SSD1306_ClearScreen (); 
+    SSD1306_SetPosition (1, 1);
+    SSD1306_DrawString (bitstring);
+    SSD1306_SetPosition (30, 5);
+    SSD1306_DrawString (statestring);
+    SSD1306_UpdateScreen (addr);
+
+    unsigned long width = 0; // keep initialization out of time critical area
+
+
+
+    // convert the timeout from microseconds to a number of times through
+    // the initial loop; it takes 16 clock cycles per iteration.
+    unsigned long numloops = 0;
+    unsigned long maxloops = microsecondsToClockCycles(timeout) / 16;
+
+    //wait for any previous pulse to end
+    while ((*PINx(PORT) & bit) == stateMask)
+        if (numloops++ == maxloops)
+            SSD1306_SetPosition (53, 10);
+            SSD1306_DrawString ("1");
+            SSD1306_UpdateScreen (addr);
+            return 1;
+
+    // wait for the pulse to start
+    while ((*PINx(PORT) & bit) != stateMask)
+        if (numloops++ == maxloops)
+            return 2;
+
+    // wait for the pulse to stop
+    while ((*PINx(PORT) & bit) == stateMask) {
+        if (numloops++ == maxloops)
+            return 3;
+        width++;
+    }
+
+    // convert the reading to microseconds. The loop has been determined
+    // to be 20 clock cycles long and have about 16 clocks between the edge
+    // and the start of the loop. There will be some error introduced by
+    // the interrupt handlers.
+    return 4;
+    return clockCyclesToMicroseconds(width * 21 + 16);
+}
+
+static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     switch (pinToTimer(PORT, pin)) {
     case TIMER0A:
         // connect pwm to pin on timer 0, channel A

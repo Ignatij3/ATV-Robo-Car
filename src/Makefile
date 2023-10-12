@@ -12,7 +12,7 @@ AVRSIZE = avr-size
 AVRDUDE = avrdude
 
 INCL_PATH = libs
-INCLUDES  = -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
+INCLUDES  = -IC:\msys64\mingw64\include -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
 
 BLDDIR = build
 OBJDIR = obj

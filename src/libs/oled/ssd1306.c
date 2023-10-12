@@ -505,6 +505,18 @@ void SSD1306_DrawString (char *str)
   }
 }
 
+void SSD1306_ReDrawString (char *str)
+{
+  // init
+  int i = 0;
+  // loop through character of string
+  while (str[i] != '\0') {
+    // draw string
+    SSD1306_DrawChar (32);
+    SSD1306_DrawChar (str[i++]);
+  }
+}
+
 /**
  * @desc    Draw pixel
  *
