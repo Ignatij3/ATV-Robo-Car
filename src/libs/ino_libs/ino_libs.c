@@ -100,42 +100,20 @@ void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     }
 }
 
-void intToString(uint8_t num, char* str) {
-    int i = 0;
-    do {
-        str[i++] = num % 10 + '0';
-        num /= 10;
-    } while (num > 0);
-    str[i] = '\0';
-    int len = i;
-    for (int j = 0; j < len / 2; j++) {
-        char temp = str[j];
-        str[j] = str[len - j - 1];
-        str[len - j - 1] = temp;
-    }
-}
+void uint8Printing(uint8_t n) {
+    static char binaryStr[9]; // 8 bits + 1 for null-termination
+    char* p = binaryStr;
 
-char* decimalToBinary(int decimal) {
-    int i = 0;
-    while (decimal > 0) {
-        binary[i] = (decimal % 2) + '0'; // Convert the remainder to a character
-        decimal /= 2;                    // Move to the next bit
-        i++;
+    for (int i = 7; i >= 0; i--) {
+        if ((n >> i) & 1) {
+            *p = '1';
+        } else {
+            *p = '0';
+        }
+        p++;
     }
-    if (i == 0) {
-        binary[i] = '0';
-        i++;
-    }
-    binary[i] = '\0';
-    int left = 0;
-    int right = i - 1;
-    while (left < right) {
-        char temp = binary[left];
-        binary[left] = binary[right];
-        binary[right] = temp;
-        left++;
-        right--;
-    }
+    *p = '\0';
+    writeString(binaryStr);
 }
 
 static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
@@ -222,27 +200,19 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
     char stateStr[10];
     char stateMaskStr[10];
 
-    decimalToBinary(*PORT, portStr);
-    decimalToBinary(bit, bitStr);
-    decimalToBinary(state, stateStr);
-    decimalToBinary(stateMask, stateMaskStr);
-
     // convert the timeout from microseconds to a number of times through
     // the initial loop; it takes 16 clock cycles per iteration.
     uint32_t maxloops = microsecondsToClockCycles(timeout) / 16;
-
-    decimalToBinary(*PINx(PORT), portStr);
     writeString(" 0pinmask:");
-    writeString(portStr);
+    uint8Printing(portStr);
 
     // wait for any previous pulse to end
 
     while ((*PINx(PORT) & bit) == stateMask) {
     }
 
-    decimalToBinary(*PINx(PORT), portStr);
     writeString(" 1pinmask:");
-    writeString(portStr);
+    uint8Printing(portStr);
     timeTravel();
     // wait for the pulse to start
     while ((*PINx(PORT) & bit) != stateMask) {
@@ -251,9 +221,8 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
         }
         width++;
     }
-    decimalToBinary(*PINx(PORT), portStr);
     writeString(" 2pinmask:");
-    writeString(portStr);
+    uint8Printing(portStr);
 
     // convert the reading to microseconds. The loop has been determined
     // to be 20 clock cycles long and have about 16 clocks between the edge

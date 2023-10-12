@@ -26,7 +26,7 @@
 
   // @includes
   #include <string.h>                     // memset function
-  #include "font.h"
+  #include "font8x8.h"
   #include "twi.h"
 
   // Success / Error
@@ -219,5 +219,9 @@
    * @return  uint8_t
    */
   uint8_t SSD1306_DrawLine (uint8_t, uint8_t, uint8_t, uint8_t);
+
+  uint8_t SSD1306_ClearPixel(uint8_t x, uint8_t y);
+uint8_t SSD1306_InvertRectangle(uint8_t address, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+uint8_t SSD1306_InvertPixel(uint8_t x, uint8_t y);
 
 #endif

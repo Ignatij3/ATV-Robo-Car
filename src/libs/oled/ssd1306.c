@@ -1,103 +1,4 @@
-/**
- * --------------------------------------------------------------------------------------+
- * @desc        SSD1306 OLED Driver
- * --------------------------------------------------------------------------------------+
- *              Copyright (C) 2020 Marian Hrinko.
- *              Written by Marian Hrinko (mato.hrinko@gmail.com)
- *
- * @author      Marian Hrinko
- * @date        06.10.2020
- * @update      06.12.2022
- * @file        ssd1306.c
- * @version     2.0.0
- * @tested      AVR Atmega328p
- *
- * @depend      ssd1306.h
- * --------------------------------------------------------------------------------------+
- * @descr       Version 1.0.0 -> applicable for 1 display
- *              Version 2.0.0 -> rebuild to 'cacheMemLcd' array
- *              Version 3.0.0 -> simplified alphanumeric version for 1 display
- * --------------------------------------------------------------------------------------+
- * @usage       Basic Setup for OLED Display
- */
- 
-// @includes
 #include "ssd1306.h"
-
-// +---------------------------+
-// |      Set MUX Ratio        |
-// +---------------------------+
-// |        0xA8, 0x3F         |
-// +---------------------------+
-//              |
-// +---------------------------+
-// |    Set Display Offset     |
-// +---------------------------+
-// |        0xD3, 0x00         |
-// +---------------------------+
-//              |
-// +---------------------------+
-// |  Set Display Start Line   |
-// +---------------------------+
-// |          0x40             |
-// +---------------------------+
-//              |
-// +---------------------------+
-// |     Set Segment Remap     |
-// +---------------------------+
-// |       0xA0 / 0xA1         |
-// +---------------------------+
-//              |
-// +---------------------------+
-// |   Set COM Output Scan     |
-// |        Direction          |
-// +---------------------------+
-// |       0xC0 / 0xC8         |
-// +---------------------------+
-//              |
-// +---------------------------+
-// |   Set COM Pins hardware   |
-// |       configuration       |
-// +---------------------------+
-// |        0xDA, 0x02         |
-// +---------------------------+
-//              |
-// +---------------------------+
-// |   Set Contrast Control    |
-// +---------------------------+
-// |        0x81, 0x7F         |
-// +---------------------------+
-//              |
-// +---------------------------+
-// | Disable Entire Display On |
-// +---------------------------+
-// |          0xA4             |
-// +---------------------------+
-//              |
-// +---------------------------+
-// |    Set Normal Display     |
-// +---------------------------+
-// |          0xA6             |
-// +---------------------------+
-//              |
-// +---------------------------+
-// |    Set Osc Frequency      |
-// +---------------------------+
-// |       0xD5, 0x80          |
-// +---------------------------+
-//              |
-// +---------------------------+
-// |    Enable charge pump     |
-// |        regulator          |
-// +---------------------------+
-// |       0x8D, 0x14          |
-// +---------------------------+
-//              |
-// +---------------------------+
-// |        Display On         |
-// +---------------------------+
-// |          0xAF             |
-// +---------------------------+
 
 // @array Init command
 const uint8_t INIT_SSD1306[] PROGMEM = {
@@ -129,16 +30,7 @@ const uint8_t INIT_SSD1306[] PROGMEM = {
   0, SSD1306_DISPLAY_ON                                           // 0xAF = Set Display ON
 };
 
-// @var array Chache memory Lcd 8 * 128 = 1024
 static char cacheMemLcd[CACHE_SIZE_MEM];
-
-/**
- * @desc    SSD1306 Init
- *
- * @param   uint8_t address
- *
- * @return  uint8_t
- */
 uint8_t SSD1306_Init (uint8_t address)
 { 
   // variables
@@ -205,13 +97,7 @@ uint8_t SSD1306_Init (uint8_t address)
   return SSD1306_SUCCESS;
 }
 
-/**
- * @desc    SSD1306 Send Start and SLAW request
- *
- * @param   uint8_t
- *
- * @return  uint8_t
- */
+
 uint8_t SSD1306_Send_StartAndSLAW (uint8_t address)
 {
   // init status
@@ -239,13 +125,7 @@ uint8_t SSD1306_Send_StartAndSLAW (uint8_t address)
   return SSD1306_SUCCESS;
 }
 
-/**
- * @desc    SSD1306 Send command
- *
- * @param   uint8_t command
- *
- * @return  uint8_t
- */
+
 uint8_t SSD1306_Send_Command (uint8_t command)
 {
   // init status
@@ -273,13 +153,7 @@ uint8_t SSD1306_Send_Command (uint8_t command)
   return SSD1306_SUCCESS;
 }
 
-/**
- * @desc    SSD1306 Normal colors
- *
- * @param   uint8_t address
- *
- * @return  uint8_t
- */
+
 uint8_t SSD1306_NormalScreen (uint8_t address)
 {
   // init status
@@ -307,13 +181,7 @@ uint8_t SSD1306_NormalScreen (uint8_t address)
   return SSD1306_SUCCESS;
 }
 
-/**
- * @desc    SSD1306 Inverse colors
- *
- * @param   uint8_t address
- *
- * @return  uint8_t
- */
+
 uint8_t SSD1306_InverseScreen (uint8_t address)
 {
   // init status
@@ -634,5 +502,70 @@ uint8_t SSD1306_DrawLine (uint8_t x1, uint8_t x2, uint8_t y1, uint8_t y2)
     }
   }
   // success return
+  return SSD1306_SUCCESS;
+}
+
+uint8_t SSD1306_ClearPixel(uint8_t x, uint8_t y) {
+  // Ensure the coordinates are within bounds
+  if (x >= MAX_X || y >= MAX_Y) {
+    return SSD1306_ERROR;  // Coordinates are out of bounds
+  }
+
+  // Calculate the page and bit within the page for the specified pixel
+  uint8_t page = y >> 3;
+  uint8_t bit = 1 << (y - (page << 3));
+
+  // Update counter
+  _counter = x + (page << 7);
+
+  // Clear the corresponding bit (invert it) in the cache memory
+  cacheMemLcd[_counter] &= ~bit;
+
+  // Success
+  return SSD1306_SUCCESS;
+}
+
+uint8_t SSD1306_InvertRectangle(uint8_t address, uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
+  // Ensure the coordinates are within bounds
+  if (x >= MAX_X || y >= MAX_Y || (x + width) > MAX_X || (y + height) > MAX_Y) {
+    return SSD1306_ERROR;  // Coordinates are out of bounds
+  }
+
+  // Calculate the end coordinates of the rectangle
+  uint8_t endX = x + width - 1;
+  uint8_t endY = y + height - 1;
+
+  // Loop through the specified rectangle area
+  for (uint8_t i = x; i <= endX; i++) {
+    for (uint8_t j = y; j <= endY; j++) {
+      // Invert the pixel at coordinates (i, j)
+      SSD1306_InvertPixel(i, j);
+    }
+  }
+
+  // Update the display
+  SSD1306_UpdateScreen(address);
+
+  // Success
+  return SSD1306_SUCCESS;
+}
+
+uint8_t SSD1306_InvertPixel(uint8_t x, uint8_t y) {
+  // Ensure the coordinates are within bounds
+  if (x >= MAX_X || y >= MAX_Y) {
+    return SSD1306_ERROR;  // Coordinates are out of bounds
+  }
+
+  // Calculate the page and bit within the page for the specified pixel
+  uint8_t page = y >> 3;
+  uint8_t bit = 1 << (y - (page << 3));
+
+  // Update counter
+  _counter = x + (page << 7);
+
+  // Invert the corresponding bit (XOR operation)
+  cacheMemLcd[_counter] ^= bit;
+
+  // Success
   return SSD1306_SUCCESS;
 }

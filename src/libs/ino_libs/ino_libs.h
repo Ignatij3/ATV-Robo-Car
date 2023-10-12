@@ -13,7 +13,6 @@ void initPWMTimers(void);
 void intToStr(uint8_t num, char *str);
 void enablePWM(void);
 void disablePWM(void);
-void decimalToBinary(int decimal, char *binary);
 void pinMode(volatile uint8_t *PORT, uint8_t pin, uint8_t mode);
 void digitalWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
