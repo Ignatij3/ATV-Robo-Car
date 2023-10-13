@@ -26,7 +26,7 @@
 
   // @includes
   #include <string.h>                     // memset function
-  #include "font8x8.h"
+  #include "font6x8.h"
   #include "twi.h"
 
   // Success / Error
