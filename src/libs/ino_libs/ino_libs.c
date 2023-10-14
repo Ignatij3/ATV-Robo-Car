@@ -152,34 +152,41 @@ uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
 // which will be singalled by pin changing state.
 // PORT parameter must be a pointer to the according port register defined in avr/io.h.
 // PORT must represent port at which desired pin exists.
-// If function times out, it returns UINT8_MAX. Otherwise, it returns time it took pulse to return in microseconds.
-uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout) {
+// If function times out, it returns 0. Otherwise, it returns time it took pulse to return in microseconds.
+// It is advised to use only HIGH and LOW as 'value' parameter, otherwise function may show unexpected behaviour.
+uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*sendPulse)()) {
     // cache the port and bit of the pin in order to speed up the
     // pulse width measuring loop and achieve finer resolution.  calling
     // digitalRead() instead yields much coarser resolution.
-    uint8_t bit = *PORT & _BV(pin);
+    uint8_t bit = _BV(pin);
     uint8_t stateMask = bit & (state << pin);
     uint32_t width = 0; // keep initialization out of time critical area
 
     // convert the timeout from microseconds to a number of times through
     // the initial loop; it takes 16 clock cycles per iteration.
-    uint32_t numloops = 0;
     uint32_t maxloops = microsecondsToClockCycles(timeout) / 16;
 
     // wait for any previous pulse to end
-    while ((*PORT & bit) == stateMask)
-        if (numloops++ == maxloops)
-            return UINT8_MAX;
+    while ((*PINx(PORT) & bit) == stateMask) {
+        if (maxloops-- == 0) {
+            return 0;
+        }
+    }
+
+    sendPulse();
 
     // wait for the pulse to start
-    while ((*PORT & bit) != stateMask)
-        if (numloops++ == maxloops)
-            return UINT8_MAX;
+    while ((*PINx(PORT) & bit) != stateMask) {
+        if (maxloops-- == 0) {
+            return 0;
+        }
+    }
 
-    // wait for the pulse to stop
-    while ((*PORT & bit) == stateMask) {
-        if (numloops++ == maxloops)
-            return UINT8_MAX;
+    // wait for the pulse to end
+    while ((*PINx(PORT) & bit) == stateMask) {
+        if (maxloops-- == 0) {
+            return 0;
+        }
         width++;
     }
 
