@@ -3,7 +3,6 @@
 #include <stdint.h>
 
 #define MAX_DISTANCE UINT8_MAX
-#define MIN_DISTANCE 5
 #define MAX_SPEED UINT8_MAX
 #define MIN_SPEED 0
 #define CPU_CLOCK 16000000UL // Clock speed
