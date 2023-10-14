@@ -92,136 +92,59 @@
   #define MAX_X                     END_COLUMN_ADDR
   #define MAX_Y                     (END_PAGE_ADDR + 1) * 8
 
-  // @var set area
+  #define DIRECTION_X_COORD 72 
+  #define DIRECTION_Y_COORD 0
+  #define DIRECTION_AREA 7
+
+  #define SPEED_X_COORD 42
+  #define SPEED_Y_COORD 2
+  #define SPEED_AREA 2
+
+  #define TIME_X_COORD 36
+  #define TIME_Y_COORD 4
+  #define TIME_AREA 5
+
+  #define DISTANCE_X_COORD 66
+  #define DISTANCE_Y_COORD 6
+  #define DISTANCE_AREA 3
+
+  #define POWER_X_COORD 96
+  #define POWER_Y_COORD 3
+  #define POWER_AREA 3
+
+  #define MAX__X 127
+  #define MAX__Y 63
+  #define MIN__X 0
+  #define MIN__Y 0
+  #define TEXT_SIZE 8
+  #define DEFAULT_MODE_POSITION 2
+  #define SIZE_OF_INVERSE 3 //3pixels from text to the border
+  #define HEIGHT_OF_REGTENGLE 14
+
   unsigned int _counter;
-
-  /**
-   * @desc    SSD1306 Init
-   *
-   * @param   uint8_t
-   *
-   * @return  uint8_t
-   */
   uint8_t SSD1306_Init (uint8_t);
-
-  /**
-   * @desc    SSD1306 Send Start and SLAW request
-   *
-   * @param   uint8_t
-   *
-   * @return  uint8_t
-   */
   uint8_t SSD1306_Send_StartAndSLAW (uint8_t);
-
-  /**
-   * @desc    SSD1306 Send command
-   *
-   * @param   uint8_t
-   *
-   * @return  uint8_t
-   */
   uint8_t SSD1306_Send_Command (uint8_t);
-
-  /**
-   * @desc    SSD1306 Clear screen
-   *
-   * @param   void
-   *
-   * @return  void
-   */
   void SSD1306_ClearScreen (void);
-
-  /**
-   * @desc    SSD1306 Normal colors
-   *
-   * @param   uint8_t
-   *
-   * @return  uint8_t
-   */
   uint8_t SSD1306_NormalScreen (uint8_t);
-
-  /**
-   * @desc    SSD1306 Inverse colors
-   *
-   * @param   uint8_t
-   *
-   * @return  uint8_t
-   */
   uint8_t SSD1306_InverseScreen (uint8_t);
-
-  /**
-   * @desc    SSD1306 Update screen
-   *
-   * @param   uint8_t
-   *
-   * @return  uint8_t
-   */
   uint8_t SSD1306_UpdateScreen (uint8_t);
-
-  /**
-   * @desc    SSD1306 Update text position
-   *
-   * @param   void
-   *
-   * @return  uint8_t
-   */
   uint8_t SSD1306_UpdatePosition (void);
-
-  /**
-   * @desc    SSD1306 Set position
-   *
-   * @param   uint8_t
-   * @param   uint8_t
-   *
-   * @return  void
-   */
   void SSD1306_SetPosition (uint8_t, uint8_t);
-
-  /**
-   * @desc    SSD1306 Draw character
-   *
-   * @param   char
-   *
-   * @return  uint8_t
-   */
   uint8_t SSD1306_DrawChar (char);
-
-  /**
-   * @desc    SSD1306 Draw string
-   *
-   * @param   char *
-   *
-   * @return  void
-   */
   void SSD1306_DrawString (char *);
-
-  /**
-   * @desc    Draw pixel
-   *
-   * @param   uint8_t
-   * @param   uint8_t
-   *
-   * @return  uint8_t
-   */
-
-  void SSD1306_ReDrawString (char *str);
-  
   uint8_t SSD1306_DrawPixel (uint8_t, uint8_t);
-
-  /**
-   * @desc    Draw line
-   *  
-   * @param   uint8_t
-   * @param   uint8_t
-   * @param   uint8_t
-   * @param   uint8_t
-   *
-   * @return  uint8_t
-   */
   uint8_t SSD1306_DrawLine (uint8_t, uint8_t, uint8_t, uint8_t);
-
   uint8_t SSD1306_ClearPixel(uint8_t x, uint8_t y);
-uint8_t SSD1306_InvertRectangle(uint8_t address, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-uint8_t SSD1306_InvertPixel(uint8_t x, uint8_t y);
+  uint8_t SSD1306_InvertRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+  uint8_t SSD1306_InvertPixel(uint8_t x, uint8_t y);
+  void setDirection_OLED(char *str);
+  void setSpeed_OLED(char *str);
+  void setTime_OLED(char *str);
+  void setDistance_OLED(char *str);
+  void setPower_OLED(char *str);
+  uint8_t mode_Menu();
+  void info_Menu();
+  uint8_t set_Mode(uint8_t previous_mode, uint8_t vector);
 
 #endif

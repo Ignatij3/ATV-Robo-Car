@@ -195,34 +195,46 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
     uint8_t stateMask = (state ? bit : 0);
     uint32_t width = 0; // keep initialization out of time critical area
 
-    char portStr[10];
-    char bitStr[10];
-    char stateStr[10];
-    char stateMaskStr[10];
-
     // convert the timeout from microseconds to a number of times through
     // the initial loop; it takes 16 clock cycles per iteration.
     uint32_t maxloops = microsecondsToClockCycles(timeout) / 16;
+    writeString(" bit mask:");
+    writeBinary(bit);
+
     writeString(" 0pinmask:");
-    uint8Printing(portStr);
+    writeBinary(*PINx(PORT) & bit);
 
     // wait for any previous pulse to end
-
     while ((*PINx(PORT) & bit) == stateMask) {
+        if (maxloops-- == 0) {
+            return MAX_DISTANCE;
+        }
     }
 
     writeString(" 1pinmask:");
-    uint8Printing(portStr);
+    writeBinary(*PINx(PORT) & bit);
     timeTravel();
+
     // wait for the pulse to start
     while ((*PINx(PORT) & bit) != stateMask) {
         if (maxloops-- == 0) {
-            return 0;
+            return MAX_DISTANCE;
+        }
+    }
+
+    // wait for the pulse to end
+    while ((*PINx(PORT) & bit) == stateMask) {
+        if (maxloops-- == 0) {
+            return MAX_DISTANCE;
         }
         width++;
     }
+
     writeString(" 2pinmask:");
-    uint8Printing(portStr);
+    writeBinary(*PINx(PORT) & bit);
+
+    writeString(" width:");
+    writeUint(width);
 
     // convert the reading to microseconds. The loop has been determined
     // to be 20 clock cycles long and have about 16 clocks between the edge

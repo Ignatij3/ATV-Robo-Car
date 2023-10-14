@@ -1,4 +1,5 @@
 #include "ssd1306.h"
+#include "../global_constants/global_constants.h"
 
 // @array Init command
 const uint8_t INIT_SSD1306[] PROGMEM = {
@@ -323,13 +324,6 @@ uint8_t SSD1306_UpdatePosition (void)
   return SSD1306_SUCCESS;
 }
 
-/**
- * @desc    SSD1306 Draw character
- *
- * @param   char character
- *
- * @return  uint8_t
- */
 uint8_t SSD1306_DrawChar (char character)
 {
   // variables
@@ -355,13 +349,7 @@ uint8_t SSD1306_DrawChar (char character)
   return SSD1306_SUCCESS;
 }
 
-/**
- * @desc    SSD1306 Draw String
- *
- * @param   char * string
- *
- * @return  void
- */
+
 void SSD1306_DrawString (char *str)
 {
   // init
@@ -373,26 +361,6 @@ void SSD1306_DrawString (char *str)
   }
 }
 
-void SSD1306_ReDrawString (char *str)
-{
-  // init
-  int i = 0;
-  // loop through character of string
-  while (str[i] != '\0') {
-    // draw string
-    SSD1306_DrawChar (32);
-    SSD1306_DrawChar (str[i++]);
-  }
-}
-
-/**
- * @desc    Draw pixel
- *
- * @param   uint8_t x -> 0 ... MAX_X
- * @param   uint8_t y -> 0 ... MAX_Y
- *
- * @return  uint8_t
- */
 uint8_t SSD1306_DrawPixel (uint8_t x, uint8_t y)
 {
   uint8_t page = 0;
@@ -416,16 +384,6 @@ uint8_t SSD1306_DrawPixel (uint8_t x, uint8_t y)
   return SSD1306_SUCCESS;
 }
 
-/**
- * @desc    Draw line by Bresenham algoritm
- *  
- * @param   uint8_t x start position / 0 <= cols <= MAX_X-1
- * @param   uint8_t x end position   / 0 <= cols <= MAX_X-1
- * @param   uint8_t y start position / 0 <= rows <= MAX_Y-1 
- * @param   uint8_t y end position   / 0 <= rows <= MAX_Y-1
- *
- * @return  uint8_t
- */
 uint8_t SSD1306_DrawLine (uint8_t x1, uint8_t x2, uint8_t y1, uint8_t y2)
 {
   // determinant
@@ -525,7 +483,7 @@ uint8_t SSD1306_ClearPixel(uint8_t x, uint8_t y) {
   return SSD1306_SUCCESS;
 }
 
-uint8_t SSD1306_InvertRectangle(uint8_t address, uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
+uint8_t SSD1306_InvertRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height) {
   // Ensure the coordinates are within bounds
   if (x >= MAX_X || y >= MAX_Y || (x + width) > MAX_X || (y + height) > MAX_Y) {
     return SSD1306_ERROR;  // Coordinates are out of bounds
@@ -544,7 +502,7 @@ uint8_t SSD1306_InvertRectangle(uint8_t address, uint8_t x, uint8_t y, uint8_t w
   }
 
   // Update the display
-  SSD1306_UpdateScreen(address);
+  SSD1306_UpdateScreen(addr);
 
   // Success
   return SSD1306_SUCCESS;
@@ -568,4 +526,124 @@ uint8_t SSD1306_InvertPixel(uint8_t x, uint8_t y) {
 
   // Success
   return SSD1306_SUCCESS;
+}
+
+void setDirection_OLED(char *str){
+  SSD1306_SetPosition (DIRECTION_X_COORD, DIRECTION_Y_COORD);
+  int i = 0;
+  while (str[i] != '\0') {
+    SSD1306_DrawChar (str[i++]);
+  }  
+  while(i++<DIRECTION_AREA){
+    SSD1306_DrawChar (' ');
+  }
+  SSD1306_UpdateScreen(addr);
+}
+
+void setSpeed_OLED(char *str){
+  SSD1306_SetPosition (SPEED_X_COORD, SPEED_Y_COORD);
+  int i = 0;
+  while (str[i] != '\0') {
+    SSD1306_DrawChar (str[i++]);
+  }  
+  while(i++<SPEED_AREA){
+    SSD1306_DrawChar (' ');
+  }
+  SSD1306_UpdateScreen(addr);
+}
+
+void setTime_OLED(char *str){
+  SSD1306_SetPosition (TIME_X_COORD, TIME_Y_COORD);
+  int i = 0;
+  while (str[i] != '\0') {
+    SSD1306_DrawChar (str[i++]);
+  }  
+  while(i++<TIME_AREA){
+    SSD1306_DrawChar (' ');
+  }
+  SSD1306_UpdateScreen(addr);
+}
+
+void setDistance_OLED(char *str){
+  SSD1306_SetPosition (DIRECTION_X_COORD, DISTANCE_Y_COORD);
+  int i = 0;
+  while (str[i] != '\0') {
+    SSD1306_DrawChar (str[i++]);
+  }  
+  while(i++<DISTANCE_AREA){
+    SSD1306_DrawChar (' ');
+  }
+  SSD1306_UpdateScreen(addr);
+}
+
+void setPower_OLED(char *str){
+  SSD1306_SetPosition (POWER_X_COORD, POWER_Y_COORD);
+  int i = 0;
+  while (str[i] != '\0') {
+    SSD1306_DrawChar (str[i++]);
+  }  
+  while(i++<POWER_AREA){
+    SSD1306_DrawChar (' ');
+  }
+  SSD1306_UpdateScreen(addr);
+}
+
+uint8_t mode_Menu(){
+  SSD1306_ClearScreen ();
+  SSD1306_SetPosition (0, 0);
+  SSD1306_DrawString ("SELECT MODE");
+  SSD1306_SetPosition (15, 2);
+  SSD1306_DrawString ("SLAVE");
+  SSD1306_SetPosition (15, 4);
+  SSD1306_DrawString ("AUTONOMIUS");
+  SSD1306_SetPosition (15, 6);
+  SSD1306_DrawString ("FOLLOWING");
+
+  SSD1306_SetPosition (100, DEFAULT_MODE_POSITION);
+  SSD1306_DrawChar('<');
+  SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * DEFAULT_MODE_POSITION - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTENGLE);
+  SSD1306_UpdateScreen(addr); 
+  return 1;
+}
+
+void info_Menu(){
+  SSD1306_ClearScreen ();
+  SSD1306_SetPosition (0, 0);
+  SSD1306_DrawString ("Direction:");
+  SSD1306_SetPosition (0, 2);
+  SSD1306_DrawString ("Speed:");
+  SSD1306_SetPosition (0, 4);
+  SSD1306_DrawString ("Time:");
+  SSD1306_SetPosition (0, 6);
+  SSD1306_DrawString ("Distance:");
+  SSD1306_SetPosition (0, 8);
+  SSD1306_DrawString ("ON");
+  SSD1306_UpdateScreen(addr);  
+}
+
+
+// MODES:
+// SLAVE - 1
+// AUTO - 2
+// FOLLOWING - 3
+
+uint8_t set_Mode(uint8_t previous_mode, uint8_t vector){
+  uint8_t current_Mode = previous_mode+vector;
+  SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * 2 * previous_mode - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTENGLE);
+  SSD1306_SetPosition (100, 2 * previous_mode);
+  SSD1306_DrawChar(' ');
+  SSD1306_UpdateScreen(addr); 
+  if (current_Mode==4){
+    current_Mode=1;
+  } else 
+  {
+    if (current_Mode==0){
+      current_Mode=3;
+    }
+  }
+  SSD1306_SetPosition (100, 2 * current_Mode);
+  SSD1306_DrawChar('<');
+  SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * 2 * current_Mode - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTENGLE);
+  SSD1306_UpdateScreen(addr); 
+  return current_Mode;
 }
