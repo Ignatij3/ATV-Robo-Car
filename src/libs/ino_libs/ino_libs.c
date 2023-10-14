@@ -9,7 +9,7 @@
 #define PINx(port) (port - 0x02)
 
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
-#define clockCyclesPerMicrosecond() (F_CPU / 1000000L)
+#define clockCyclesPerMicrosecond() (CPU_CLOCK / 1000000L)
 #define clockCyclesToMicroseconds(a) ((a) / clockCyclesPerMicrosecond())
 #define microsecondsToClockCycles(a) ((a)*clockCyclesPerMicrosecond())
 

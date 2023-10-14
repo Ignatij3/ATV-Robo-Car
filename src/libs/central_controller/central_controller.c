@@ -5,7 +5,7 @@
 #include "central_controller.h"
 #include "distance_sensor/HCSR04.h"
 
-#define MYUBRR(baud) F_CPU / 16 / baud - 1
+#define MYUBRR(baud) CPU_CLOCK / 16 / baud - 1
 
 static uint8_t minimalTolerableDistance;
 static drivingMode mode;
