@@ -1,5 +1,5 @@
-#include "../ino_libs/ino_libs.h"
 #include "serial_communication.h"
+#include "../ino_libs/ino_libs.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stddef.h>

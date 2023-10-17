@@ -4,6 +4,7 @@
 #include "../serial_communication/serial_communication.h"
 #include "central_controller.h"
 #include "distance_sensor/HCSR04.h"
+#include "../line_follow/line_follow.h"
 
 #define MYUBRR(baud) CPU_CLOCK / 16 / baud - 1
 
