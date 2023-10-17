@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 #include "../ino_libs/ino_libs.h"
-=======
->>>>>>> e27875f (Temporary fixed)
 #include "../global_constants/global_constants.h"
 #include "../ino_libs/ino_libs.h"
 #include "../serial_communication/serial_communication.h"

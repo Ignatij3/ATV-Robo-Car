@@ -98,15 +98,15 @@
 
   #define SPEED_X_COORD 42
   #define SPEED_Y_COORD 2
-  #define SPEED_AREA 2
+  #define SPEED_AREA 5
 
   #define TIME_X_COORD 36
   #define TIME_Y_COORD 4
-  #define TIME_AREA 5
+  #define TIME_AREA 7
 
   #define DISTANCE_X_COORD 66
   #define DISTANCE_Y_COORD 6
-  #define DISTANCE_AREA 3
+  #define DISTANCE_AREA 5
 
   #define POWER_X_COORD 96
   #define POWER_Y_COORD 3

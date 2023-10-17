@@ -9,33 +9,34 @@ AVRSIZE := avr-size
 AVRDUDE := avrdude
 
 PROGRAMMER_TYPE := xplainedmini
-<<<<<<< HEAD
-PROGRAMMER_ARGS := -v -p $(MCU) -c $(PROGRAMMER_TYPE) -b 57600 
-=======
-PROGRAMMER_ARGS := -C/etc/avrdude.conf -v -p$(MCU) -c$(PROGRAMMER_TYPE) -b57600
->>>>>>> e27875f (Temporary fixed)
-
-INCL_PATH := $(CURDIR)/libs
-INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
-
-<<<<<<< HEAD
-INCL_PATH = libs
-INCLUDES  = -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/oled -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
-=======
+SOURCES := main.c
 BLDDIR := build
 OBJDIR := obj
 TARGET := $(BLDDIR)/robocar_atv
->>>>>>> e27875f (Temporary fixed)
 
-SOURCES := main.c
+INCL_PATH := $(CURDIR)/libs
+INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/oled -I$(INCL_PATH)/global_constants -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
+
+ifeq ($(OS),Windows_NT)
+PROGRAMMER_ARGS := -v -p $(MCU) -c $(PROGRAMMER_TYPE) -b 57600 
+SOURCES += $(wildcard libs/**/*.c)
+SOURCES += $(wildcard libs/**/**/*.c)
+$(info LIB_C_FILES: $(LIB_C_FILES))
+
+clean:
+	rm -rf $(OBJDIR)
+	rm -rf $(BLDDIR)
+else
+PROGRAMMER_ARGS := -C/etc/avrdude.conf -v -p$(MCU) -c$(PROGRAMMER_TYPE) -b57600
 SOURCES += $(shell find libs/ -type f -name '*.c')
 OBJECTS := $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
 HEADERS := $(SOURCES:.c=.h)
 
-SOURCES = main.c
-SOURCES += $(wildcard libs/**/*.c)
-SOURCES += $(wildcard libs/**/**/*.c)
-$(info LIB_C_FILES: $(LIB_C_FILES))
+clean:
+	cd $(BLDDIR) && rm -f *.elf *.hex *.map
+	cd $(OBJDIR) && rm -rf ./*
+	rmdir $(BLDDIR) $(OBJDIR)
+endif
 
 OBJECTS = $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
 HEADERS = $(SOURCES:.c=.h)
@@ -74,16 +75,6 @@ debug:
 	@echo "Object files:"   $(OBJECTS)
 	@echo "MCU, F_CPU, BAUD:"  $(MCU), $(F_CPU), $(BAUD)
 	@echo	
-
-clean:
-<<<<<<< HEAD
-	rm -rf $(OBJDIR)
-	rm -rf $(BLDDIR)
-=======
-	cd $(BLDDIR) && rm -f *.elf *.hex *.map
-	cd $(OBJDIR) && rm -rf ./*
-	rmdir $(BLDDIR) $(OBJDIR)
->>>>>>> e27875f (Temporary fixed)
 
 flash: $(TARGET).hex
 	$(AVRDUDE) $(PROGRAMMER_ARGS) -Uflash:w:$<:i

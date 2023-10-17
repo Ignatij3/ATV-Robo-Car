@@ -546,6 +546,7 @@ void setSpeed_OLED(char *str){
   while (str[i] != '\0') {
     SSD1306_DrawChar (str[i++]);
   }  
+  SSD1306_DrawString("m/s"); i+=3;
   while(i++<SPEED_AREA){
     SSD1306_DrawChar (' ');
   }
@@ -558,6 +559,7 @@ void setTime_OLED(char *str){
   while (str[i] != '\0') {
     SSD1306_DrawChar (str[i++]);
   }  
+  SSD1306_DrawChar('s'); i++;
   while(i++<TIME_AREA){
     SSD1306_DrawChar (' ');
   }
@@ -570,6 +572,7 @@ void setDistance_OLED(char *str){
   while (str[i] != '\0') {
     SSD1306_DrawChar (str[i++]);
   }  
+  SSD1306_DrawString("cm"); i+=2;
   while(i++<DISTANCE_AREA){
     SSD1306_DrawChar (' ');
   }
