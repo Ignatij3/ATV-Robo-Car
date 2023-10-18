@@ -1,20 +1,3 @@
-/** 
- * --------------------------------------------------------------------------------------+
- * @desc        Two Wire Interface / I2C Communication
- * --------------------------------------------------------------------------------------+
- *              Copyright (C) 2020 Marian Hrinko.
- *              Written by Marian Hrinko (mato.hrinko@gmail.com)
- *
- * @author      Marian Hrinko
- * @datum       06.09.2020
- * @file        twi.h
- * @tested      AVR Atmega16, ATmega8, Atmega328
- *
- * @depend      avr/io.h
- * --------------------------------------------------------------------------------------+
- * @usage       Basic Master Transmit Operation
- */
-
 #ifndef __TWI_H__
 #define __TWI_H__
 
@@ -123,59 +106,11 @@
 
   // TWI status mask
   #define TWI_STATUS                    ( TWI_TWSR & 0xF8 )
-  
-  /**
-   * @desc    TWI init
-   *
-   * @param   void
-   *
-   * @return  void
-   */
   void TWI_Init (void);
-
-  /**
-   * @desc    TWI MT Start
-   *
-   * @param   void
-   *
-   * @return  char
-   */
   char TWI_MT_Start (void);
-
-  /**
-   * @desc    TWI Send SLAW
-   *
-   * @param   void
-   *
-   * @return  unsigned char
-   */
   char TWI_MT_Send_SLAW (char);
-
-  /**
-   * @desc    TWI Send data
-   *
-   * @param   char
-   *
-   * @return  char
-   */
   char TWI_MT_Send_Data (char);
-
-  /**
-   * @desc    TWI Send SLAR
-   *
-   * @param   void
-   *
-   * @return  unsigned char
-   */
   char TWI_MR_Send_SLAR (char);
-
-  /**
-   * @desc    TWI stop
-   *
-   * @param   void
-   *
-   * @return  void
-   */
   void TWI_Stop (void);
   
 #endif

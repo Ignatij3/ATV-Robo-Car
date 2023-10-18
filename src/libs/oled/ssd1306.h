@@ -143,8 +143,8 @@
   void setTime_OLED(char *str);
   void setDistance_OLED(char *str);
   void setPower_OLED(char *str);
-  uint8_t mode_Menu();
-  void info_Menu();
-  uint8_t set_Mode(uint8_t previous_mode, uint8_t vector);
+  uint8_t modeMenu_OLED();
+  void infoMenu_OLED();
+  uint8_t setMode_OLED(uint8_t previous_mode, uint8_t vector);
 
 #endif

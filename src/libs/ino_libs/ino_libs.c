@@ -26,10 +26,6 @@
 static uint8_t pinToTimer(volatile uint8_t *PORT, uint8_t pin);
 static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 
-void intToStr(uint8_t num, char *str) {
-    sprintf(str, "%d", num);
-}
-
 // initPWMTimers initializes timers 0, 1, 2 for phase Correct PWM signal.
 void initPWMTimers(void) {
     TCCR0A |= _BV(WGM00) | _BV(COM0A1);
@@ -98,22 +94,6 @@ void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     } else {
         writeToTimer(PORT, pin, value);
     }
-}
-
-void uint8Printing(uint8_t n) {
-    static char binaryStr[9]; // 8 bits + 1 for null-termination
-    char* p = binaryStr;
-
-    for (int i = 7; i >= 0; i--) {
-        if ((n >> i) & 1) {
-            *p = '1';
-        } else {
-            *p = '0';
-        }
-        p++;
-    }
-    *p = '\0';
-    writeString(binaryStr);
 }
 
 static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
@@ -186,23 +166,18 @@ uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
 // PORT parameter must be a pointer to the according port register defined in avr/io.h.
 // PORT must represent port at which desired pin exists.
 // If function times out, it returns UINT8_MAX. Otherwise, it returns time it took pulse to return in microseconds.
-uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*timeTravel)()) {
+// sendSignal is essential to instruct the sensor to begin its distance measurement process accurately.
+uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*sendSignal)()) {
     // cache the port and bit of the pin in order to speed up the
     // pulse width measuring loop and achieve finer resolution.  calling
     // digitalRead() instead yields much coarser resolution.
     uint8_t bit = _BV(pin);
-    // uint8_t stateMask = bit & (state << pin);
-    uint8_t stateMask = (state ? bit : 0);
+    uint8_t stateMask = bit & (state << pin);
     uint32_t width = 0; // keep initialization out of time critical area
 
     // convert the timeout from microseconds to a number of times through
     // the initial loop; it takes 16 clock cycles per iteration.
     uint32_t maxloops = microsecondsToClockCycles(timeout) / 16;
-    writeString(" bit mask:");
-    writeBinary(bit);
-
-    writeString(" 0pinmask:");
-    writeBinary(*PINx(PORT) & bit);
 
     // wait for any previous pulse to end
     while ((*PINx(PORT) & bit) == stateMask) {
@@ -211,9 +186,8 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
         }
     }
 
-    writeString(" 1pinmask:");
-    writeBinary(*PINx(PORT) & bit);
-    timeTravel();
+    //initialize sensore measure process
+    sendSignal();
 
     // wait for the pulse to start
     while ((*PINx(PORT) & bit) != stateMask) {
@@ -229,12 +203,6 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
         }
         width++;
     }
-
-    writeString(" 2pinmask:");
-    writeBinary(*PINx(PORT) & bit);
-
-    writeString(" width:");
-    writeUint(width);
 
     // convert the reading to microseconds. The loop has been determined
     // to be 20 clock cycles long and have about 16 clocks between the edge

@@ -1,30 +1,5 @@
-/** 
- * --------------------------------------------------------------------------------------+
- * @desc        Two Wire Interface / I2C Communication
- * --------------------------------------------------------------------------------------+
- *              Copyright (C) 2020 Marian Hrinko.
- *              Written by Marian Hrinko (mato.hrinko@gmail.com)
- *
- * @author      Marian Hrinko
- * @datum       06.09.2020
- * @file        twi.c
- * @tested      AVR Atmega16, ATmega8, Atmega328
- *
- * @depend      twi.h
- * --------------------------------------------------------------------------------------+
- * @usage       Master Transmit Operation
- */
- 
-// include libraries
 #include "twi.h"
 
-/**
- * @desc    TWI init - initialize frequency
- *
- * @param   void
- *
- * @return  void
- */
 void TWI_Init (void)
 {
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -46,13 +21,6 @@ void TWI_Init (void)
   TWI_FREQ (2, 1);
 }
 
-/**
- * @desc    TWI MT Start
- *
- * @param   void
- *
- * @return  char
- */
 char TWI_MT_Start (void)
 {
   // null status flag
@@ -72,13 +40,6 @@ char TWI_MT_Start (void)
   return SUCCESS;
 }
 
-/**
- * @desc    TWI Send address + write
- *
- * @param   char
- *
- * @return  char
- */
 char TWI_MT_Send_SLAW (char address)
 {
   // SLA+W
@@ -98,13 +59,6 @@ char TWI_MT_Send_SLAW (char address)
   return SUCCESS;
 }
 
-/**
- * @desc    TWI Send data
- *
- * @param   char
- *
- * @return  char
- */
 char TWI_MT_Send_Data (char data)
 {
   // DATA
@@ -124,13 +78,6 @@ char TWI_MT_Send_Data (char data)
   return SUCCESS;
 }
 
-/**
- * @desc    TWI Send address + read
- *
- * @param   char
- *
- * @return  char
- */
 char TWI_MR_Send_SLAR (char address)
 {
   // SLA+R
@@ -150,13 +97,6 @@ char TWI_MR_Send_SLAR (char address)
   return SUCCESS;
 }
 
-/**
- * @desc    TWI stop
- *
- * @param   void
- *
- * @return  void
- */
 void TWI_Stop (void)
 {
   // End TWI

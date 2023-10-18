@@ -502,7 +502,7 @@ uint8_t SSD1306_InvertRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t hei
   }
 
   // Update the display
-  SSD1306_UpdateScreen(addr);
+  SSD1306_UpdateScreen(OLED_ADDRESS);
 
   // Success
   return SSD1306_SUCCESS;
@@ -528,6 +528,9 @@ uint8_t SSD1306_InvertPixel(uint8_t x, uint8_t y) {
   return SSD1306_SUCCESS;
 }
 
+// The setDirection_OLED function is responsible for setting the direction
+// information to be displayed on an OLED screen.
+// It ensures that the direction information is correctly positioned and rendered on the screen.
 void setDirection_OLED(char *str){
   SSD1306_SetPosition (DIRECTION_X_COORD, DIRECTION_Y_COORD);
   int i = 0;
@@ -537,9 +540,12 @@ void setDirection_OLED(char *str){
   while(i++<DIRECTION_AREA){
     SSD1306_DrawChar (' ');
   }
-  SSD1306_UpdateScreen(addr);
+  SSD1306_UpdateScreen(OLED_ADDRESS);
 }
 
+// The setSpeed_OLED function is responsible for setting the speed
+// information to be displayed on an OLED screen with unit of measurement(m/s).
+// It ensures that the speed information is correctly positioned and rendered on the screen. 
 void setSpeed_OLED(char *str){
   SSD1306_SetPosition (SPEED_X_COORD, SPEED_Y_COORD);
   int i = 0;
@@ -550,9 +556,12 @@ void setSpeed_OLED(char *str){
   while(i++<SPEED_AREA){
     SSD1306_DrawChar (' ');
   }
-  SSD1306_UpdateScreen(addr);
+  SSD1306_UpdateScreen(OLED_ADDRESS);
 }
 
+// The setTime_OLED function is responsible for setting the time
+// information to be displayed on an OLED screen with unit of measurement(s).
+// It ensures that the time information is correctly positioned and rendered on the screen. 
 void setTime_OLED(char *str){
   SSD1306_SetPosition (TIME_X_COORD, TIME_Y_COORD);
   int i = 0;
@@ -563,9 +572,12 @@ void setTime_OLED(char *str){
   while(i++<TIME_AREA){
     SSD1306_DrawChar (' ');
   }
-  SSD1306_UpdateScreen(addr);
+  SSD1306_UpdateScreen(OLED_ADDRESS);
 }
 
+// The setDistance_OLED function is responsible for setting the distance
+// information to be displayed on an OLED screen with unit of measurement(cm).
+// It ensures that the distance information is correctly positioned and rendered on the screen. 
 void setDistance_OLED(char *str){
   SSD1306_SetPosition (DIRECTION_X_COORD, DISTANCE_Y_COORD);
   int i = 0;
@@ -576,9 +588,12 @@ void setDistance_OLED(char *str){
   while(i++<DISTANCE_AREA){
     SSD1306_DrawChar (' ');
   }
-  SSD1306_UpdateScreen(addr);
+  SSD1306_UpdateScreen(OLED_ADDRESS);
 }
 
+// The setPower_OLED function is responsible for setting the power
+// information to be displayed on an OLED screen.
+// It ensures that the power information is correctly positioned and rendered on the screen. 
 void setPower_OLED(char *str){
   SSD1306_SetPosition (POWER_X_COORD, POWER_Y_COORD);
   int i = 0;
@@ -588,10 +603,13 @@ void setPower_OLED(char *str){
   while(i++<POWER_AREA){
     SSD1306_DrawChar (' ');
   }
-  SSD1306_UpdateScreen(addr);
+  SSD1306_UpdateScreen(OLED_ADDRESS);
 }
 
-uint8_t mode_Menu(){
+// The modeMenu function is responsible for displaying a menu of modes on an OLED screen
+// and allowing the user to select one of them. 
+// It sets the SLAVE mode as default and return its value(1)
+uint8_t modeMenu_OLED(){
   SSD1306_ClearScreen ();
   SSD1306_SetPosition (0, 0);
   SSD1306_DrawString ("SELECT MODE");
@@ -605,11 +623,13 @@ uint8_t mode_Menu(){
   SSD1306_SetPosition (100, DEFAULT_MODE_POSITION);
   SSD1306_DrawChar('<');
   SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * DEFAULT_MODE_POSITION - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTENGLE);
-  SSD1306_UpdateScreen(addr); 
+  SSD1306_UpdateScreen(OLED_ADDRESS); 
   return 1;
 }
 
-void info_Menu(){
+// The infoMenu function is responsible for displaying an information menu on an OLED screen.
+// It presents information related to various parameters such as direction, speed, time, distance and power.
+void infoMenu_OLED(){
   SSD1306_ClearScreen ();
   SSD1306_SetPosition (0, 0);
   SSD1306_DrawString ("Direction:");
@@ -621,21 +641,21 @@ void info_Menu(){
   SSD1306_DrawString ("Distance:");
   SSD1306_SetPosition (0, 8);
   SSD1306_DrawString ("ON");
-  SSD1306_UpdateScreen(addr);  
+  SSD1306_UpdateScreen(OLED_ADDRESS);  
 }
 
-
+// The setMode function is designed to change the operational mode on an OLED screen and
+// return the updated mode value. It clears the previous mode and updates the screen with the latest one.
 // MODES:
 // SLAVE - 1
 // AUTO - 2
 // FOLLOWING - 3
-
-uint8_t set_Mode(uint8_t previous_mode, uint8_t vector){
+uint8_t setMode_OLED(uint8_t previous_mode, uint8_t vector){
   uint8_t current_Mode = previous_mode+vector;
   SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * 2 * previous_mode - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTENGLE);
   SSD1306_SetPosition (100, 2 * previous_mode);
   SSD1306_DrawChar(' ');
-  SSD1306_UpdateScreen(addr); 
+  SSD1306_UpdateScreen(OLED_ADDRESS); 
   if (current_Mode==4){
     current_Mode=1;
   } else 
@@ -647,6 +667,6 @@ uint8_t set_Mode(uint8_t previous_mode, uint8_t vector){
   SSD1306_SetPosition (100, 2 * current_Mode);
   SSD1306_DrawChar('<');
   SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * 2 * current_Mode - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTENGLE);
-  SSD1306_UpdateScreen(addr); 
+  SSD1306_UpdateScreen(OLED_ADDRESS); 
   return current_Mode;
 }

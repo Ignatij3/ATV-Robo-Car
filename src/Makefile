@@ -14,33 +14,28 @@ BLDDIR := build
 OBJDIR := obj
 TARGET := $(BLDDIR)/robocar_atv
 
-INCL_PATH := $(CURDIR)/libs
-INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/oled -I$(INCL_PATH)/global_constants -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
-
 ifeq ($(OS),Windows_NT)
-PROGRAMMER_ARGS := -v -p $(MCU) -c $(PROGRAMMER_TYPE) -b 57600 
 SOURCES += $(wildcard libs/**/*.c)
 SOURCES += $(wildcard libs/**/**/*.c)
 $(info LIB_C_FILES: $(LIB_C_FILES))
-
 clean:
 	rm -rf $(OBJDIR)
 	rm -rf $(BLDDIR)
-else
-PROGRAMMER_ARGS := -C/etc/avrdude.conf -v -p$(MCU) -c$(PROGRAMMER_TYPE) -b57600
-SOURCES += $(shell find libs/ -type f -name '*.c')
-OBJECTS := $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
-HEADERS := $(SOURCES:.c=.h)
 
+else
+ADIT_PATH := -C/etc/avrdude.conf
+SOURCES += $(shell find libs/ -type f -name '*.c')
 clean:
 	cd $(BLDDIR) && rm -f *.elf *.hex *.map
 	cd $(OBJDIR) && rm -rf ./*
 	rmdir $(BLDDIR) $(OBJDIR)
 endif
 
+INCL_PATH := $(CURDIR)/libs
+INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/oled -I$(INCL_PATH)/global_constants -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
+PROGRAMMER_ARGS := $(ADIT_PATH) -v -p$(MCU) -c$(PROGRAMMER_TYPE) -b57600
 OBJECTS = $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
 HEADERS = $(SOURCES:.c=.h)
-
 
 CPPFLAGS    = -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) $(INCLUDES)
 CFLAGS      = -Os -g -std=gnu99 -Wall
