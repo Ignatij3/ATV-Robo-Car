@@ -1,4 +1,5 @@
 #include "libs/central_controller/central_controller.h"
+#include "libs/serial_communication/serial_communication.h"
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
@@ -61,6 +62,7 @@ int main(void) {
 
         // if NONE mode is chosen, the car must halt
         case NONE:
+            writeString("mode is none\n\r");
             return 1;
         }
         // delay not to change state too rapidly

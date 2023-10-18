@@ -82,9 +82,9 @@ void reverseEngines(void) {
 
 // setMode sets passed driving mode.
 // If driving mode is NONE, setMode wouldn't accept it.
-void setMode(drivingMode mode) {
-    if (mode != NONE) {
-        mode = mode;
+void setMode(drivingMode newMode) {
+    if (newMode != NONE) {
+        mode = newMode;
     }
 }
 
