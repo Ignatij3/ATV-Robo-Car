@@ -7,15 +7,15 @@
 
 #define MYUBRR(baud) CPU_CLOCK / 16 / baud - 1
 
-static uint8_t minimalTolerableDistance;
+static uint8_t minDist;
 static drivingMode mode;
 
 // initializeModules performs initialization of structures for the vehicle to operate.
-// minimalTolerableDistance is minimal distance between car and object in front,
+// minDistance is minimal distance between car and object in front,
 // to be able to evade collision, imperatively calculated.
 // The function sets initial vehicle mode to NONE.
-void initializeModules(uint8_t minimalTolerableDistance) {
-    minimalTolerableDistance = minimalTolerableDistance;
+void initializeModules(uint8_t minDistance) {
+    minDist = minDistance;
     mode = NONE;
 
     // initialize other modules
@@ -43,7 +43,7 @@ void disableCar(void) {
 // isCollision returns whether vehicle is about to collide with object in front.
 // This is done by comparing closest object distance with minimal tolerable distance.
 bool isCollisionSoon(void) {
-    return measureDistanceCm() < minimalTolerableDistance;
+    return measureDistanceCm() < minDist;
 }
 
 // evadeCollision will tank turn clockwise until there is no objects in front of the car.
