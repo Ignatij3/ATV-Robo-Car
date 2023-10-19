@@ -33,7 +33,7 @@ void enableCar(void) {
     setSpeed(0, false);
 }
 
-// disableCar halts the car, disabling it's engines.
+// disableCar halts the car, disabling it's engines and setting PWM signal duty rate to 0.
 // To continue driving, call 'enableCar'.
 void disableCar(void) {
     setSpeed(0, false);
