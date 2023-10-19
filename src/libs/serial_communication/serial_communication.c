@@ -55,10 +55,10 @@ void serialInit(uint32_t ubrr) {
 
 // writeBinary prints passed number to serial in its binary representation.
 void writeBinary(uint64_t n) {
-    static char binaryStr[9]; // 8 bits + 1 for null-termination
+    static char binaryStr[65]; // 64 bits + 1 for null-termination
     char *p = binaryStr;
 
-    for (int i = 7; i >= 0; i--) {
+    for (int i = 63; i >= 0; i--) {
         if ((n >> i) & 1) {
             *p = '1';
         } else {
