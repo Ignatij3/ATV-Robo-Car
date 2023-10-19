@@ -23,7 +23,7 @@ void initializeModules(uint8_t minimalTolerableDistance) {
     enablePWM();
     initializeEngines();
     registerDistanceSensor();
-    serialInit(MYUBRR(BAUD));
+    serialInit(MYUBRR(SERIAL_BAUD));
 }
 
 // enableCar enables cars engines.
