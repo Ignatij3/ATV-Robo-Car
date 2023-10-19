@@ -4,13 +4,13 @@
 #include <util/delay.h>
 
 volatile static bool poweredOn = false;
-volatile static uint8_t state = 1;
 
 // captures interrupt from switch pin, switches power to the wheels on or off.
 ISR(PCINT0_vect) {
     // interrupt routine is triggered both on rising and falling edge, to distinguish between those,
     // state variable is introduced, which is toggled every routine execution.
     // buttons state: 1 - released, 0 - pressed
+    volatile static uint8_t state = 1;
 
     // toggle power of the car only if button is pressed
     state = !state;
@@ -37,7 +37,11 @@ int main(void) {
 
     while (1) {
         // halt while car is turned off
-        while (!poweredOn) {
+        if (!poweredOn) {
+            disableCar();
+            while (!poweredOn) {
+            }
+            enableCar();
         }
 
         setMode(readNewMode());
