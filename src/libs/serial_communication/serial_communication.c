@@ -72,7 +72,7 @@ void writeBinary(uint16_t n) {
 
 // writeUint writes passed number to serial.
 void writeUint(uint16_t n) {
-    writeStringF("%d", n);
+    writeStringF("%u", n);
 }
 
 // writeByte writes single byte via serial interface.
@@ -148,12 +148,12 @@ static void disableLED(void) {
 static char *applyFormat(const char *format, va_list formatArgs) {
     size_t bufsz = determineBufferSize(format, formatArgs);
     char *str = malloc(bufsz + 1);
-    snprintf(str, bufsz + 1, format, formatArgs);
+    vsnprintf(str, bufsz + 1, format, formatArgs);
     return str;
 }
 
 // determineBufferSize returns number of characters (with null terminator counted in)
 // needed to hold entire resulting string after substituting formatArgs into format.
 static size_t determineBufferSize(const char *format, va_list formatArgs) {
-    return snprintf(NULL, 0, format, formatArgs);
+    return vsnprintf(NULL, 0, format, formatArgs);
 }
