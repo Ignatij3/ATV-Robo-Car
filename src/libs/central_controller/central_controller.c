@@ -1,10 +1,9 @@
+#include "central_controller.h"
 #include "../engine_controller/engine_controller.h"
 #include "../global_constants/global_constants.h"
 #include "../ino_libs/ino_libs.h"
 #include "../serial_communication/serial_communication.h"
-#include "central_controller.h"
 #include "distance_sensor/HCSR04.h"
-#include "../line_follow/line_follow.h"
 
 #define MYUBRR(baud) CPU_CLOCK / 16 / baud - 1
 
@@ -25,6 +24,7 @@ void initializeModules(uint8_t minimalTolerableDistance) {
     initializeEngines();
     registerDistanceSensor();
     serialInit(MYUBRR(BAUD));
+    initializeIR();
 }
 
 // enableCar enables cars engines.
