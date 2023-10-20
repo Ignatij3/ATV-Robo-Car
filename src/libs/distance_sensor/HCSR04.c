@@ -15,6 +15,17 @@ void registerDistanceSensor(void) {
     pinMode(&PORTB, ECHO_PIN, INPUT);
 }
 
+// sendSignal function is created to send a trigger signal to an ultrasonic
+// distance sensor. This signal initiates the sensor's distance measurement process.
+void sendSignal() {
+    digitalWrite(&PORTB, TRIGGER_PIN, LOW);
+    _delay_us(2);
+    // Hold trigger for 10 microseconds, which is signal for sensor to measure distance
+    digitalWrite(&PORTB, TRIGGER_PIN, HIGH);
+    _delay_us(10);
+    digitalWrite(&PORTB, TRIGGER_PIN, LOW);
+}
+
 // measureDistanceCm return distance in cm from nearest object in front.
 uint8_t measureDistanceCm(void) {
     // Measure the length of echo signal, which is equal to the time needed for sound to go there and back.

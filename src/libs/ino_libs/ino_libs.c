@@ -1,4 +1,6 @@
 #include "../global_constants/global_constants.h"
+#include "../oled/ssd1306.h"
+#include "../serial_communication/serial_communication.h"
 #include "ino_libs.h"
 #include <avr/cpufunc.h>
 #include <avr/io.h>
@@ -22,6 +24,7 @@
 #define TIMER2B 8
 
 static uint8_t pinToTimer(volatile uint8_t *PORT, uint8_t pin);
+static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 
 // initPWMTimers initializes timers 0, 1, 2 for phase Correct PWM signal.
 void initPWMTimers(void) {
@@ -84,6 +87,16 @@ uint8_t digitalRead(volatile uint8_t *PORT, uint8_t pin) {
 // PORT must represent port at which desired pin exists.
 // If passed pin is not PWM pin, function writes value/255 rounded to the nearest integer.
 void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
+    if (value == 0) {
+        digitalWrite(PORT, pin, LOW);
+    } else if (value == 255) {
+        digitalWrite(PORT, pin, HIGH);
+    } else {
+        writeToTimer(PORT, pin, value);
+    }
+}
+
+static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     switch (pinToTimer(PORT, pin)) {
     case TIMER0A:
         // connect pwm to pin on timer 0, channel A
@@ -173,19 +186,20 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
         }
     }
 
+    //initialize sensore measure process
     sendPulse();
 
     // wait for the pulse to start
     while ((*PINx(PORT) & bit) != stateMask) {
         if (maxloops-- == 0) {
-            return 0;
+            return MAX_DISTANCE;
         }
     }
 
     // wait for the pulse to end
     while ((*PINx(PORT) & bit) == stateMask) {
         if (maxloops-- == 0) {
-            return 0;
+            return MAX_DISTANCE;
         }
         width++;
     }
