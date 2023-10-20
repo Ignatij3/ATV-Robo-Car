@@ -2,11 +2,16 @@
 #define ATV_SERIAL_COMMUNICATION_SERIAL_COMMUNICATION_H
 #include <stdint.h>
 
+#define NEWLINE "\n\r"
+
 void serialInit(uint32_t ubrr);
-void writeByte(uint8_t c);
-void writeArray(uint8_t *c, uint16_t len);
-void writeString(uint8_t *c);
-uint8_t readByte(void);
+void writeUint(uint16_t n);
+void writeBinary(uint16_t n);
+void writeByte(const char c);
+void writeString(const char *str);
+void writeStringF(const char *format, ...);
+void writeStringLn(const char *str);
+char readByte(void);
 uint16_t readCount(void);
 
 #endif

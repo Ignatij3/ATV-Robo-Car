@@ -1,22 +1,25 @@
 #include "libs/central_controller/central_controller.h"
+#include "libs/serial_communication/serial_communication.h"
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-bool poweredOn = false;
+volatile static bool poweredOn = false;
 
 // captures interrupt from switch pin, switches power to the wheels on or off.
 ISR(PCINT0_vect) {
-    // button's state: 1 - released, 0 - pressed
+    // interrupt routine is triggered both on rising and falling edge, to distinguish between those,
+    // state variable is introduced, which is toggled every routine execution.
+    // buttons state: 1 - released, 0 - pressed
     volatile static uint8_t state = 1;
 
-    state = (state - 1) & 1;
-    // We don't want to toggle power mode on release
+    // toggle power of the car only if button is pressed
+    state = !state;
     if (!state) {
         poweredOn = !poweredOn;
     }
 }
 
-// setUpInterrupts writes to registers that manage interrupts to capture interrupts from built-in switch.
+// setUpInterrupts sets to registers that manage interrupts to capture interrupts from built-in switch.
 // Afterwards, it enables interrupts.
 void setUpInterrupts(void) {
     EICRA |= _BV(ISC01);
@@ -34,7 +37,11 @@ int main(void) {
 
     while (1) {
         // halt while car is turned off
-        while (!poweredOn) {
+        if (!poweredOn) {
+            disableCar();
+            while (!poweredOn) {
+            }
+            enableCar();
         }
 
         setMode(readNewMode());
@@ -44,9 +51,9 @@ int main(void) {
         // afterwards, it turns around and continues forward
         case AUTOMATIC:
             accelerate(1);
-            if (isCollisionSoon()) {
-                evadeCollision();
-            }
+            // if (isCollisionSoon()) {
+            //     evadeCollision();
+            // }
             break;
 
         // in controlled mode, car receives and executes commands from DualShock PS4 controller
@@ -61,12 +68,14 @@ int main(void) {
 
         // if NONE mode is chosen, the car must halt
         case NONE:
-            return 1;
+            goto exit;
         }
         // delay not to change state too rapidly
         _delay_ms(10);
     }
 
+exit:
     disableCar();
-    return 0;
+    writeString("\n\rerror occured, exiting");
+    return 1;
 }

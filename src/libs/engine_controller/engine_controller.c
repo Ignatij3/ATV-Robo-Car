@@ -168,17 +168,31 @@ void setSpeed(uint8_t speed, bool reverse) {
 
 // increaseSpeed increases speed by 'step'.
 // If the speed is at maximum, it does nothing.
-// The functions does not perform overflow checks.
 void increaseSpeed(uint8_t step) {
-    car.speed += step;
+    if (car.speed == MAX_SPEED) {
+        return;
+    }
+
+    if (car.speed > MAX_SPEED - step) {
+        car.speed = MAX_SPEED;
+    } else {
+        car.speed += step;
+    }
     setDutyCycle();
 }
 
 // decreaseSpeed decreases speed by 'step'.
 // If the speed is 0, it does nothing.
-// The functions does not perform underflow checks.
 void decreaseSpeed(uint8_t step) {
-    car.speed -= step;
+    if (car.speed == MIN_SPEED) {
+        return;
+    }
+
+    if (car.speed < step) {
+        car.speed = MIN_SPEED;
+    } else {
+        car.speed -= step;
+    }
     setDutyCycle();
 }
 
