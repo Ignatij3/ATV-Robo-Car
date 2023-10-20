@@ -20,7 +20,7 @@ void initializeModules(uint8_t minDistance) {
     mode = NONE;
 
     // initialize other modules
-    SSD1306_Init(OLED_ADDRESS);
+    // SSD1306_Init(OLED_ADDRESS);
     initPWMTimers();
     enablePWM();
     initializeEngines();
