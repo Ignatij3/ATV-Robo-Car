@@ -143,30 +143,6 @@ static void disableLED(void) {
     digitalWrite(&PORTD, SERIAL_USAGE_INDICATOR, LOW);
 }
 
-// uint8Printing function is responsible for converting an unsigned 8-bit
-// integer into a binary representation and printing it as a string.
-void uint8Printing(uint8_t n) {
-    static char binaryStr[9]; // 8 bits + 1 for null-termination
-    char* p = binaryStr;
-
-    for (int i = 7; i >= 0; i--) {
-        if ((n >> i) & 1) {
-            *p = '1';
-        } else {
-            *p = '0';
-        }
-        p++;
-    }
-    *p = '\0';
-    writeString(binaryStr);
-}
-
-// intToStr function converts an 8-bit integer into a string representation
-// and stores it in the character array. 
-void intToStr(uint8_t num, char *str) {
-    sprintf(str, "%d", num);
-}
-
 // applyFormat returns string with format variables inserted into the string.
 // It is mandatory to free() returned string.
 static char *applyFormat(const char *format, va_list formatArgs) {

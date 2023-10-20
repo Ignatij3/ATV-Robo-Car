@@ -23,7 +23,6 @@ clean:
 	rm -rf $(BLDDIR)
 
 else
-ADIT_PATH := -C/etc/avrdude.conf
 SOURCES += $(shell find libs/ -type f -name '*.c')
 clean:
 	cd $(BLDDIR) && rm -f *.elf *.hex *.map
@@ -33,7 +32,7 @@ endif
 
 INCL_PATH := $(CURDIR)/libs
 INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/oled -I$(INCL_PATH)/global_constants -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
-PROGRAMMER_ARGS := $(ADIT_PATH) -v -p$(MCU) -c$(PROGRAMMER_TYPE) -b57600
+PROGRAMMER_ARGS := -v -p$(MCU) -c$(PROGRAMMER_TYPE) -b57600
 OBJECTS = $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
 HEADERS = $(SOURCES:.c=.h)
 

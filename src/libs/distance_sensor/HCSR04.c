@@ -4,8 +4,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define TRIGGER_PIN PINB2
-#define ECHO_PIN PINB1
+#define TRIGGER_PIN PINB4
+#define ECHO_PIN PINB5
 
 static void sendPulse(void);
 
