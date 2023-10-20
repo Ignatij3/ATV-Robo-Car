@@ -186,7 +186,7 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
         }
     }
 
-    //initialize sensore measure process
+    // initialize sensore measure process
     sendPulse();
 
     // wait for the pulse to start
