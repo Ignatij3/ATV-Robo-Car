@@ -1,5 +1,5 @@
-#ifndef ATV_LINE_FOLLOW_IR_SENSOR_H
-#define ATV_LINE_FOLLOW_IR_SENSOR_H
+#ifndef ATV_IR_SENSOR_IR_SENSOR_H
+#define ATV_IR_SENSOR_IR_SENSOR_H
 #include <stdbool.h>
 
 void initializeIR(void);
@@ -9,4 +9,4 @@ bool isOffLine(void);
 bool isOnLeftOfLine(void);
 bool isOnRightOfLine(void);
 
-#endif
+#endif // ATV_IR_SENSOR_IR_SENSOR_H

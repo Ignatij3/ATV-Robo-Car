@@ -1,5 +1,4 @@
 #include "libs/central_controller/central_controller.h"
-#include "libs/serial_communication/serial_communication.h"
 #include <avr/interrupt.h>
 #include <util/delay.h>
 

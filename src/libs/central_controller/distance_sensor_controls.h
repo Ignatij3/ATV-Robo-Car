@@ -1,0 +1,12 @@
+#ifndef ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H
+#error "Must include central_controller.h"
+#endif // ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H
+
+#ifndef ATV_CENTRAL_CONTROLLER_DISTANCE_SENSOR_CONTROLS_H
+#define ATV_CENTRAL_CONTROLLER_DISTANCE_SENSOR_CONTROLS_H
+#include <stdbool.h>
+
+bool isCollisionSoon(void);
+void evadeCollision(void);
+
+#endif // ATV_CENTRAL_CONTROLLER_DISTANCE_SENSOR_CONTROLS_H
