@@ -15,7 +15,7 @@ void registerDistanceSensor(void) {
 
 // sendPulse function is created to send a trigger signal to an ultrasonic
 // distance sensor. This signal initiates the sensor's pulse.
-void sendPulse() {
+void sendPulse(void) {
     digitalWrite(&PORTB, TRIGGER_PIN, LOW);
     _delay_us(2);
     // Hold trigger for 10 microseconds, which is signal for sensor to measure distance
@@ -38,14 +38,4 @@ uint8_t measureDistanceCm(void) {
     }
 
     return (uint8_t)(distanceCm);
-}
-
-static void sendPulse(void) {
-    // Make sure that trigger pin is LOW.
-    digitalWrite(&PORTB, TRIGGER_PIN, LOW);
-    _delay_us(2);
-    // Hold trigger for 10 microseconds, which is signal for sensor to measure distance
-    digitalWrite(&PORTB, TRIGGER_PIN, HIGH);
-    _delay_us(10);
-    digitalWrite(&PORTB, TRIGGER_PIN, LOW);
 }

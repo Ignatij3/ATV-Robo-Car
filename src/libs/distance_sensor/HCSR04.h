@@ -5,6 +5,6 @@
 
 void registerDistanceSensor(void);
 uint8_t measureDistanceCm(void);
-void sendPulse();
+void sendPulse(void);
 
 #endif
