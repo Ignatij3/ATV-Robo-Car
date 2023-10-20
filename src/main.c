@@ -1,4 +1,6 @@
 #include "libs/central_controller/central_controller.h"
+#include "libs/engine_controller/engine_controller.h"
+#include "libs/ir_sensor/IR_sensor.h"
 #include "libs/serial_communication/serial_communication.h"
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -63,7 +65,32 @@ int main(void) {
 
         // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it
         case SLAVE:
-            /* code */
+            bool IR_L, IR_R;
+            read_sensor(&IR_L, &IR_R);
+
+            // Needs to avoid colissions and needs macro defined
+            // No idea if its according to the coding style
+            if ((IR_L == 0) && (IR_R == 0)) {
+                accelerate(1);
+                if (isCollisionSoon()) {
+                    evadeCollision();
+                }
+            }
+
+            else if ((IR_L == 1) && (IR_R == 0)) {
+                left();
+            }
+
+            else if ((IR_L == 0) && (IR_R == 1)) {
+                right();
+            }
+
+            else if ((IR_L == 1) && (IR_R == 1)) {
+                accelerate(1);
+                if (isCollisionSoon()) {
+                    evadeCollision();
+                }
+            }
             break;
 
         // if NONE mode is chosen, the car must halt

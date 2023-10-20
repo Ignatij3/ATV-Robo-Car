@@ -5,10 +5,13 @@
 #include "../oled/ssd1306.h"
 #include "../serial_communication/serial_communication.h"
 #include "central_controller.h"
+=======
+#include "distance_sensor/HCSR04.h"
+    >>>>>>> e454b2a7b4f3094f0744b9f54dbad4707cdabaf4
 
 #define MYUBRR(baud) CPU_CLOCK / 16 / baud - 1
 
-static uint8_t minDist;
+    static uint8_t minDist;
 static drivingMode mode;
 
 // initializeModules performs initialization of structures for the vehicle to operate.
@@ -26,6 +29,7 @@ void initializeModules(uint8_t minDistance) {
     initializeEngines();
     registerDistanceSensor();
     serialInit(MYUBRR(SERIAL_BAUD));
+    initializeIR();
 }
 
 // enableCar enables cars engines.
