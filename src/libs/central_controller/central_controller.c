@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 #include "../distance_sensor/HCSR04.h"
+=======
+#include "central_controller.h"
+>>>>>>> e454b2a7b4f3094f0744b9f54dbad4707cdabaf4
 #include "../engine_controller/engine_controller.h"
 #include "../global_constants/global_constants.h"
 #include "../ino_libs/ino_libs.h"
 #include "../serial_communication/serial_communication.h"
+<<<<<<< HEAD
 #include "central_controller.h"
 #include "../oled/ssd1306.h"
 #include "../distance_sensor/HCSR04.h"
+=======
+#include "distance_sensor/HCSR04.h"
+>>>>>>> e454b2a7b4f3094f0744b9f54dbad4707cdabaf4
 
 #define MYUBRR(baud) CPU_CLOCK / 16 / baud - 1
 
@@ -26,7 +34,12 @@ void initializeModules(uint8_t minDistance) {
     enablePWM();
     initializeEngines();
     registerDistanceSensor();
+<<<<<<< HEAD
     serialInit(MYUBRR(SERIAL_BAUD));
+=======
+    serialInit(MYUBRR(BAUD));
+    initializeIR();
+>>>>>>> e454b2a7b4f3094f0744b9f54dbad4707cdabaf4
 }
 
 // enableCar enables cars engines.
