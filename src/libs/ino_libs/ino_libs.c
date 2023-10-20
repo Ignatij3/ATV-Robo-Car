@@ -165,9 +165,9 @@ uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
 // which will be singalled by pin changing state.
 // PORT parameter must be a pointer to the according port register defined in avr/io.h.
 // PORT must represent port at which desired pin exists.
-// If function times out, it returns UINT8_MAX. Otherwise, it returns time it took pulse to return in microseconds.
-// sendSignal is essential to instruct the sensor to begin its distance measurement process accurately.
-uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*sendSignal)()) {
+// If function times out, it returns 0. Otherwise, it returns time it took pulse to return in microseconds.
+// It is advised to use only HIGH and LOW as 'value' parameter, otherwise function may show unexpected behaviour.
+uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*sendPulse)()) {
     // cache the port and bit of the pin in order to speed up the
     // pulse width measuring loop and achieve finer resolution.  calling
     // digitalRead() instead yields much coarser resolution.
@@ -182,12 +182,12 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
     // wait for any previous pulse to end
     while ((*PINx(PORT) & bit) == stateMask) {
         if (maxloops-- == 0) {
-            return MAX_DISTANCE;
+            return 0;
         }
     }
 
     //initialize sensore measure process
-    sendSignal();
+    sendPulse();
 
     // wait for the pulse to start
     while ((*PINx(PORT) & bit) != stateMask) {

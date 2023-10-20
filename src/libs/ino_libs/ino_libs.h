@@ -17,6 +17,6 @@ void digitalWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 uint8_t digitalRead(volatile uint8_t *PORT, uint8_t pin);
 uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin);
-uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*sendSignal)());
+uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*sendPulse)());
 
 #endif

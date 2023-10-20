@@ -1,3 +1,4 @@
+#include "../distance_sensor/HCSR04.h"
 #include "../engine_controller/engine_controller.h"
 #include "../global_constants/global_constants.h"
 #include "../ino_libs/ino_libs.h"
@@ -8,15 +9,15 @@
 
 #define MYUBRR(baud) CPU_CLOCK / 16 / baud - 1
 
-static uint8_t minimalTolerableDistance;
+static uint8_t minDist;
 static drivingMode mode;
 
 // initializeModules performs initialization of structures for the vehicle to operate.
-// minimalTolerableDistance is minimal distance between car and object in front,
+// minDistance is minimal distance between car and object in front,
 // to be able to evade collision, imperatively calculated.
 // The function sets initial vehicle mode to NONE.
-void initializeModules(uint8_t minimalTolerableDistance) {
-    minimalTolerableDistance = minimalTolerableDistance;
+void initializeModules(uint8_t minDistance) {
+    minDist = minDistance;
     mode = NONE;
 
     // initialize other modules
@@ -25,7 +26,7 @@ void initializeModules(uint8_t minimalTolerableDistance) {
     enablePWM();
     initializeEngines();
     registerDistanceSensor();
-    serialInit(MYUBRR(BAUD));
+    serialInit(MYUBRR(SERIAL_BAUD));
 }
 
 // enableCar enables cars engines.
@@ -35,7 +36,7 @@ void enableCar(void) {
     setSpeed(0, false);
 }
 
-// disableCar halts the car, disabling it's engines.
+// disableCar halts the car, disabling it's engines and setting PWM signal duty rate to 0.
 // To continue driving, call 'enableCar'.
 void disableCar(void) {
     setSpeed(0, false);
@@ -45,7 +46,7 @@ void disableCar(void) {
 // isCollision returns whether vehicle is about to collide with object in front.
 // This is done by comparing closest object distance with minimal tolerable distance.
 bool isCollisionSoon(void) {
-    return measureDistanceCm() < minimalTolerableDistance;
+    return measureDistanceCm() < minDist;
 }
 
 // evadeCollision will tank turn clockwise until there is no objects in front of the car.
@@ -84,9 +85,9 @@ void reverseEngines(void) {
 
 // setMode sets passed driving mode.
 // If driving mode is NONE, setMode wouldn't accept it.
-void setMode(drivingMode mode) {
-    if (mode != NONE) {
-        mode = mode;
+void setMode(drivingMode newMode) {
+    if (newMode != NONE) {
+        mode = newMode;
     }
 }
 
