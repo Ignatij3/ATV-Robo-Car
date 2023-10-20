@@ -7,17 +7,15 @@
 #define TRIGGER_PIN PINB4
 #define ECHO_PIN PINB5
 
-static void sendPulse(void);
-
 // registerDistanceSensor initializes HCSR04 sensor's pins.
 void registerDistanceSensor(void) {
     pinMode(&PORTB, TRIGGER_PIN, OUTPUT);
     pinMode(&PORTB, ECHO_PIN, INPUT);
 }
 
-// sendSignal function is created to send a trigger signal to an ultrasonic
-// distance sensor. This signal initiates the sensor's distance measurement process.
-void sendSignal() {
+// sendPulse function is created to send a trigger signal to an ultrasonic
+// distance sensor. This signal initiates the sensor's pulse.
+void sendPulse() {
     digitalWrite(&PORTB, TRIGGER_PIN, LOW);
     _delay_us(2);
     // Hold trigger for 10 microseconds, which is signal for sensor to measure distance
