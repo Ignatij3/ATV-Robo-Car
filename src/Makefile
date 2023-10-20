@@ -9,10 +9,12 @@ AVRSIZE := avr-size
 AVRDUDE := avrdude
 
 PROGRAMMER_TYPE := xplainedmini
+PROGRAMMER_ARGS := -v -p$(MCU) -c$(PROGRAMMER_TYPE) -b57600
+
 SOURCES := main.c
-BLDDIR := build
-OBJDIR := obj
-TARGET := $(BLDDIR)/robocar_atv
+BLDDIR  := build
+OBJDIR  := obj
+TARGET  := $(BLDDIR)/robocar_atv
 
 ifeq ($(OS),Windows_NT)
 SOURCES += $(wildcard libs/**/*.c)
@@ -28,16 +30,17 @@ clean:
 	cd $(BLDDIR) && rm -f *.elf *.hex *.map
 	cd $(OBJDIR) && rm -rf ./*
 	rmdir $(BLDDIR) $(OBJDIR)
+
 endif
+
+OBJECTS := $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
+HEADERS := $(SOURCES:.c=.h)
 
 INCL_PATH := $(CURDIR)/libs
 INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/oled -I$(INCL_PATH)/global_constants -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
-PROGRAMMER_ARGS := -v -p$(MCU) -c$(PROGRAMMER_TYPE) -b57600
-OBJECTS = $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
-HEADERS = $(SOURCES:.c=.h)
 
-CPPFLAGS    = -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) $(INCLUDES)
-CFLAGS      = -Os -g -std=gnu99 -Wall
+CPPFLAGS    := -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) $(INCLUDES)
+CFLAGS      := -Os -g -std=gnu99 -Wall
 CFLAGS      += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 # Splits up object files per function
 CFLAGS      += -ffunction-sections -fdata-sections
@@ -74,9 +77,9 @@ flash: $(TARGET).hex
 	$(AVRDUDE) $(PROGRAMMER_ARGS) -Uflash:w:$<:i
 
 # Mega 48, 88, 168, 328 default values
-LFUSE = 0x62
-HFUSE = 0xdf
-EFUSE = 0x00
+LFUSE := 0x62
+HFUSE := 0xDF
+EFUSE := 0x00
 
 # Generic
 FUSE_STRING = -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m
