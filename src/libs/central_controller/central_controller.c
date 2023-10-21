@@ -5,6 +5,7 @@
 #include "../oled/ssd1306.h"
 #include "../serial_communication/serial_communication.h"
 #include "central_controller.h"
+#include "../joystick/joystick.h"
 
 #define MYUBRR(baud) CPU_CLOCK / 16 / baud - 1
 
@@ -20,7 +21,8 @@ void initializeModules(uint8_t minDistance) {
     mode = NONE;
 
     // initialize other modules
-    // SSD1306_Init(OLED_ADDRESS);
+    SSD1306_Init(OLED_ADDRESS);
+    lol();
     initPWMTimers();
     enablePWM();
     initializeEngines();
