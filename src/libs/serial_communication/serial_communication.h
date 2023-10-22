@@ -14,4 +14,4 @@ void writeStringLn(const char *str);
 char readByte(void);
 uint16_t readCount(void);
 
-#endif
+#endif // ATV_SERIAL_COMMUNICATION_SERIAL_COMMUNICATION_H

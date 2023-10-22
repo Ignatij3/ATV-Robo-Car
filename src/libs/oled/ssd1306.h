@@ -29,6 +29,8 @@
 #include "twi.h"
 #include <string.h> // memset function
 
+#define OLED_ADDRESS SSD1306_ADDR // oled display
+
 // Success / Error
 // ------------------------------------------------------------------------------------
 #define SSD1306_SUCCESS 0

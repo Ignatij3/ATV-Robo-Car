@@ -3,4 +3,6 @@ Language: Cpp
 
 IndentWidth: 4
 ColumnLimit: 120
+
 AllowShortFunctionsOnASingleLine: Empty
+AllowShortEnumsOnASingleLine: False

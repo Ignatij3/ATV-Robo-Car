@@ -3,14 +3,14 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-volatile static bool poweredOn = false;
+static volatile bool poweredOn = false;
 
 // captures interrupt from switch pin, switches power to the wheels on or off.
 ISR(PCINT0_vect) {
     // interrupt routine is triggered both on rising and falling edge, to distinguish between those,
     // state variable is introduced, which is toggled every routine execution.
     // buttons state: 1 - released, 0 - pressed
-    volatile static uint8_t state = 1;
+    static volatile uint8_t state = 1;
 
     // toggle power of the car only if button is pressed
     state = !state;
@@ -30,8 +30,7 @@ void setUpInterrupts(void) {
 }
 
 int main(void) {
-    initializeModules(10);
-    setMode(AUTOMATIC);
+    initializeModules(10, AUTOMATIC);
     setUpInterrupts();
     enableCar();
 
@@ -63,7 +62,8 @@ int main(void) {
 
         // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it
         case SLAVE:
-            /* code */
+            updateLinePosition();
+            adjustEnginesSpeed(30);
             break;
 
         // if NONE mode is chosen, the car must halt
