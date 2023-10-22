@@ -142,7 +142,7 @@ static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
 // analogRead reads PWM waveform generator duty cycle length from pin at specified PORT.
 // PORT parameter must be a pointer to the according port register defined in avr/io.h.
 // PORT must represent port at which desired pin exists.
-uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
+uint16_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
     // set the analog reference (high two bits of ADMUX) and select the
     // channel (low 4 bits).  this also sets ADLAR (left-adjust result)
     // to 0 (the default).
