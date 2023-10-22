@@ -1,4 +1,14 @@
-#include "engine_controls.h"
+#include "../engine_controller/engine_controller.h"
+#include "../ino_libs/ino_libs.h"
+#include "central_controller.h"
+#include <stdbool.h>
+
+// _controllerInitEngines initializes engines and PWM timers.
+void _controllerInitEngines(void) {
+    initPWMTimers();
+    enablePWM();
+    initializeEngines();
+}
 
 // enableCar enables cars engines.
 // Function configures engines to run forward.

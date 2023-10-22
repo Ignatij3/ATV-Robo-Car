@@ -1,7 +1,15 @@
-#include "distance_sensor_controls.h"
+#include "../distance_sensor/HCSR04.h"
+#include "../engine_controller/engine_controller.h"
+#include "central_controller.h"
 #include <stdint.h>
 
-extern uint8_t minDist;
+static uint8_t minDist;
+
+// _controllerInitDistanceSensor initializes ultrasonic distance sensor.
+void _controllerInitDistanceSensor(uint8_t minimalDistance) {
+    minDist = minimalDistance;
+    registerDistanceSensor();
+}
 
 // isCollision returns whether vehicle is about to collide with object in front.
 // This is done by comparing closest object distance with minimal tolerable distance.
