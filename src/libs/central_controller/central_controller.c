@@ -9,6 +9,6 @@ void initializeModules(uint8_t minDistance, drivingMode drMode) {
     _controllerInitSerial();
     _controllerInitEngines();
     _controllerInitDistanceSensor(minDistance);
-    _controllerInitIRSensor();
-    _controllerInitOLED();
+    // _controllerInitIRSensor();
+    // _controllerInitOLED();
 }
