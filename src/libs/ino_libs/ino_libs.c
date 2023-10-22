@@ -5,7 +5,6 @@
 #include <avr/cpufunc.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-#include <stdint.h>
 
 #define DDx(port) (port - 0x01)
 #define PINx(port) (port - 0x02)
@@ -96,6 +95,9 @@ void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     }
 }
 
+// writeToTimer sets PWM duty cycle for specific timer provided pin is using.
+// If pin is not on timer, function writes either 1 or 0,
+// depending on which is closer representation.
 static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     switch (pinToTimer(PORT, pin)) {
     case TIMER0A:
