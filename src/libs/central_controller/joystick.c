@@ -4,7 +4,7 @@
 static drivingMode mode;
 
 // _controllerInit initializes on-board joystick.
-void _controllerInitJoystick() {
+void _controllerInitJoystick(void) {
     registerJoystick();
 }
 
@@ -14,6 +14,7 @@ drivingMode readNewMode(void) {
     return changeMode(); // read from joystick
 }
 
+//check when the button on joystick is pressed
 bool joystickPressed(void){
     return pressed();
 }

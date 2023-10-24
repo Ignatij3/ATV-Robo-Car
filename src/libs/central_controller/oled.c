@@ -3,4 +3,5 @@
 
 void _controllerInitOLED(void) {
     SSD1306_Init(OLED_ADDRESS);
+    setDirection_OLED("srg");
 }

@@ -39,7 +39,7 @@ void reverseEngines(void);
 
 // Joystick API and Car's mode control functions
 // ------------------------------------------------------------------------------------
-void _controllerInitJoystick();
+void _controllerInitJoystick(void);
 drivingMode readNewMode(void);
 void setMode(drivingMode drMode);
 drivingMode getMode(void);
@@ -58,5 +58,10 @@ void adjustEnginesSpeed(uint8_t adjustmentFactor);
 // Serial communication wrappers
 // ------------------------------------------------------------------------------------
 void _controllerInitSerial(void);
+
+// Speed sensor API
+// ------------------------------------------------------------------------------------
+void _controllerInitSpeedSensor(void);
+void updateCarSpeed(void);
 
 #endif // ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H

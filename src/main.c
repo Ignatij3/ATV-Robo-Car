@@ -2,7 +2,10 @@
 #include "libs/serial_communication/serial_communication.h"
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include "libs/oled/ssd1306.h"
+#include <time.h>
 
+#define INTERVAL 1
 static volatile bool poweredOn = false;
 
 // captures interrupt from switch pin, switches power to the wheels on or off.
@@ -34,8 +37,17 @@ int main(void) {
     setUpInterrupts();
     setMode(readNewMode());
     enableCar();
+    time_t timeNow = time(NULL), previousTime = 0;  
 
     while (1) {
+        timeNow = time(NULL); //get new time
+        //every second the timer and speed information are updated
+        if (timeNow - previousTime >= INTERVAL){ 
+            previousTime = timeNow;
+            updateCarSpeed();
+            updateTimer();
+        }
+
         // halt while car is turned off
         if (!poweredOn) {
             disableCar();

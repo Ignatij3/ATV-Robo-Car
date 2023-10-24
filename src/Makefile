@@ -36,7 +36,7 @@ OBJECTS := $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
 HEADERS := $(SOURCES:.c=.h)
 
 INCL_PATH := $(CURDIR)/libs
-INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/oled -I$(INCL_PATH)/global_constants -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
+INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/speed_sensor -I$(INCL_PATH)/oled -I$(INCL_PATH)/global_constants -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
 
 CPPFLAGS    := -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) $(INCLUDES)
 CFLAGS      := -Os -g -std=gnu99 -Wall -Wextra -Wdouble-promotion
