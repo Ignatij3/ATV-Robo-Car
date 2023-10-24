@@ -5,7 +5,6 @@
 #include <avr/cpufunc.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-#include <stdint.h>
 
 #define DDx(port) (port - 0x01)
 #define PINx(port) (port - 0x02)
@@ -96,6 +95,9 @@ void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     }
 }
 
+// writeToTimer sets PWM duty cycle for specific timer provided pin is using.
+// If pin is not on timer, function writes either 1 or 0,
+// depending on which is closer representation.
 static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     switch (pinToTimer(PORT, pin)) {
     case TIMER0A:
@@ -142,7 +144,7 @@ static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
 // analogRead reads PWM waveform generator duty cycle length from pin at specified PORT.
 // PORT parameter must be a pointer to the according port register defined in avr/io.h.
 // PORT must represent port at which desired pin exists.
-uint8_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
+uint16_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
     // set the analog reference (high two bits of ADMUX) and select the
     // channel (low 4 bits).  this also sets ADLAR (left-adjust result)
     // to 0 (the default).

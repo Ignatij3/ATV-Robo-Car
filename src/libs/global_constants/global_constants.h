@@ -9,4 +9,4 @@
 #define OLED_ADDRESS SSD1306_ADDR // oled display
 #define SERIAL_BAUD 9600          // communication speed
 
-#endif
+#endif // ATV_GLOBAL_CONSTANTS_GLOBAL_CONSTANTS_H

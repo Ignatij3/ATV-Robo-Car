@@ -1,7 +1,6 @@
 #include "../ino_libs/ino_libs.h"
 #include "serial_communication.h"
 #include <avr/interrupt.h>
-#include <avr/io.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -20,9 +19,9 @@
         varArgs;                                                                                                       \
     })
 
-volatile static uint8_t rx_buffer[RX_BUFFER_SIZE] = {0};
-volatile static uint16_t rx_count = 0;
-volatile static uint8_t uart_tx_busy = 1;
+static volatile uint8_t rx_buffer[RX_BUFFER_SIZE] = {0};
+static volatile uint16_t rx_count = 0;
+static volatile uint8_t uart_tx_busy = 1;
 
 static void enableLED(void);
 static void disableLED(void);
@@ -30,7 +29,7 @@ static char *applyFormat(const char *format, va_list formatArgs);
 static size_t determineBufferSize(const char *format, va_list formatArgs);
 
 ISR(USART_RX_vect) {
-    volatile static uint16_t rx_write_pos = 0;
+    static volatile uint16_t rx_write_pos = 0;
 
     rx_buffer[rx_write_pos] = UDR0;
     rx_count++;
