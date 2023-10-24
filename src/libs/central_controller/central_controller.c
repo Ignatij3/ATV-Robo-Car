@@ -21,13 +21,17 @@ void initializeModules(uint8_t minDistance) {
     mode = NONE;
 
     // initialize other modules
+    registerJoystick();
     SSD1306_Init(OLED_ADDRESS);
-    lol();
     initPWMTimers();
     enablePWM();
     initializeEngines();
     registerDistanceSensor();
     serialInit(MYUBRR(SERIAL_BAUD));
+    while(1){
+    writeByte('f');
+    }
+    lol();
 }
 
 // enableCar enables cars engines.

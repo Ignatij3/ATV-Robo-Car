@@ -7,6 +7,6 @@
 #define MIN_SPEED 0
 #define CPU_CLOCK 16000000UL      // Clock speed
 #define OLED_ADDRESS SSD1306_ADDR // oled display
-#define SERIAL_BAUD 9600          // Serial communication speed
+#define SERIAL_BAUD 9600          // communication speed
 
 #endif
