@@ -30,8 +30,9 @@ void setUpInterrupts(void) {
 }
 
 int main(void) {
-    initializeModules(10, AUTOMATIC);
+    initializeModules(10);
     setUpInterrupts();
+    setMode(readNewMode());
     enableCar();
 
     while (1) {
@@ -43,7 +44,10 @@ int main(void) {
             enableCar();
         }
 
-        setMode(readNewMode());
+        //change driving mode when joystick is pressed
+        if (joystickPressed()){
+            setMode(readNewMode());
+        }
 
         switch (getMode()) {
         // in automatic mode, car drives forward until colliding

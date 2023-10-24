@@ -19,7 +19,7 @@ typedef enum {
 
 // General API
 // ------------------------------------------------------------------------------------
-void initializeModules(uint8_t minDistance, drivingMode drMode);
+void initializeModules(uint8_t minDistance);
 
 // Ultrasonic distance sensor API
 // ------------------------------------------------------------------------------------
@@ -39,10 +39,11 @@ void reverseEngines(void);
 
 // Joystick API and Car's mode control functions
 // ------------------------------------------------------------------------------------
-void _controllerInitJoystick(drivingMode drMode);
+void _controllerInitJoystick();
 drivingMode readNewMode(void);
 void setMode(drivingMode drMode);
 drivingMode getMode(void);
+bool joystickPressed(void);
 
 // OLED screen API
 // ------------------------------------------------------------------------------------
