@@ -5,7 +5,6 @@
 
 // _controllerInitEngines initializes engines and PWM timers.
 void _controllerInitEngines(void) {
-    initPWMTimers();
     enablePWM();
     initializeEngines();
 }

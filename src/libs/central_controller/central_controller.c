@@ -1,3 +1,4 @@
+#include "../ino_libs/ino_libs.h"
 #include "central_controller.h"
 
 // initializeModules performs initialization of structures for the vehicle to operate.
@@ -5,6 +6,11 @@
 // to be able to evade collision, imperatively calculated.
 // The function sets initial vehicle mode to NONE.
 void initializeModules(uint8_t minDistance, drivingMode drMode) {
+    // initialize microcontroller
+    initPWMTimers();
+    initADC();
+
+    // initialize other modules
     _controllerInitJoystick(drMode);
     _controllerInitSerial();
     _controllerInitEngines();
