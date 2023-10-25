@@ -10,6 +10,7 @@
 #define INPUT_PULLUP 2
 
 void initPWMTimers(void);
+void initADC(void);
 void enablePWM(void);
 void disablePWM(void);
 void pinMode(volatile uint8_t *PORT, uint8_t pin, uint8_t mode);

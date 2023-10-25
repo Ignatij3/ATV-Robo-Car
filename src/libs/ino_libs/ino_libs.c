@@ -32,6 +32,15 @@ void initPWMTimers(void) {
     TCCR2A |= _BV(WGM00) | _BV(COM2A1);
 }
 
+// initADC initializes built-in analog-digital converter and sets needed prescaler;
+void initADC(void) {
+    PRR &= ~_BV(PRADC);
+    // enable ADC
+    ADCSRA = _BV(ADEN);
+    // set prescaler = 128
+    ADCSRA |= _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
+}
+
 // enablePWM turns on waveform generators.
 void enablePWM(void) {
     TCCR0B |= _BV(CS01);
