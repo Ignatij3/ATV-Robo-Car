@@ -27,6 +27,7 @@ static void enableLED(void);
 static void disableLED(void);
 static char *applyFormat(const char *format, va_list formatArgs);
 static size_t determineBufferSize(const char *format, va_list formatArgs);
+static uint8_t numPlaces(uint32_t n);
 
 ISR(USART_RX_vect) {
     static volatile uint16_t rx_write_pos = 0;
@@ -53,25 +54,33 @@ void serialInit(uint32_t ubrr) {
 }
 
 // writeBinary prints passed number to serial in its binary representation.
-void writeBinary(uint16_t n) {
-    static char binaryStr[17]; // 16 bits + 1 for null-termination
-    char *p = binaryStr;
+void writeBinary(uint32_t n) {
+    // 32 bits + 1 for null-termination
+    static char binaryStr[33];
 
-    for (int i = 15; i >= 0; i--) {
-        if ((n >> i) & 1) {
-            *p = '1';
-        } else {
-            *p = '0';
-        }
-        p++;
+    for (int8_t i = 31; i >= 0; i--) {
+        binaryStr[i] = '0' + ((n >> i) & 1);
     }
-    *p = '\0';
+
+    binaryStr[32] = '\0';
     writeString(binaryStr);
 }
 
-// writeUint writes passed number to serial.
-void writeUint(uint16_t n) {
-    writeStringF("%u", n);
+// writeUint prints passed number to serial in its decimal representation.
+// It is made to circumvent comiler's potential inability to output numbers with byte-size over 2 bytes.
+void writeUint(uint32_t n) {
+    // 10 decimal places + 1 for null-termination
+    static char decimalStr[11];
+
+    uint8_t places = numPlaces(n);
+
+    for (int8_t i = places - 1; i >= 0; i--) {
+        decimalStr[i] = '0' + n % 10;
+        n /= 10;
+    }
+
+    decimalStr[places] = '\0';
+    writeString(decimalStr);
 }
 
 // writeByte writes single byte via serial interface.
@@ -155,4 +164,15 @@ static char *applyFormat(const char *format, va_list formatArgs) {
 // needed to hold entire resulting string after substituting formatArgs into format.
 static size_t determineBufferSize(const char *format, va_list formatArgs) {
     return vsnprintf(NULL, 0, format, formatArgs);
+}
+
+// numPlaces returns number of decimal places a number has.
+static uint8_t numPlaces(uint32_t n) {
+    uint8_t places = 1;
+    uint32_t comp = 1;
+    while (comp <= n) {
+        comp *= 10;
+        places++;
+    }
+    return places - 1;
 }
