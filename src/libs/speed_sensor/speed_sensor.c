@@ -12,6 +12,8 @@ void registerSpeedSensor(void){
     pinMode(&PORTD, SPEED_SENSOR, INPUT_PULLUP);
 }
 
+//updating the vehicle speed depending on the time taken to overcome the obstacle
+//In case if this time is more than SECOND we assume that the car is not moving
 void updateSpeed(void) {
     // Configure external interrupt 0 (INT0) 
     EICRA |= _BV(ISC01);
@@ -26,6 +28,7 @@ ISR(INT0_vect) {
     static uint32_t startTime;
     static uint8_t firstTrigger = 1;
 
+    // if sensor see the obstacle
     if (firstTrigger) {
         startTime = micros();
         firstTrigger = 0;
@@ -38,7 +41,7 @@ ISR(INT0_vect) {
         //elapseTime = micros()-startTime;
         uint8_t result = (uint8_t)((LENGTH*(uint32_t)1000)/(micros()-startTime));
 
-        setSpeed_OLED(result);
+        setSpeed_OLED(result); //update the screen with new speed
 
         firstTrigger = 1; // Reset for the next measurement
     }
