@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #define NEWLINE "\n\r"
+#define SERIAL_BAUD 9600 // communication speed
 
 void serialInit(uint32_t ubrr);
 void writeUint(uint32_t n);

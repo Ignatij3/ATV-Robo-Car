@@ -1,10 +1,11 @@
-#ifndef SPEED_SENSOR
+#ifndef ATV_SPEED_SENSOR_SPEED_SENSOR_H
+#define ATV_SPEED_SENSOR_SPEED_SENSOR_H
+
+#include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stdio.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
 
 void registerSpeedSensor(void);
-void updateSpeed(void);
+uint8_t getSpeed(void);
 
-#endif
+#endif // ATV_SPEED_SENSOR_SPEED_SENSOR_H

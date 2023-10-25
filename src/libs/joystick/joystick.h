@@ -1,5 +1,6 @@
-#ifndef JOYSTICK
-#define JOYSTICK
+#ifndef ATV_JOYSTICK_JOYSTICK_H
+#define ATV_JOYSTICK_JOYSTICK_H
+
 #include <stdbool.h>
 #include <time.h>
 
@@ -8,5 +9,4 @@ void registerJoystick(void);
 uint8_t mapValue(uint16_t myvalue);
 uint8_t changeMode(void);
 
-#endif
-
+#endif // ATV_JOYSTICK_JOYSTICK_H

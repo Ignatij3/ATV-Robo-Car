@@ -41,6 +41,7 @@ void reverseEngines(void);
 // ------------------------------------------------------------------------------------
 void _controllerInitJoystick(void);
 drivingMode readNewMode(void);
+drivingMode updateMode(void);
 void setMode(drivingMode drMode);
 drivingMode getMode(void);
 bool joystickPressed(void);
@@ -48,6 +49,8 @@ bool joystickPressed(void);
 // OLED screen API
 // ------------------------------------------------------------------------------------
 void _controllerInitOLED(void);
+void updateCarSpeed(void);
+void updateCarTime(void);
 
 // IR reflection sensor API
 // ------------------------------------------------------------------------------------
@@ -62,15 +65,10 @@ void _controllerInitSerial(void);
 // Speed sensor API
 // ------------------------------------------------------------------------------------
 void _controllerInitSpeedSensor(void);
-void updateCarSpeed(void);
 
 // Time library
 // ------------------------------------------------------------------------------------
 uint32_t millis(void);
 uint32_t micros(void);
-
-// Timer API
-// ------------------------------------------------------------------------------------
-void updateCarTime(void);
 
 #endif // ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H

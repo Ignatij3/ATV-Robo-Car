@@ -34,7 +34,7 @@ int main(void) {
     initializeModules(10);
     setUpInterrupts();
     enableCar();
-    setMode(readNewMode());
+    updateMode();
     uint32_t previousTime = 0;
 
     while (1) {
@@ -46,11 +46,11 @@ int main(void) {
             enableCar();
         }
 
-        if (joystickPressed()){
-            setMode(readNewMode());
+        if (joystickPressed()) {
+            updateMode();
         }
-        
-        if (millis() - previousTime > INTERVAL){
+
+        if (millis() - previousTime > INTERVAL) {
             previousTime = millis();
             updateCarSpeed();
             updateCarTime();
@@ -61,20 +61,20 @@ int main(void) {
         // afterwards, it turns around and continues forward
         case AUTOMATIC:
             accelerate(1);
-            // if (isCollisionSoon()) {
-            //     evadeCollision();
-            // }
+            if (isCollisionSoon()) {
+                evadeCollision();
+            }
             break;
 
         // in controlled mode, car receives and executes commands from DualShock PS4 controller
         case CONTROLLED:
-            /* code */
+            /* read commands from serial here */
             break;
 
         // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it
         case SLAVE:
             updateLinePosition();
-            adjustEnginesSpeed(30);
+            adjustEnginesSpeed(30); // 30 - arbitrary constant, subject to change
             break;
 
         // if NONE mode is chosen, the car must halt

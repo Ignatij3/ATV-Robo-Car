@@ -1,5 +1,6 @@
-#include "central_controller.h"
+#include "../engine_controller/engine_controller.h"
 #include "../joystick/joystick.h"
+#include "central_controller.h"
 
 static drivingMode mode;
 
@@ -8,14 +9,27 @@ void _controllerInitJoystick(void) {
     registerJoystick();
 }
 
-// readNewMode reads signal from joystick that is it pushed.
+// updateMode stops car, reads new mode from joystick and resumes driving.
+// updateMode reads signal from joystick that is it pushed.
 // It returns selected driving mode.
-drivingMode readNewMode(void) {
+drivingMode updateMode(void) {
+    uint8_t leftSpeed = getLeftSpeed();
+    uint8_t rightSpeed = getRightSpeed();
+    setSpeed(0, isReverse());
+
+    mode = changeMode();
+
+    setLeftSpeed(leftSpeed, isReverse());
+    setRightSpeed(rightSpeed, isReverse());
+    return mode;
+}
+
+drivingMode getMode(void) {
     return changeMode(); // read from joystick
 }
 
-//check when the button on joystick is pressed
-bool joystickPressed(void){
+// check when the button on joystick is pressed
+bool joystickPressed(void) {
     return pressed();
 }
 
@@ -31,4 +45,3 @@ void setMode(drivingMode newMode) {
 drivingMode getMode(void) {
     return mode;
 }
-

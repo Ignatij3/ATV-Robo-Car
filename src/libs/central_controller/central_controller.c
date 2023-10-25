@@ -15,7 +15,7 @@ void initializeModules(uint8_t minDistance) {
     _controllerInitSerial();
     _controllerInitEngines();
     _controllerInitDistanceSensor(minDistance);
-    // _controllerInitIRSensor();
+    _controllerInitIRSensor();
     _controllerInitOLED();
     _controllerInitJoystick();
     _controllerInitSpeedSensor();
