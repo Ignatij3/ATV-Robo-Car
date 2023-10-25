@@ -27,7 +27,7 @@ void updateCarTime(void) {
     // Write updated seconds in memory
     eeprom_write_byte(&EEPROM_ADDRESS, ++readData);
 
-    setTime_OLED(readData);
+    setTime_OLED(readData); // updates the screen with new time value
 #else
     eeprom_write_byte(&EEPROM_ADDRESS, 0);
     setTime_OLED(49999);
