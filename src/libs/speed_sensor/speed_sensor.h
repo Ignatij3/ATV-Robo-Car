@@ -5,7 +5,6 @@
 #include <avr/interrupt.h>
 
 void registerSpeedSensor(void);
-long long getNanoTime(void);
 void updateSpeed(void);
 
 #endif

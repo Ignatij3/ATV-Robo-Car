@@ -28,6 +28,7 @@
 #include "font6x8.h"
 #include "twi.h"
 #include <string.h> // memset function
+#include <stdio.h>
 
 #define OLED_ADDRESS SSD1306_ADDR // oled display
 
@@ -141,7 +142,7 @@ uint8_t SSD1306_ClearPixel(uint8_t x, uint8_t y);
 uint8_t SSD1306_InvertRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
 uint8_t SSD1306_InvertPixel(uint8_t x, uint8_t y);
 void setDirection_OLED(char *str);
-void setSpeed_OLED(char *str);
+void setSpeed_OLED(uint8_t n);
 void setTime_OLED(char *str);
 void setDistance_OLED(char *str);
 void setPower_OLED(char *str);

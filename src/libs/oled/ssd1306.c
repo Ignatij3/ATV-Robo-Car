@@ -529,7 +529,9 @@ void setDirection_OLED(char *str) {
 // The setSpeed_OLED function is responsible for setting the speed
 // information to be displayed on an OLED screen with unit of measurement(m/s).
 // It ensures that the speed information is correctly positioned and rendered on the screen.
-void setSpeed_OLED(char *str) {
+void setSpeed_OLED(uint8_t n) {
+    char str[4];
+    snprintf(str, 4, "%u", n);
     SSD1306_SetPosition(SPEED_X_COORD, SPEED_Y_COORD);
     int i = 0;
     while (str[i] != '\0') {

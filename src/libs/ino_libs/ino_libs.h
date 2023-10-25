@@ -11,8 +11,6 @@
 
 void initPWMTimers(void);
 void initADC(void);
-uint32_t millis(void);
-uint32_t micros(void);
 void pinMode(volatile uint8_t *PORT, uint8_t pin, uint8_t mode);
 void digitalWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value);

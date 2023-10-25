@@ -64,4 +64,13 @@ void _controllerInitSerial(void);
 void _controllerInitSpeedSensor(void);
 void updateCarSpeed(void);
 
+// Time library
+// ------------------------------------------------------------------------------------
+uint32_t millis(void);
+uint32_t micros(void);
+
+// Timer API
+// ------------------------------------------------------------------------------------
+void updateCarTime(void);
+
 #endif // ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H

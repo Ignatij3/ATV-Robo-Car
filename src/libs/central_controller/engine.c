@@ -1,5 +1,6 @@
 #include "../engine_controller/engine_controller.h"
 #include "../ino_libs/ino_libs.h"
+# include "../oled/ssd1306.h"
 #include "central_controller.h"
 #include <stdbool.h>
 
@@ -11,6 +12,7 @@ void _controllerInitEngines(void) {
 // enableCar enables cars engines.
 // Function configures engines to run forward.
 void enableCar(void) {
+    setPower_OLED("ON");
     setEnginesDirection(true);
     setSpeed(0, false);
 }
@@ -18,6 +20,7 @@ void enableCar(void) {
 // disableCar halts the car, disabling it's engines and setting PWM signal duty rate to 0.
 // To continue driving, call 'enableCar'.
 void disableCar(void) {
+    setPower_OLED("OFF");
     setSpeed(0, false);
     turnOffEngines();
 }
