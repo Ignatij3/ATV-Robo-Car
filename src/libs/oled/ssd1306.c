@@ -516,7 +516,7 @@ uint8_t SSD1306_InvertPixel(uint8_t x, uint8_t y) {
 // It ensures that the direction information is correctly positioned and rendered on the screen.
 void setDirection_OLED(char *str) {
     SSD1306_SetPosition(DIRECTION_X_COORD, DIRECTION_Y_COORD);
-    int i = 0;
+    uint8_t i = 0;
     while (str[i] != '\0') {
         SSD1306_DrawChar(str[i++]);
     }
@@ -529,9 +529,11 @@ void setDirection_OLED(char *str) {
 // The setSpeed_OLED function is responsible for setting the speed
 // information to be displayed on an OLED screen with unit of measurement(m/s).
 // It ensures that the speed information is correctly positioned and rendered on the screen.
-void setSpeed_OLED(char *str) {
+void setSpeed_OLED(uint8_t n) {
+    char str[4];
+    snprintf(str, 4, "%u", n);
     SSD1306_SetPosition(SPEED_X_COORD, SPEED_Y_COORD);
-    int i = 0;
+    uint8_t i = 0;
     while (str[i] != '\0') {
         SSD1306_DrawChar(str[i++]);
     }
@@ -546,9 +548,11 @@ void setSpeed_OLED(char *str) {
 // The setTime_OLED function is responsible for setting the time
 // information to be displayed on an OLED screen with unit of measurement(s).
 // It ensures that the time information is correctly positioned and rendered on the screen.
-void setTime_OLED(char *str) {
+void setTime_OLED(uint16_t n) {
+    char str[6];
+    snprintf(str, 6, "%u", n);
     SSD1306_SetPosition(TIME_X_COORD, TIME_Y_COORD);
-    int i = 0;
+    uint8_t i = 0;
     while (str[i] != '\0') {
         SSD1306_DrawChar(str[i++]);
     }
@@ -565,7 +569,7 @@ void setTime_OLED(char *str) {
 // It ensures that the distance information is correctly positioned and rendered on the screen.
 void setDistance_OLED(char *str) {
     SSD1306_SetPosition(DIRECTION_X_COORD, DISTANCE_Y_COORD);
-    int i = 0;
+    uint8_t i = 0;
     while (str[i] != '\0') {
         SSD1306_DrawChar(str[i++]);
     }
@@ -582,7 +586,7 @@ void setDistance_OLED(char *str) {
 // It ensures that the power information is correctly positioned and rendered on the screen.
 void setPower_OLED(char *str) {
     SSD1306_SetPosition(POWER_X_COORD, POWER_Y_COORD);
-    int i = 0;
+    uint8_t i = 0;
     while (str[i] != '\0') {
         SSD1306_DrawChar(str[i++]);
     }

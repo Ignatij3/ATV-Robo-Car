@@ -1,25 +1,3 @@
-/**
- * -------------------------------------------------------------------------------------+
- * @desc        LCD FONT 6x8
- * -------------------------------------------------------------------------------------+
- * @source      https://github.com/basti79/LCD-fonts/blob/master/6x8_vertikal_LSB_1.h
- *              Copyright (C) 2020 Marian Hrinko.
- *              Written by Marian Hrinko (mato.hrinko@gmail.com)
- *
- * @author      Marian Hrinko
- * @date        08.12.2020
- * @update      08.12.2022
- * @file        font6x8.h
- * @version     1.0
- * @tested      AVR Atmega328p
- *
- * @depend
- * -------------------------------------------------------------------------------------+
- * @descr       LCD pixel fonts
- * -------------------------------------------------------------------------------------+
- * @usage       Display characters
- */
-
 #ifndef __FONT6x8_H__
 #define __FONT6x8_H__
 

@@ -19,7 +19,7 @@ typedef enum {
 
 // General API
 // ------------------------------------------------------------------------------------
-void initializeModules(uint8_t minDistance, drivingMode drMode);
+void initializeModules(uint8_t minDistance);
 
 // Ultrasonic distance sensor API
 // ------------------------------------------------------------------------------------
@@ -39,10 +39,11 @@ void reverseEngines(void);
 
 // Joystick API and Car's mode control functions
 // ------------------------------------------------------------------------------------
-void _controllerInitJoystick(drivingMode drMode);
+void _controllerInitJoystick(void);
 drivingMode readNewMode(void);
 void setMode(drivingMode drMode);
 drivingMode getMode(void);
+bool joystickPressed(void);
 
 // OLED screen API
 // ------------------------------------------------------------------------------------
@@ -57,5 +58,19 @@ void adjustEnginesSpeed(uint8_t adjustmentFactor);
 // Serial communication wrappers
 // ------------------------------------------------------------------------------------
 void _controllerInitSerial(void);
+
+// Speed sensor API
+// ------------------------------------------------------------------------------------
+void _controllerInitSpeedSensor(void);
+void updateCarSpeed(void);
+
+// Time library
+// ------------------------------------------------------------------------------------
+uint32_t millis(void);
+uint32_t micros(void);
+
+// Timer API
+// ------------------------------------------------------------------------------------
+void updateCarTime(void);
 
 #endif // ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H

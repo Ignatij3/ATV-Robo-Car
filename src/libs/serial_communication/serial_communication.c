@@ -10,6 +10,7 @@
 #define CHUNK 16
 #define SERIAL_USAGE_INDICATOR PIND4
 #define RX_BUFFER_SIZE 32
+#define SERIAL_BAUD 9600          // communication speed
 
 // returns variable arguments as a list
 #define COPY_VAR_ARGS(arg)                                                                                             \

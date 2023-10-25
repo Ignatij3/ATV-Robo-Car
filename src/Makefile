@@ -19,7 +19,6 @@ TARGET  := $(BLDDIR)/robocar_atv
 ifeq ($(OS),Windows_NT)
 SOURCES += $(wildcard libs/**/*.c)
 SOURCES += $(wildcard libs/**/**/*.c)
-$(info LIB_C_FILES: $(LIB_C_FILES))
 clean:
 	rm -rf $(OBJDIR)
 	rm -rf $(BLDDIR)
@@ -27,9 +26,9 @@ clean:
 else
 SOURCES += $(shell find libs/ -type f -name '*.c')
 clean:
-	cd $(BLDDIR) && rm -f *.elf *.hex *.map
-	cd $(OBJDIR) && rm -rf ./*
-	rmdir $(BLDDIR) $(OBJDIR)
+	@cd $(BLDDIR) && rm -f *.elf *.hex *.map
+	@cd $(OBJDIR) && rm -rf ./*
+	@rmdir $(BLDDIR) $(OBJDIR)
 
 endif
 
@@ -37,7 +36,7 @@ OBJECTS := $(addprefix $(OBJDIR)/,$(SOURCES:%.c=%.o))
 HEADERS := $(SOURCES:.c=.h)
 
 INCL_PATH := $(CURDIR)/libs
-INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/oled -I$(INCL_PATH)/global_constants -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
+INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/speed_sensor -I$(INCL_PATH)/oled -I$(INCL_PATH)/global_constants -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
 
 CPPFLAGS    := -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) $(INCLUDES)
 CFLAGS      := -Os -g -std=gnu99 -Wall -Wextra -Wdouble-promotion
@@ -52,29 +51,22 @@ TARGET_ARCH := -mmcu=$(MCU)
 all: $(TARGET).hex
 
 $(OBJDIR) $(BLDDIR):
-	mkdir -p "$@"
+	@mkdir -p "$@"
 
 $(OBJECTS): $(OBJDIR)/%.o: %.c | $(OBJDIR)
-	mkdir -p "$(dir $@)"
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+	@mkdir -p "$(dir $@)"
+	@$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
 
 $(TARGET).elf: $(OBJECTS) | $(BLDDIR)
-	$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LDLIBS) -o $@
+	@$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LDLIBS) -o $@
 
 %.hex: %.elf
-	$(OBJCOPY) -j .text -j .data -O ihex $< $@
+	@$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
-.PHONY: all debug clean flash fuses
-
-debug:
-	@echo
-	@echo "Source files:"   $(SOURCES)
-	@echo "Object files:"   $(OBJECTS)
-	@echo "MCU, F_CPU, BAUD:"  $(MCU), $(F_CPU), $(BAUD)
-	@echo	
+.PHONY: all clean flash fuses
 
 flash: $(TARGET).hex
-	$(AVRDUDE) $(PROGRAMMER_ARGS) -Uflash:w:$<:i
+	@$(AVRDUDE) $(PROGRAMMER_ARGS) -Uflash:w:$<:i
 
 # Mega 48, 88, 168, 328 default values
 LFUSE := 0x62
@@ -85,6 +77,6 @@ EFUSE := 0x00
 FUSE_STRING = -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m
 
 fuses: 
-	$(AVRDUDE) $(PROGRAMMER_ARGS) $(FUSE_STRING)
+	@$(AVRDUDE) $(PROGRAMMER_ARGS) $(FUSE_STRING)
 show_fuses:
-	$(AVRDUDE) $(PROGRAMMER_ARGS) -nv
+	@$(AVRDUDE) $(PROGRAMMER_ARGS) -nv

@@ -3,6 +3,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#define INTERVAL 1000 // every second
 static volatile bool poweredOn = false;
 
 // captures interrupt from switch pin, switches power to the wheels on or off.
@@ -30,9 +31,11 @@ void setUpInterrupts(void) {
 }
 
 int main(void) {
-    initializeModules(10, AUTOMATIC);
+    initializeModules(10);
     setUpInterrupts();
     enableCar();
+    setMode(readNewMode());
+    uint32_t previousTime = 0;
 
     while (1) {
         // halt while car is turned off
@@ -43,7 +46,15 @@ int main(void) {
             enableCar();
         }
 
-        setMode(readNewMode());
+        if (joystickPressed()){
+            setMode(readNewMode());
+        }
+        
+        if (millis() - previousTime > INTERVAL){
+            previousTime = millis();
+            updateCarSpeed();
+            updateCarTime();
+        }
 
         switch (getMode()) {
         // in automatic mode, car drives forward until colliding
