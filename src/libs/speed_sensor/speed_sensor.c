@@ -1,8 +1,7 @@
 #include "../ino_libs/ino_libs.h"
 #include "../oled/ssd1306.h"
 #include "speed_sensor.h"
-#include <avr/io.h>
-#include <avr/interrupt.h>
+
 
 #define SPEED_SENSOR PIND3
 
@@ -43,9 +42,11 @@ void updateSpeed(void){
     while (!digitalRead(&PORTD, SPEED_SENSOR)){
     }
     initTimer();
+    uint32_t currentTime = millis();
     while (digitalRead(&PORTD, SPEED_SENSOR)){
-        uint32_t currentTime = millis();
+        
     }
+    uint32_t elapseTime = millis()-currentTime;
     //formula 
     //setSpeed_OLED(formula);
     return;
