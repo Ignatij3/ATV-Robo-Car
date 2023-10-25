@@ -6,7 +6,6 @@
 #define VRY PINC0
 #define SW PIND2
 #define MAXIMUM 1023
-#define UINT8T_MAX 255
 #define ZONE 10 //zone in which the joystick coordinates will be readable
 #define INTERVAL 1
 
@@ -15,10 +14,15 @@ struct Coordinates {
     uint8_t Y;
 };
 
-//the coordinates in which joystick reside in different parts 
-#define RIGHT ((struct Coordinates){0, 128})
-#define UP ((struct Coordinates){128, 255})
-#define DOWN ((struct Coordinates){128, 0})
+#define LOWER 0
+#define CENTER 128
+#define UPPER 255
+
+// the coordinates in which joystick reside in different parts
+#define RIGHT ((struct Coordinates){LOWER, CENTER})
+#define UP ((struct Coordinates){CENTER, UPPER})
+#define LEFT ((struct Coordinates){UPPER, CENTER})
+#define DOWN ((struct Coordinates){CENTER, LOWER})
 
 //check when the button on joystick is pressed
 bool pressed(void){
@@ -27,20 +31,20 @@ bool pressed(void){
 
 //register all pins in joystick
 void registerJoystick(void) {
-    pinMode(&PORTD, SW, INPUT_PULLUP);
-    pinMode(&PORTC, VRX, INPUT_PULLUP);
-    pinMode(&PORTC, VRY, INPUT_PULLUP);
+    pinMode(&PORTD, SW, INPUT);
+    pinMode(&PORTC, VRX, INPUT);
+    pinMode(&PORTC, VRY, INPUT);
 }
 
 //map value, which provide joystick(0-1023) to unit8_t format(0-255)
 uint8_t mapValue(uint16_t myvalue){
-    return myvalue / MAXIMUM * UINT8T_MAX;
+    return (myvalue >> 2);
 }
 
 // This function allows the user to change the operating mode by interacting with a joystick.
 // It continuously monitors the joystick's position and changes the mode based on user input.
 // It returns the mode, which the user has selected
-uint8_t changeMode(){
+uint8_t changeMode(void){
     uint8_t mode = modeMenu_OLED();
     time_t startTime = time(NULL), currentTime = 0; 
     uint8_t xValue = mapValue(analogRead(VRX)), yValue = mapValue(analogRead(VRY));

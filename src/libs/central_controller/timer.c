@@ -1,14 +1,19 @@
 #include <avr/io.h>
 #include <avr/eeprom.h>
+#include "../oled/ssd1306.h"
 
 // EEPROM address for data storage
-uint8_t EEMEM eeprom_address = 0x00;
+#define EEPROM_ADDRESS *((uint8_t*)0x00)
 
 void updateCarTime(void) {
     uint16_t readData;
     // Read how many seconds is saved in memory
-    readData = eeprom_read_byte(&eeprom_address);
+    readData = eeprom_read_byte(&EEPROM_ADDRESS);
 
     // Write updated seconds in memory
-    eeprom_write_byte(&eeprom_address, readData++);
+    eeprom_write_byte(&EEPROM_ADDRESS, ++readData);
+
+    setTime_OLED(readData);
+
+    return;
 }

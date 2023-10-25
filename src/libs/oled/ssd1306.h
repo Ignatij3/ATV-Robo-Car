@@ -143,7 +143,7 @@ uint8_t SSD1306_InvertRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t hei
 uint8_t SSD1306_InvertPixel(uint8_t x, uint8_t y);
 void setDirection_OLED(char *str);
 void setSpeed_OLED(uint8_t n);
-void setTime_OLED(char *str);
+void setTime_OLED(uint16_t n);
 void setDistance_OLED(char *str);
 void setPower_OLED(char *str);
 uint8_t modeMenu_OLED();
