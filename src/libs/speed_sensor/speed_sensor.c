@@ -1,6 +1,8 @@
 #include "../ino_libs/ino_libs.h"
 #include "../oled/ssd1306.h"
 #include "speed_sensor.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
 #define SPEED_SENSOR PIND3
 
@@ -8,46 +10,42 @@ void registerSpeedSensor(void){
     pinMode(&PORTD, SPEED_SENSOR, INPUT_PULLUP);
 }
 
-struct timespec {
-    time_t tv_sec;
-    long tv_nsec;
-};
+volatile uint32_t milliseconds = 0;
 
-#if defined(_WIN64) // Windows
-// #if defined(_WIN32) || defined(_WIN64) // Windows
+// Function to initialize the timer and enable interrupts
+void initTimer() {
+    // Set up timer 0
+    TCCR0B = (1 << CS01);
 
-#include <windows.h>
+    // Enable overflow interrupt
+    TIMSK0 |= (1 << TOIE0);
 
-// Function to get the current time in nanoseconds
-long long getNanoTime() {
-    LARGE_INTEGER time, frequency;
-    QueryPerformanceCounter(&time);
-    QueryPerformanceFrequency(&frequency);
-    return (long long)(time.QuadPart * 1000000000LL / frequency.QuadPart);
+    // Activate interrupts
+    sei();
 }
 
-#else // shiteaters
-
-#include <time.h>
-
-// Function to get the current time in nanoseconds
-long long getNanoTime() {
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    return (long long)(ts.tv_sec * 1000000000LL + ts.tv_nsec);
+// Function to get the current time in milliseconds
+uint32_t millis() {
+    uint32_t ms;
+    cli();
+    ms = milliseconds;
+    sei();
+    return ms;
 }
 
-#endif
+ISR(TIMER0_OVF_vect) {
+    // This gets called every time there is an overflow in the timer register
+    milliseconds += 1; // Increase milliseconds by 1
+}
 
 void updateSpeed(void){
-    long long startTime, endTime, elapsedTime;
+    
     while (!digitalRead(&PORTD, SPEED_SENSOR)){
     }
-    startTime = getNanoTime();
+    initTimer();
     while (digitalRead(&PORTD, SPEED_SENSOR)){
+        uint32_t currentTime = millis();
     }
-    endTime = getNanoTime();
-    elapsedTime = endTime - startTime;
     //formula 
     //setSpeed_OLED(formula);
     return;
