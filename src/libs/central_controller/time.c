@@ -1,5 +1,5 @@
-#include "central_controller.h"
 #include "../global_constants/global_constants.h"
+#include "central_controller.h"
 #include <avr/interrupt.h>
 
 // the prescaler is set so that timer0 ticks every 8 clock cycles, and the overflow handler is called every 256 ticks.
