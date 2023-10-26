@@ -13,7 +13,7 @@ void _controllerInitOLED(void) {
 }
 
 void updateCarSpeed(void) {
-    setSpeed_OLED(getSpeed());
+    setSpeed_OLED(getSensorSpeedReading());
 }
 
 // updateCarTime reads and updates time from persistent memory,

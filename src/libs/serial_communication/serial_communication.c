@@ -2,6 +2,7 @@
 #include "serial_communication.h"
 #include <avr/interrupt.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define CHUNK 16
 #define SERIAL_USAGE_INDICATOR PIND4
