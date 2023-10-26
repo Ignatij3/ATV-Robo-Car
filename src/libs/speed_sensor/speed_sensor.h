@@ -3,9 +3,8 @@
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#include <stdio.h>
 
 void registerSpeedSensor(void);
-uint8_t getSpeed(void);
+uint8_t getSensorSpeedReading(void);
 
 #endif // ATV_SPEED_SENSOR_SPEED_SENSOR_H

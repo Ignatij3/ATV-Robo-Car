@@ -24,10 +24,6 @@ drivingMode updateMode(void) {
     return mode;
 }
 
-drivingMode getMode(void) {
-    return changeMode(); // read from joystick
-}
-
 // check when the button on joystick is pressed
 bool joystickPressed(void) {
     return pressed();

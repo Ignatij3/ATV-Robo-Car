@@ -24,10 +24,6 @@
 #ifndef __SSD1306_H__
 #define __SSD1306_H__
 
-// @includes
-#include "font6x8.h"
-#include "twi.h"
-#include <string.h> // memset function
 #include <stdio.h>
 
 #define OLED_ADDRESS SSD1306_ADDR // oled display

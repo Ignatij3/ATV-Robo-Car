@@ -1,11 +1,7 @@
 #include "../ino_libs/ino_libs.h"
 #include "serial_communication.h"
 #include <avr/interrupt.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #define CHUNK 16
 #define SERIAL_USAGE_INDICATOR PIND4

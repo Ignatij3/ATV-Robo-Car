@@ -1,11 +1,7 @@
 #include "../global_constants/global_constants.h"
-#include "../oled/ssd1306.h"
-#include "../serial_communication/serial_communication.h"
 #include "ino_libs.h"
 #include <avr/cpufunc.h>
 #include <avr/interrupt.h>
-#include <avr/io.h>
-#include <avr/pgmspace.h>
 
 #define DDx(port) (port - 0x01)
 #define PINx(port) (port - 0x02)
@@ -194,14 +190,14 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
     // wait for the pulse to start
     while ((*PINx(PORT) & bit) != stateMask) {
         if (maxloops-- == 0) {
-            return MAX_DISTANCE;
+            return 0;
         }
     }
 
     // wait for the pulse to end
     while ((*PINx(PORT) & bit) == stateMask) {
         if (maxloops-- == 0) {
-            return MAX_DISTANCE;
+            return 0;
         }
         width++;
     }

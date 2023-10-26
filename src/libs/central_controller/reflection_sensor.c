@@ -2,7 +2,6 @@
 #include "../global_constants/global_constants.h"
 #include "../ir_sensor/ir_sensor.h"
 #include "central_controller.h"
-#include <stdint.h>
 
 int8_t deviation;
 

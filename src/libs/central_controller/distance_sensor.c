@@ -1,7 +1,6 @@
 #include "../distance_sensor/HCSR04.h"
 #include "../engine_controller/engine_controller.h"
 #include "central_controller.h"
-#include <stdint.h>
 
 static uint8_t minDist;
 

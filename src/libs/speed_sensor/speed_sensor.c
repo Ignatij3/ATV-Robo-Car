@@ -16,13 +16,13 @@ void registerSpeedSensor(void) {
     setupSensorInterrupts();
 }
 
-uint8_t getSpeed(void) {
+uint8_t getSensorSpeedReading(void) {
     return actualSpeed;
 }
 
 // updating the vehicle speed depending on the time taken to overcome the obstacle
 // In case if this time is more than SECOND we assume that the car is not moving
-void updateSpeed(void) {
+static void setupSensorInterrupts(void) {
     // Configure external interrupt 0 (INT0)
     EICRA |= _BV(ISC01);
     EIMSK |= _BV(INT0);

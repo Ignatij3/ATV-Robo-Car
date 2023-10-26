@@ -1,8 +1,6 @@
 #include "../engine_controller/engine_controller.h"
-#include "../ino_libs/ino_libs.h"
-# include "../oled/ssd1306.h"
+#include "../oled/ssd1306.h"
 #include "central_controller.h"
-#include <stdbool.h>
 
 // _controllerInitEngines initializes engines and PWM timers.
 void _controllerInitEngines(void) {

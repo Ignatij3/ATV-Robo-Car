@@ -7,6 +7,6 @@ void _controllerInitSpeedSensor(void) {
 }
 
 // update the vehicle speed
-void updateCarSpeed(void) {
-    updateSpeed();
+uint8_t getCarSpeedSensor(void) {
+    return getSensorSpeedReading();
 }

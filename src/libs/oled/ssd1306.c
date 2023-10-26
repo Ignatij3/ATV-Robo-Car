@@ -1,5 +1,9 @@
-#include "../global_constants/global_constants.h"
+
+// @includes
+#include "font6x8.h"
 #include "ssd1306.h"
+#include "twi.h"
+#include <string.h> // memset function
 
 // @array Init command
 const uint8_t INIT_SSD1306[] PROGMEM = {

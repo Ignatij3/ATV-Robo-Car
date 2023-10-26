@@ -65,6 +65,7 @@ void _controllerInitSerial(void);
 // Speed sensor API
 // ------------------------------------------------------------------------------------
 void _controllerInitSpeedSensor(void);
+uint8_t getCarSpeedSensor(void);
 
 // Time library
 // ------------------------------------------------------------------------------------

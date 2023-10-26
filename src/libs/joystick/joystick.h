@@ -2,7 +2,6 @@
 #define ATV_JOYSTICK_JOYSTICK_H
 
 #include <stdbool.h>
-#include <time.h>
 
 bool pressed(void);
 void registerJoystick(void);

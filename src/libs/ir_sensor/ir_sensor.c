@@ -1,5 +1,4 @@
 #include "../ino_libs/ino_libs.h"
-#include "../serial_communication/serial_communication.h"
 #include "ir_sensor.h"
 #include <avr/io.h>
 
