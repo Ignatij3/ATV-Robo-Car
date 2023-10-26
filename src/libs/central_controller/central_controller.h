@@ -20,6 +20,7 @@ typedef enum {
 // General API
 // ------------------------------------------------------------------------------------
 void initializeModules(uint8_t minDistance);
+bool isPoweredOn(void);
 
 // Ultrasonic distance sensor API
 // ------------------------------------------------------------------------------------
