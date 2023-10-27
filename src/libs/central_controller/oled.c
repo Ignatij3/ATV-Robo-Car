@@ -1,5 +1,6 @@
 #include "../global_constants/global_constants.h"
 #include "../oled/ssd1306.h"
+#include "../speed_sensor/speed_sensor.h"
 #include "central_controller.h"
 #include <avr/eeprom.h>
 
