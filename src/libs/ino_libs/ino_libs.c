@@ -22,9 +22,9 @@ static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 // initPWMTimers initializes timers 0, 1, 2 for phase Correct PWM signal.
 void initPWMTimers(void) {
     // set up timers
-    TCCR0A |= _BV(WGM00) | _BV(COM0A1);
-    TCCR1A |= _BV(WGM00) | _BV(COM1A1);
-    TCCR2A |= _BV(WGM00) | _BV(COM2A1);
+    TCCR0A |= _BV(WGM00) | _BV(COM0A1) | _BV(COM0B1);
+    // TCCR1A |= _BV(WGM00) | _BV(COM1A1) | _BV(COM1B1);
+    // TCCR2A |= _BV(WGM00) | _BV(COM2A1) | _BV(COM2B1);
 
     // enabling interrupts for all timers
     TIMSK0 |= _BV(TOIE0);
