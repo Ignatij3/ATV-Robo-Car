@@ -43,7 +43,6 @@ void reverseEngines(void);
 void _controllerInitJoystick(void);
 drivingMode readNewMode(void);
 drivingMode updateMode(void);
-void setMode(drivingMode drMode);
 drivingMode getMode(void);
 bool joystickPressed(void);
 

@@ -29,14 +29,6 @@ bool joystickPressed(void) {
     return pressed();
 }
 
-// setMode sets passed driving mode.
-// If driving mode is NONE, setMode wouldn't accept it.
-void setMode(drivingMode newMode) {
-    if (newMode != NONE) {
-        mode = newMode;
-    }
-}
-
 // getMode returns driving mode.
 drivingMode getMode(void) {
     return mode;
