@@ -21,15 +21,15 @@ static carspeed car;
 #define IN1 PINB0
 #define IN2 PINB1
 // left-side motor pins
-#define IN3 PINB2
-#define IN4 PINB3
+#define IN3 PINB3
+#define IN4 PINB2
 // PWM signal pins
 #define ENA PIND6
 #define ENB PIND5
 
 // defining LED turning pins
 #define LEFT_TURN_LED_PIN PIND2
-#define RIGHT_TURN_LED_PIN PIND3
+#define RIGHT_TURN_LED_PIN PIND4
 
 static void forward(void);
 static void backwards(void);
