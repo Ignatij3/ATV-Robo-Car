@@ -1,10 +1,13 @@
 
 // @includes
+#include "../central_controller/central_controller.h"
 #include "font6x8.h"
 #include "ssd1306.h"
 #include "twi.h"
 #include <stdio.h>
 #include <string.h> // memset function
+
+#define str(s) #s
 
 // @array Init command
 const uint8_t INIT_SSD1306[] PROGMEM = {
@@ -613,11 +616,11 @@ uint8_t modeMenu_OLED() {
     SSD1306_SetPosition(0, 0);
     SSD1306_DrawString("SELECT MODE");
     SSD1306_SetPosition(15, 2);
-    SSD1306_DrawString("SLAVE");
+    SSD1306_DrawString(str(SLAVE));
     SSD1306_SetPosition(15, 4);
-    SSD1306_DrawString("AUTONOMIUS");
+    SSD1306_DrawString(str(CONTROLLED));
     SSD1306_SetPosition(15, 6);
-    SSD1306_DrawString("FOLLOWING");
+    SSD1306_DrawString(str(AUTOMATIC));
 
     SSD1306_SetPosition(100, DEFAULT_MODE_POSITION);
     SSD1306_DrawChar('<');
@@ -645,22 +648,16 @@ void infoMenu_OLED() {
 
 // The setMode function is designed to change the operational mode on an OLED screen and
 // return the updated mode value. It clears the previous mode and updates the screen with the latest one.
-// MODES:
-// SLAVE - 1
-// AUTO - 2
-// FOLLOWING - 3
 uint8_t setMode_OLED(uint8_t previous_mode, uint8_t vector) {
     uint8_t current_Mode = previous_mode + vector;
     SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * 2 * previous_mode - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTANGLE);
     SSD1306_SetPosition(100, 2 * previous_mode);
     SSD1306_DrawChar(' ');
     SSD1306_UpdateScreen(OLED_ADDRESS);
-    if (current_Mode == 4) {
-        current_Mode = 1;
-    } else {
-        if (current_Mode == 0) {
-            current_Mode = 3;
-        }
+    if (current_Mode < SLAVE) {
+        current_Mode = SLAVE;
+    } else if (current_Mode > AUTOMATIC) {
+        current_Mode = AUTOMATIC;
     }
     SSD1306_SetPosition(100, 2 * current_Mode);
     SSD1306_DrawChar('<');

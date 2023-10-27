@@ -49,9 +49,7 @@ bool joystickPressed(void);
 // OLED screen API
 // ------------------------------------------------------------------------------------
 void _controllerInitOLED(void);
-void updateCarSpeed(void);
-void updateCarTime(void);
-void updateCarDistance(void);
+void updateCarMetrics(void);
 
 // IR reflection sensor API
 // ------------------------------------------------------------------------------------

@@ -1,12 +1,12 @@
 #include "libs/central_controller/central_controller.h"
 #include <util/delay.h>
 
-#define INTERVAL 1000 // every second
+#define INTERVAL_MS 1000
 
 int main(void) {
     initializeModules(10);
-    enableCar();
     updateMode();
+    enableCar();
     uint32_t previousTime = 0;
 
     while (1) {
@@ -19,13 +19,15 @@ int main(void) {
         }
 
         if (joystickPressed()) {
+            disableCar();
             updateMode();
+            _delay_ms(200);
+            enableCar();
         }
 
-        if (millis() - previousTime > INTERVAL) {
+        if (millis() - previousTime > INTERVAL_MS) {
             previousTime = millis();
-            updateCarSpeed();
-            updateCarTime();
+            updateCarMetrics();
         }
 
         switch (getMode()) {
@@ -33,9 +35,10 @@ int main(void) {
         // afterwards, it turns around and continues forward
         case AUTOMATIC:
             accelerate(1);
-            if (isCollisionSoon()) {
-                evadeCollision();
-            }
+
+            // if (isCollisionSoon()) {
+            //     evadeCollision();
+            // }
             break;
 
         // in controlled mode, car receives and executes commands from DualShock PS4 controller
@@ -45,7 +48,7 @@ int main(void) {
 
         // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it
         case SLAVE:
-            updateLinePosition();
+            // updateLinePosition(); // holds back
             adjustEnginesSpeed(30); // 30 - arbitrary constant, subject to change
             break;
 
