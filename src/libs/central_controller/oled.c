@@ -7,8 +7,6 @@
 
 // EEPROM address for data storage
 #define EEPROM_ADDRESS *((uint8_t *)0x00)
-// oled display address
-#define OLED_ADDRESS SSD1306_ADDR
 
 void _controllerInitOLED(void) {
     SSD1306_Init(OLED_ADDRESS);
