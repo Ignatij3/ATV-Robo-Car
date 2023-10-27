@@ -1,7 +1,8 @@
 #include "libs/central_controller/central_controller.h"
 #include <util/delay.h>
 
-#define INTERVAL_MS 1000
+// update rate of 60Hz
+#define INTERVAL_MS 1000 / 60
 
 int main(void) {
     initializeModules(10);
@@ -21,7 +22,6 @@ int main(void) {
         if (joystickPressed()) {
             disableCar();
             updateMode();
-            _delay_ms(200);
             enableCar();
         }
 

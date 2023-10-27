@@ -51,7 +51,7 @@ uint8_t changeMode(void) {
     uint8_t mode = modeMenu_OLED();
     uint32_t startTime = millis(), currentTime = 0;
     uint8_t xValue = mapValue(analogRead(VRX)), yValue = mapValue(analogRead(VRY));
-    _delay_ms(500);
+
     while (!pressed()) {
         currentTime = millis();
         if (currentTime - startTime >= INTERVAL) {

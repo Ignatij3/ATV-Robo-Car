@@ -9,6 +9,8 @@
 // EEPROM address for data storage
 #define EEPROM_ADDRESS *((uint16_t *)0x00)
 
+#define SECOND 1000
+
 // _controllerInitOLED initializes OLED display
 void _controllerInitOLED(void) {
     SSD1306_Init(OLED_ADDRESS);
@@ -16,24 +18,20 @@ void _controllerInitOLED(void) {
 
 // updateCarMetrics updates information about car on OLED screen
 void updateCarMetrics(void) {
+    static uint16_t lastTimeUpdate = 0;
+
     // update speed reading
     setSpeed_OLED(getSensorSpeedReading());
 
     // update distance reading
     setDistance_OLED(measureDistanceCm());
 
-    // read how many seconds is saved in memory
-    uint16_t secondsRecorded = eeprom_read_word(&EEPROM_ADDRESS);
-
-    // write updated seconds to memory
-#ifndef DEBUG
-    eeprom_write_word(&EEPROM_ADDRESS, ++secondsRecorded);
-#else
-    eeprom_write_word(&EEPROM_ADDRESS, 0);
-#endif // DEBUG
-
-    // update timer
-    setTime_OLED(secondsRecorded);
+    // update time
+    if (millis() - lastTimeUpdate > SECOND) {
+        // read how many seconds is saved in memory and write it back incremented by 1
+        eeprom_write_word(&EEPROM_ADDRESS, eeprom_read_word(&EEPROM_ADDRESS) + 1);
+        setTime_OLED(eeprom_read_word(&EEPROM_ADDRESS));
+    }
 
     // update showed direction
     if (isReverse()) {

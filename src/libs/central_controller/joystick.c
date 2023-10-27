@@ -17,7 +17,12 @@ drivingMode updateMode(void) {
     uint8_t rightSpeed = getRightSpeed();
     setSpeed(0, isReverse());
 
+    // waiting for user to let go of joystick
+    while (joystickPressed()) {
+    }
     mode = changeMode();
+    while (joystickPressed()) {
+    }
 
     setLeftSpeed(leftSpeed, isReverse());
     setRightSpeed(rightSpeed, isReverse());
