@@ -28,6 +28,7 @@ void updateCarMetrics(void) {
 
     // update time
     if (millis() - lastTimeUpdate > SECOND) {
+        lastTimeUpdate = millis();
         // read how many seconds is saved in memory and write it back incremented by 1
         eeprom_write_word(&EEPROM_ADDRESS, eeprom_read_word(&EEPROM_ADDRESS) + 1);
         setTime_OLED(eeprom_read_word(&EEPROM_ADDRESS));

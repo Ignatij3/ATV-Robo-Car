@@ -34,11 +34,11 @@ int main(void) {
         // in automatic mode, car drives forward until colliding
         // afterwards, it turns around and continues forward
         case AUTOMATIC:
-            accelerate(1);
+            accelerate(5);
 
-            // if (isCollisionSoon()) {
-            //     evadeCollision();
-            // }
+            if (isCollisionSoon()) {
+                evadeCollision();
+            }
             break;
 
         // in controlled mode, car receives and executes commands from DualShock PS4 controller

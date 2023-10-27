@@ -81,11 +81,11 @@ void turnOffEngines(void) {
     digitalWrite(&PORTB, IN4, LOW);
 }
 
-// turnLeft stops the car to perform tank turn.
+// tankTurnLeft stops the car to perform tank turn.
 // The function will constantly call cancelFunc until it returns false.
 // Once cancelFunc returns false, the function restores engine torque vector.
 // On function exit, car remains stationary.
-void turnLeft(bool (*cancelFunc)(void)) {
+void tankTurnLeft(bool (*cancelFunc)(void)) {
     setSpeed(MIN_SPEED, car.reverse);
     left();
     bool preserveReverse = car.reverse;
@@ -101,11 +101,11 @@ void turnLeft(bool (*cancelFunc)(void)) {
     setEnginesDirection(car.reverse);
 }
 
-// turnRight stops the car to perform tank turn.
+// tankTurnRight stops the car to perform tank turn.
 // The function will constantly call cancelFunc until it returns false.
 // Once cancelFunc returns false, the function restores engine torque vector.
 // On function exit, car remains stationary.
-void turnRight(bool (*cancelFunc)(void)) {
+void tankTurnRight(bool (*cancelFunc)(void)) {
     setSpeed(MIN_SPEED, car.reverse);
     right();
     bool preserveReverse = car.reverse;

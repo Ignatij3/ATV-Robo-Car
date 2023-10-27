@@ -9,6 +9,5 @@
 #define clockCyclesPerMicrosecond() (CPU_CLOCK / 1000000L)
 #define clockCyclesToMicroseconds(a) ((a) / clockCyclesPerMicrosecond())
 #define microsecondsToClockCycles(a) ((a)*clockCyclesPerMicrosecond())
-#define DEBUG // will persist until code is ready to be shipped
 
 #endif // ATV_GLOBAL_CONSTANTS_GLOBAL_CONSTANTS_H
