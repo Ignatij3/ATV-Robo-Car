@@ -51,6 +51,7 @@ bool joystickPressed(void);
 void _controllerInitOLED(void);
 void updateCarSpeed(void);
 void updateCarTime(void);
+void updateCarDistance(void);
 
 // IR reflection sensor API
 // ------------------------------------------------------------------------------------

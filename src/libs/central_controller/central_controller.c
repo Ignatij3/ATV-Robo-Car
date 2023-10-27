@@ -17,7 +17,6 @@ void initializeModules(uint8_t minDistance) {
     setupPowerSwitchInterrupts();
 
     // initialize other modules
-    _controllerInitJoystick();
     _controllerInitSerial();
     _controllerInitEngines();
     _controllerInitDistanceSensor(minDistance);

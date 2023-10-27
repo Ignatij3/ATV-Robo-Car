@@ -1,3 +1,4 @@
+#include "../distance_sensor/HCSR04.h"
 #include "../global_constants/global_constants.h"
 #include "../oled/ssd1306.h"
 #include "../speed_sensor/speed_sensor.h"
@@ -33,4 +34,9 @@ void updateCarTime(void) {
     eeprom_write_byte(&EEPROM_ADDRESS, 0);
     setTime_OLED(49999);
 #endif // DEBUG
+}
+
+void updateCarDistance(void) {
+    // setDistance_OLED(measureDistanceCm());
+    setDistance_OLED(111);
 }

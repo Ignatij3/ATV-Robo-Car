@@ -3,6 +3,7 @@
 #include "font6x8.h"
 #include "ssd1306.h"
 #include "twi.h"
+#include <stdio.h>
 #include <string.h> // memset function
 
 // @array Init command
@@ -571,8 +572,12 @@ void setTime_OLED(uint16_t n) {
 // The setDistance_OLED function is responsible for setting the distance
 // information to be displayed on an OLED screen with unit of measurement(cm).
 // It ensures that the distance information is correctly positioned and rendered on the screen.
-void setDistance_OLED(char *str) {
+void setDistance_OLED(uint8_t n) {
     SSD1306_SetPosition(DIRECTION_X_COORD, DISTANCE_Y_COORD);
+
+    char str[4]; // max 3 digits + null terminator
+    sprintf(str, "%u", n);
+
     uint8_t i = 0;
     while (str[i] != '\0') {
         SSD1306_DrawChar(str[i++]);
@@ -616,7 +621,7 @@ uint8_t modeMenu_OLED() {
 
     SSD1306_SetPosition(100, DEFAULT_MODE_POSITION);
     SSD1306_DrawChar('<');
-    SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * DEFAULT_MODE_POSITION - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTENGLE);
+    SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * DEFAULT_MODE_POSITION - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTANGLE);
     SSD1306_UpdateScreen(OLED_ADDRESS);
     return 1;
 }
@@ -646,7 +651,7 @@ void infoMenu_OLED() {
 // FOLLOWING - 3
 uint8_t setMode_OLED(uint8_t previous_mode, uint8_t vector) {
     uint8_t current_Mode = previous_mode + vector;
-    SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * 2 * previous_mode - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTENGLE);
+    SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * 2 * previous_mode - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTANGLE);
     SSD1306_SetPosition(100, 2 * previous_mode);
     SSD1306_DrawChar(' ');
     SSD1306_UpdateScreen(OLED_ADDRESS);
@@ -659,7 +664,7 @@ uint8_t setMode_OLED(uint8_t previous_mode, uint8_t vector) {
     }
     SSD1306_SetPosition(100, 2 * current_Mode);
     SSD1306_DrawChar('<');
-    SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * 2 * current_Mode - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTENGLE);
+    SSD1306_InvertRectangle(MIN__X, TEXT_SIZE * 2 * current_Mode - SIZE_OF_INVERSE, MAX__X, HEIGHT_OF_REGTANGLE);
     SSD1306_UpdateScreen(OLED_ADDRESS);
     return current_Mode;
 }

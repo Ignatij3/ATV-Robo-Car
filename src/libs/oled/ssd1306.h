@@ -118,7 +118,7 @@
 #define TEXT_SIZE 8
 #define DEFAULT_MODE_POSITION 2
 #define SIZE_OF_INVERSE 3 // 3pixels from text to the border
-#define HEIGHT_OF_REGTENGLE 14
+#define HEIGHT_OF_REGTANGLE 14
 
 unsigned int _counter;
 uint8_t SSD1306_Init(uint8_t);
@@ -140,7 +140,7 @@ uint8_t SSD1306_InvertPixel(uint8_t x, uint8_t y);
 void setDirection_OLED(char *str);
 void setSpeed_OLED(uint8_t n);
 void setTime_OLED(uint16_t n);
-void setDistance_OLED(char *str);
+void setDistance_OLED(uint8_t n);
 void setPower_OLED(char *str);
 uint8_t modeMenu_OLED();
 void infoMenu_OLED();
