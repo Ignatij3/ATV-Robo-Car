@@ -91,8 +91,9 @@ void tankTurnLeft(bool (*cancelFunc)(void)) {
 
     setLeftTurnSignal(HIGH);
     increaseSpeed(MAX_SPEED);
+    // waiting for function to signal end of turning
     while (cancelFunc()) {
-        // waiting for function to signal end of turning
+        updateCarMetrics();
     }
     decreaseSpeed(MAX_SPEED);
     setLeftTurnSignal(LOW);
@@ -110,8 +111,9 @@ void tankTurnRight(bool (*cancelFunc)(void)) {
 
     setRightTurnSignal(HIGH);
     increaseSpeed(MAX_SPEED);
+    // waiting for function to signal end of turning
     while (cancelFunc()) {
-        // waiting for function to signal end of turning
+        updateCarMetrics();
     }
     decreaseSpeed(MAX_SPEED);
     setRightTurnSignal(LOW);

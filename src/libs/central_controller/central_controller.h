@@ -45,6 +45,7 @@ drivingMode readNewMode(void);
 drivingMode updateMode(void);
 drivingMode getMode(void);
 bool joystickPressed(void);
+bool isChoosingMode(void);
 
 // OLED screen API
 // ------------------------------------------------------------------------------------
@@ -70,5 +71,6 @@ uint8_t getCarSpeedSensor(void);
 // ------------------------------------------------------------------------------------
 uint32_t millis(void);
 uint32_t micros(void);
+uint32_t _updateInternalTimer(void);
 
 #endif // ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H

@@ -1,33 +1,27 @@
 #include "libs/central_controller/central_controller.h"
 #include <util/delay.h>
 
-// update rate of 60Hz
-#define INTERVAL_MS 1000 / 60
-
 int main(void) {
     initializeModules(20);
     updateMode();
     enableCar();
-    uint32_t previousTime = 0;
 
     while (1) {
+        updateCarMetrics();
         // halt while car is turned off
         if (!isPoweredOn()) {
             disableCar();
             while (!isPoweredOn()) {
+                updateCarMetrics();
             }
             enableCar();
         }
 
+        // halt while user chooses driving mode
         if (joystickPressed()) {
             disableCar();
             updateMode();
             enableCar();
-        }
-
-        if (millis() - previousTime > INTERVAL_MS) {
-            previousTime = millis();
-            updateCarMetrics();
         }
 
         switch (getMode()) {

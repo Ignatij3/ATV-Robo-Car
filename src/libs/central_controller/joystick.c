@@ -3,6 +3,7 @@
 #include "central_controller.h"
 
 static drivingMode mode;
+static bool choosingMode;
 
 // _controllerInit initializes on-board joystick.
 void _controllerInitJoystick(void) {
@@ -13,6 +14,7 @@ void _controllerInitJoystick(void) {
 // updateMode reads signal from joystick that is it pushed.
 // It returns selected driving mode.
 drivingMode updateMode(void) {
+    choosingMode = true;
     uint8_t leftSpeed = getLeftSpeed();
     uint8_t rightSpeed = getRightSpeed();
     setSpeed(0, isReverse());
@@ -26,6 +28,7 @@ drivingMode updateMode(void) {
 
     setLeftSpeed(leftSpeed, isReverse());
     setRightSpeed(rightSpeed, isReverse());
+    choosingMode = false;
     return mode;
 }
 
@@ -37,4 +40,9 @@ bool joystickPressed(void) {
 // getMode returns driving mode.
 drivingMode getMode(void) {
     return mode;
+}
+
+// isChoosingMode returns whether user is in process of choosing mode.
+bool isChoosingMode(void) {
+    return choosingMode;
 }
