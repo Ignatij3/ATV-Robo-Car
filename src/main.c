@@ -5,7 +5,7 @@
 #define INTERVAL_MS 1000 / 60
 
 int main(void) {
-    initializeModules(10);
+    initializeModules(20);
     updateMode();
     enableCar();
     uint32_t previousTime = 0;
@@ -34,8 +34,7 @@ int main(void) {
         // in automatic mode, car drives forward until colliding
         // afterwards, it turns around and continues forward
         case AUTOMATIC:
-            accelerate(5);
-
+            accelerate(10);
             if (isCollisionSoon()) {
                 evadeCollision();
             }

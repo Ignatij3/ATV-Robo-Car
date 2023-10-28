@@ -18,7 +18,7 @@ void _controllerInitOLED(void) {
 
 // updateCarMetrics updates information about car on OLED screen
 void updateCarMetrics(void) {
-    static uint16_t lastTimeUpdate = 0;
+    static uint16_t lastTimeUpdate;
 
     // update speed reading
     setSpeed_OLED(getSensorSpeedReading());
@@ -30,7 +30,8 @@ void updateCarMetrics(void) {
     if (millis() - lastTimeUpdate > SECOND) {
         lastTimeUpdate = millis();
         // read how many seconds is saved in memory and write it back incremented by 1
-        eeprom_write_word(&EEPROM_ADDRESS, eeprom_read_word(&EEPROM_ADDRESS) + 1);
+        uint16_t updatedTime = eeprom_read_word(&EEPROM_ADDRESS) + 1;
+        eeprom_write_word(&EEPROM_ADDRESS, updatedTime);
         setTime_OLED(eeprom_read_word(&EEPROM_ADDRESS));
     }
 

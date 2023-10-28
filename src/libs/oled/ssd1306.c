@@ -642,7 +642,7 @@ void infoMenu_OLED() {
     SSD1306_DrawString("Time:");
     SSD1306_SetPosition(0, 6);
     SSD1306_DrawString("Distance:");
-    setPower_OLED("ON");
+    setPower_OLED("OFF");
     SSD1306_UpdateScreen(OLED_ADDRESS);
 }
 

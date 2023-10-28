@@ -18,6 +18,8 @@ bool isCollisionSoon(void) {
 
 // evadeCollision will tank turn clockwise until there is no objects in front of the car.
 void evadeCollision(void) {
-    setSpeed(0, isReverse());
+    uint8_t temp = minDist;
+    minDist = 100;
     tankTurnRight(isCollisionSoon);
+    minDist = temp;
 }

@@ -65,8 +65,8 @@ void initializeEngines(void) {
 
 // setEnginesDirection configures engines to turn either forward or backwards, depending on forward flag.
 // This function must be called first for engines tor.
-void setEnginesDirection(bool isForward) {
-    if (isForward) {
+void setEnginesDirection(bool reverse) {
+    if (!reverse) {
         forward();
     } else {
         backwards();
@@ -86,16 +86,15 @@ void turnOffEngines(void) {
 // Once cancelFunc returns false, the function restores engine torque vector.
 // On function exit, car remains stationary.
 void tankTurnLeft(bool (*cancelFunc)(void)) {
-    setSpeed(MIN_SPEED, car.reverse);
+    decreaseSpeed(MAX_SPEED);
     left();
-    bool preserveReverse = car.reverse;
 
     setLeftTurnSignal(HIGH);
-    setSpeed(MAX_SPEED, true);
+    increaseSpeed(MAX_SPEED);
     while (cancelFunc()) {
         // waiting for function to signal end of turning
     }
-    setSpeed(MIN_SPEED, preserveReverse);
+    decreaseSpeed(MAX_SPEED);
     setLeftTurnSignal(LOW);
 
     setEnginesDirection(car.reverse);
@@ -106,16 +105,15 @@ void tankTurnLeft(bool (*cancelFunc)(void)) {
 // Once cancelFunc returns false, the function restores engine torque vector.
 // On function exit, car remains stationary.
 void tankTurnRight(bool (*cancelFunc)(void)) {
-    setSpeed(MIN_SPEED, car.reverse);
+    decreaseSpeed(MAX_SPEED);
     right();
-    bool preserveReverse = car.reverse;
 
     setRightTurnSignal(HIGH);
-    setSpeed(MAX_SPEED, true);
+    increaseSpeed(MAX_SPEED);
     while (cancelFunc()) {
         // waiting for function to signal end of turning
     }
-    setSpeed(MIN_SPEED, preserveReverse);
+    decreaseSpeed(MAX_SPEED);
     setRightTurnSignal(LOW);
 
     setEnginesDirection(car.reverse);
@@ -149,6 +147,7 @@ static void setSpeedEngines(bool reverse) {
         car.reverse = reverse;
         setEnginesDirection(car.reverse);
     }
+    enableTurnSignals();
     setDutyCycle();
 }
 
@@ -221,7 +220,6 @@ bool isReverse(void) {
 static void setDutyCycle(void) {
     analogWrite(&PORTD, ENA, car.leftSpeed);
     analogWrite(&PORTD, ENB, car.rightSpeed);
-    enableTurnSignals();
 }
 
 // forward configures engines to turn forward.
@@ -242,18 +240,18 @@ static void backwards(void) {
 
 // left configures left engines to turn backwards and right engines to turn forward.
 static void left(void) {
-    digitalWrite(&PORTB, IN1, LOW);
-    digitalWrite(&PORTB, IN2, HIGH);
-    digitalWrite(&PORTB, IN3, HIGH);
-    digitalWrite(&PORTB, IN4, LOW);
-}
-
-// right configures left engines to turn forward and right engines to turn backwards.
-static void right(void) {
     digitalWrite(&PORTB, IN1, HIGH);
     digitalWrite(&PORTB, IN2, LOW);
     digitalWrite(&PORTB, IN3, LOW);
     digitalWrite(&PORTB, IN4, HIGH);
+}
+
+// right configures left engines to turn forward and right engines to turn backwards.
+static void right(void) {
+    digitalWrite(&PORTB, IN1, LOW);
+    digitalWrite(&PORTB, IN2, HIGH);
+    digitalWrite(&PORTB, IN3, HIGH);
+    digitalWrite(&PORTB, IN4, LOW);
 }
 
 // enableTurnSignal will turn on appropriate turn signal if the car engines' speed is not matching.
