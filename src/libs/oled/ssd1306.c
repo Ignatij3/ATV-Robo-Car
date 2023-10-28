@@ -633,6 +633,7 @@ uint8_t modeMenu_OLED() {
 // It presents information related to various parameters such as direction, speed, time, distance and power.
 void infoMenu_OLED() {
     SSD1306_ClearScreen();
+    // do not set position to 0,8 - results in overwrite of poweredOn variable (for some reason?)
     SSD1306_SetPosition(0, 0);
     SSD1306_DrawString("Direction:");
     SSD1306_SetPosition(0, 2);
@@ -641,8 +642,7 @@ void infoMenu_OLED() {
     SSD1306_DrawString("Time:");
     SSD1306_SetPosition(0, 6);
     SSD1306_DrawString("Distance:");
-    SSD1306_SetPosition(0, 8);
-    SSD1306_DrawString("ON");
+    setPower_OLED("ON");
     SSD1306_UpdateScreen(OLED_ADDRESS);
 }
 
