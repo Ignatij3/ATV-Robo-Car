@@ -11,7 +11,7 @@ void _controllerInitEngines(void) {
 // Function configures engines to run forward.
 void enableCar(void) {
     setPower_OLED("ON");
-    setEnginesDirection(true);
+    setEnginesDirection(false);
     setSpeed(0, false);
 }
 
