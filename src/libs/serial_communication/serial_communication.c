@@ -138,6 +138,42 @@ char readByte(void) {
     disableLED();
 }
 
+// readNBytes reads specified number of bytes into str.
+void readNBytes(uint16_t n, char *str) {
+    while (n > 0) {
+        str = readByte();
+        str++;
+        n--;
+    }
+    str = '\0';
+}
+
+// readLine will read to str until encountering `\r\n`.
+// '\n\r` is not considered as newline.
+void readLine(char *str) {
+    while (1) {
+        str = readByte();
+        str++;
+        if (*(str - 1) == '\r') {
+            str = readByte();
+            str++;
+            if (*(str - 1) == '\n') {
+                break;
+            }
+        }
+    }
+    str = '\0';
+}
+
+// readUntil will read to str until encountering c.
+void readUntil(const char c, char *str) {
+    do {
+        str = readByte();
+        str++;
+    } while (*(str - 1) != c);
+    str = '\0';
+}
+
 // enableLED lights up serial usage indicator LED.
 static void enableLED(void) {
     digitalWrite(&PORTD, SERIAL_USAGE_INDICATOR, HIGH);
