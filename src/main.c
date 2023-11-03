@@ -28,7 +28,7 @@ int main(void) {
         // in automatic mode, car drives forward until colliding
         // afterwards, it turns around and continues forward
         case AUTOMATIC:
-            accelerate(10);
+            accelerate(20);
             if (isCollisionSoon()) {
                 evadeCollision();
             }
@@ -36,7 +36,7 @@ int main(void) {
 
         // in controlled mode, car receives and executes commands from DualShock PS4 controller
         case CONTROLLED:
-            /* read commands from serial here */
+            readAndSetMovementVector();
             break;
 
         // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it

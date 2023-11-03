@@ -138,8 +138,8 @@ char readByte(void) {
     disableLED();
 }
 
-// readNBytes reads specified number of bytes into str.
-void readNBytes(uint16_t n, char *str) {
+// readNBytes reads n+1 bytes into str, with addition of null-terminator.
+void readNBytes(char *str, uint16_t n) {
     while (n > 0) {
         str = readByte();
         str++;
@@ -148,7 +148,7 @@ void readNBytes(uint16_t n, char *str) {
     str = '\0';
 }
 
-// readLine will read to str until encountering `\r\n`.
+// readLine will read to str until encountering `\r\n`, at the end it appends null-terminator.
 // '\n\r` is not considered as newline.
 void readLine(char *str) {
     while (1) {

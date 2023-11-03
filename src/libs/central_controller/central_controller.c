@@ -18,6 +18,7 @@ void initializeModules(uint8_t minDistance) {
 
     // initialize other modules
     _controllerInitSerial();
+    _controllerPairWithESP();
     _controllerInitEngines();
     _controllerInitDistanceSensor(minDistance);
     _controllerInitIRSensor();

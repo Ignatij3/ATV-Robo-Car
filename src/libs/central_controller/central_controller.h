@@ -47,6 +47,11 @@ drivingMode getMode(void);
 bool joystickPressed(void);
 bool isChoosingMode(void);
 
+// Communication with bluetooth module
+// ------------------------------------------------------------------------------------
+void _controllerPairWithBluetooth(void);
+void readAndSetMovementVector(void);
+
 // OLED screen API
 // ------------------------------------------------------------------------------------
 void _controllerInitOLED(void);

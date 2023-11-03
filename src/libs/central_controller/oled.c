@@ -1,6 +1,5 @@
 #include "../distance_sensor/HCSR04.h"
 #include "../engine_controller/engine_controller.h"
-#include "../global_constants/global_constants.h"
 #include "../oled/ssd1306.h"
 #include "../speed_sensor/speed_sensor.h"
 #include "central_controller.h"

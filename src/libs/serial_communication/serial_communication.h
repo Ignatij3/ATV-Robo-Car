@@ -13,7 +13,7 @@ void writeString(const char *str);
 void writeStringF(const char *format, ...);
 void writeStringLn(const char *str);
 char readByte(void);
-void readNBytes(uint16_t n, char *str);
+void readNBytes(char *str, uint16_t n);
 void readLine(char *str);
 void readUntil(const char c, char *str);
 uint16_t readCount(void);

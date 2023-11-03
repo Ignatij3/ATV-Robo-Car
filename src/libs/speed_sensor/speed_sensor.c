@@ -1,6 +1,8 @@
 #include "../central_controller/central_controller.h"
 #include "../ino_libs/ino_libs.h"
 #include "speed_sensor.h"
+#include <avr/interrupt.h>
+#include <avr/io.h>
 
 #define SPEED_SENSOR PIND3
 #define SECOND 1000000 // hw many microseconds are in second

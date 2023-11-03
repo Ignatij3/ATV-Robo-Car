@@ -1,5 +1,3 @@
-#include "../global_constants/global_constants.h"
-#include "../oled/ssd1306.h"
 #include "central_controller.h"
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
