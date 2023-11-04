@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
 #define CHUNK 16
-#define SERIAL_USAGE_INDICATOR PIND4
-#define RX_BUFFER_SIZE 32
+// #define SERIAL_USAGE_INDICATOR PIND4
+#define RX_BUFFER_SIZE 64
 
 // returns variable arguments as a list
 #define COPY_VAR_ARGS(arg)                                                                                             \
@@ -27,7 +27,7 @@ static size_t determineBufferSize(const char *format, va_list formatArgs);
 static uint8_t numPlaces(uint32_t n);
 
 ISR(USART_RX_vect) {
-    static volatile uint16_t rx_write_pos = 0;
+    static volatile uint8_t rx_write_pos = 0;
 
     rx_buffer[rx_write_pos] = UDR0;
     rx_count++;
@@ -48,6 +48,8 @@ void serialInit(uint32_t ubrr) {
 
     UCSR0B |= _BV(TXEN0) | _BV(RXEN0) | _BV(TXCIE0) | _BV(RXCIE0);
     sei();
+
+    // pinMode(&PIND, SERIAL_USAGE_INDICATOR, OUTPUT);
 }
 
 // writeBinary prints passed number to serial in its binary representation.
@@ -134,54 +136,55 @@ char readByte(void) {
     if (rx_read_pos >= RX_BUFFER_SIZE) {
         rx_read_pos = 0;
     }
-    return data;
+
     disableLED();
+    return data;
 }
 
 // readNBytes reads n+1 bytes into str, with addition of null-terminator.
 void readNBytes(char *str, uint16_t n) {
     while (n > 0) {
-        str = readByte();
+        *str = readByte();
         str++;
         n--;
     }
-    str = '\0';
+    *str = '\0';
 }
 
 // readLine will read to str until encountering `\r\n`, at the end it appends null-terminator.
 // '\n\r` is not considered as newline.
 void readLine(char *str) {
     while (1) {
-        str = readByte();
+        *str = readByte();
         str++;
         if (*(str - 1) == '\r') {
-            str = readByte();
+            *str = readByte();
             str++;
             if (*(str - 1) == '\n') {
                 break;
             }
         }
     }
-    str = '\0';
+    *str = '\0';
 }
 
 // readUntil will read to str until encountering c.
 void readUntil(const char c, char *str) {
     do {
-        str = readByte();
+        *str = readByte();
         str++;
     } while (*(str - 1) != c);
-    str = '\0';
+    *str = '\0';
 }
 
 // enableLED lights up serial usage indicator LED.
 static void enableLED(void) {
-    digitalWrite(&PORTD, SERIAL_USAGE_INDICATOR, HIGH);
+    // digitalWrite(&PORTD, SERIAL_USAGE_INDICATOR, HIGH);
 }
 
 // disableLED disables serial usage indicator LED.
 static void disableLED(void) {
-    digitalWrite(&PORTD, SERIAL_USAGE_INDICATOR, LOW);
+    // digitalWrite(&PORTD, SERIAL_USAGE_INDICATOR, LOW);
 }
 
 // applyFormat returns string with format variables inserted into the string.

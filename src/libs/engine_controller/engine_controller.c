@@ -1,3 +1,4 @@
+#include "../central_controller/central_controller.h"
 #include "../global_constants/global_constants.h"
 #include "../ino_libs/ino_libs.h"
 #include "engine_controller.h"
@@ -11,25 +12,18 @@ typedef struct {
 
 static carspeed car;
 
-// IN1/IN3	  IN2/IN4	Spinning Direction
-// Low(0)	  Low(0)	Motor OFF
-// High(1)	  Low(0)	Forward
-// Low(0)	  High(1)	Backward
-// High(1)	  High(1)	Motor OFF
+//  IN1	  IN2	driving direction
+//    0	    0	backwards
+//    0	    1	right
+//    1	    0	left
+//    1	    1	forward
 
-// right-side motor pins
-#define IN1 PINB0
-#define IN2 PINB1
-// left-side motor pins
-#define IN3 PINB3
-#define IN4 PINB2
+// motor pins
+#define IN1 PINC3
+#define IN2 PINC2
 // PWM signal pins
 #define ENA PIND6
 #define ENB PIND5
-
-// defining LED turning pins
-#define LEFT_TURN_LED_PIN PIND2
-#define RIGHT_TURN_LED_PIN PIND4
 
 static void forward(void);
 static void backwards(void);
@@ -37,20 +31,12 @@ static void left(void);
 static void right(void);
 static void setDutyCycle(void);
 static void setSpeedEngines(bool reverse);
-static void enableTurnSignals(void);
-static void setLeftTurnSignal(uint8_t power);
-static void setRightTurnSignal(uint8_t power);
 
 // initializeEngines sets up input and enable pins.
 // After setting up, the function makes sure engines do not move.
 void initializeEngines(void) {
-    pinMode(&PORTD, LEFT_TURN_LED_PIN, OUTPUT);
-    pinMode(&PORTD, RIGHT_TURN_LED_PIN, OUTPUT);
-
-    pinMode(&PORTB, IN1, OUTPUT);
-    pinMode(&PORTB, IN2, OUTPUT);
-    pinMode(&PORTB, IN3, OUTPUT);
-    pinMode(&PORTB, IN4, OUTPUT);
+    pinMode(&PORTC, IN1, OUTPUT);
+    pinMode(&PORTC, IN2, OUTPUT);
 
     pinMode(&PORTD, ENA, OUTPUT);
     pinMode(&PORTD, ENB, OUTPUT);
@@ -75,10 +61,8 @@ void setEnginesDirection(bool reverse) {
 
 // turnOffEngines configures engines to not turn even if power is applied.
 void turnOffEngines(void) {
-    digitalWrite(&PORTB, IN1, LOW);
-    digitalWrite(&PORTB, IN2, LOW);
-    digitalWrite(&PORTB, IN3, LOW);
-    digitalWrite(&PORTB, IN4, LOW);
+    analogWrite(&PORTD, ENA, MIN_SPEED);
+    analogWrite(&PORTD, ENB, MIN_SPEED);
 }
 
 // tankTurnLeft stops the car to perform tank turn.
@@ -89,14 +73,12 @@ void tankTurnLeft(bool (*cancelFunc)(void)) {
     decreaseSpeed(MAX_SPEED);
     left();
 
-    setLeftTurnSignal(HIGH);
     increaseSpeed(MAX_SPEED);
     // waiting for function to signal end of turning
     while (cancelFunc()) {
         updateCarMetrics();
     }
     decreaseSpeed(MAX_SPEED);
-    setLeftTurnSignal(LOW);
 
     setEnginesDirection(car.reverse);
 }
@@ -109,14 +91,12 @@ void tankTurnRight(bool (*cancelFunc)(void)) {
     decreaseSpeed(MAX_SPEED);
     right();
 
-    setRightTurnSignal(HIGH);
     increaseSpeed(MAX_SPEED);
     // waiting for function to signal end of turning
     while (cancelFunc()) {
         updateCarMetrics();
     }
     decreaseSpeed(MAX_SPEED);
-    setRightTurnSignal(LOW);
 
     setEnginesDirection(car.reverse);
 }
@@ -149,7 +129,6 @@ static void setSpeedEngines(bool reverse) {
         car.reverse = reverse;
         setEnginesDirection(car.reverse);
     }
-    enableTurnSignals();
     setDutyCycle();
 }
 
@@ -226,59 +205,24 @@ static void setDutyCycle(void) {
 
 // forward configures engines to turn forward.
 static void forward(void) {
-    digitalWrite(&PORTB, IN1, HIGH);
-    digitalWrite(&PORTB, IN2, LOW);
-    digitalWrite(&PORTB, IN3, HIGH);
-    digitalWrite(&PORTB, IN4, LOW);
+    digitalWrite(&PORTC, IN1, HIGH);
+    digitalWrite(&PORTC, IN2, HIGH);
 }
 
 // backwards configures engines to turn backwards.
 static void backwards(void) {
-    digitalWrite(&PORTB, IN1, LOW);
-    digitalWrite(&PORTB, IN2, HIGH);
-    digitalWrite(&PORTB, IN3, LOW);
-    digitalWrite(&PORTB, IN4, HIGH);
+    digitalWrite(&PORTC, IN1, LOW);
+    digitalWrite(&PORTC, IN2, LOW);
 }
 
 // left configures left engines to turn backwards and right engines to turn forward.
 static void left(void) {
-    digitalWrite(&PORTB, IN1, HIGH);
-    digitalWrite(&PORTB, IN2, LOW);
-    digitalWrite(&PORTB, IN3, LOW);
-    digitalWrite(&PORTB, IN4, HIGH);
+    digitalWrite(&PORTC, IN1, HIGH);
+    digitalWrite(&PORTC, IN2, LOW);
 }
 
 // right configures left engines to turn forward and right engines to turn backwards.
 static void right(void) {
-    digitalWrite(&PORTB, IN1, LOW);
-    digitalWrite(&PORTB, IN2, HIGH);
-    digitalWrite(&PORTB, IN3, HIGH);
-    digitalWrite(&PORTB, IN4, LOW);
-}
-
-// enableTurnSignal will turn on appropriate turn signal if the car engines' speed is not matching.
-// The function will turn off turn signals if the car engines' speed is matching.
-static void enableTurnSignals(void) {
-    if (car.leftSpeed < car.rightSpeed) {
-        setLeftTurnSignal(HIGH);
-        setRightTurnSignal(LOW);
-    } else if (car.leftSpeed > car.rightSpeed) {
-        setRightTurnSignal(HIGH);
-        setLeftTurnSignal(LOW);
-    } else {
-        setRightTurnSignal(LOW);
-        setLeftTurnSignal(LOW);
-    }
-}
-
-// setLeftTurnSignal will either turn ON or OFF left turning signal.
-// User should pass either HIGH or LOW to avoid possible bugs.
-static void setLeftTurnSignal(uint8_t power) {
-    digitalWrite(&PORTD, LEFT_TURN_LED_PIN, power);
-}
-
-// setLeftTurnSignal will either turn ON or OFF right turning signal.
-// User should pass either HIGH or LOW to avoid possible bugs.
-static void setRightTurnSignal(uint8_t power) {
-    digitalWrite(&PORTD, RIGHT_TURN_LED_PIN, power);
+    digitalWrite(&PORTC, IN1, LOW);
+    digitalWrite(&PORTC, IN2, HIGH);
 }

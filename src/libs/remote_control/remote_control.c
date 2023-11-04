@@ -1,5 +1,6 @@
 #include "../serial_communication/serial_communication.h"
 #include "remote_control.h"
+#include <string.h>
 
 typedef struct {
     uint8_t a;
@@ -14,8 +15,8 @@ static volatile moveVector vec;
 bool pairWithModule(void) {
     writeString("init");
     char answer[9];
-    readNBytes(&answer, 8);
-    return answer == "conndone";
+    readNBytes(&answer[0], 8);
+    return strcmp(answer, "conndone") == 0;
 }
 
 // readMovementVector will wait data, containing information about vector of movement.

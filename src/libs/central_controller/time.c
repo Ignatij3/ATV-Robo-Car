@@ -1,3 +1,4 @@
+#include "../global_constants/global_constants.h"
 #include "central_controller.h"
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>

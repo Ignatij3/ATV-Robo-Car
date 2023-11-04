@@ -14,7 +14,9 @@ void _controllerInitIRSensor(void) {
 // It returns the said position.
 linePosition updateLinePosition(void) {
     deviation = updateIRReadings();
-    if (deviation > 0) {
+    if (deviation == UNKNOWN) {
+        return UNKNOWN;
+    } else if (deviation > 0) {
         return RIGHT;
     } else if (deviation < 0) {
         return LEFT;
@@ -25,7 +27,7 @@ linePosition updateLinePosition(void) {
 // adjustEnginesSpeed adjusts each side's engine speed to turn the Car in direction of the line.
 // Resulting engine power difference is adjustmentFactor multiplied by deviation factor.
 void adjustEnginesSpeed(uint8_t adjustmentFactor) {
-    if (deviation == 0) {
+    if (deviation == 0 || deviation == UNKNOWN) {
         return;
     }
 

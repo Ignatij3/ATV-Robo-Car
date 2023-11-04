@@ -1,6 +1,8 @@
 #ifndef ATV_SPEED_SENSOR_SPEED_SENSOR_H
 #define ATV_SPEED_SENSOR_SPEED_SENSOR_H
 
+#include <stdint.h>
+
 void registerSpeedSensor(void);
 uint8_t getSensorSpeedReading(void);
 

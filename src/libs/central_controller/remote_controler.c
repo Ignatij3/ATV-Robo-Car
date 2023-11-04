@@ -4,7 +4,7 @@
 
 // _controllerPairWithBluetooth will try to pair with remote controller communication device.
 void _controllerPairWithBluetooth(void) {
-    while (!pairWithESP())
+    while (!pairWithModule())
         ;
 }
 

@@ -2,16 +2,17 @@
 #include "ir_sensor.h"
 #include <avr/io.h>
 
-#define SENSOR_AMOUNT 2
+#define SENSOR_AMOUNT 3
 #define LEFTMOST_IR 0
 #define RIGHTMOST_IR SENSOR_AMOUNT - 1
 
-#define IR_LEFT_FIRST PINC2
-#define IR_RIGHT_FIRST PINC1
+#define IR_LEFT_FIRST PINB2
+#define IR_CENTER PINB1
+#define IR_RIGHT_FIRST PINB0
 
 // sensorLookup is an array containing information about physical sensor location.
 // Sensors are arranged so leftmost will be first and rightmost will be last.
-static const uint8_t sensorLookup[SENSOR_AMOUNT] = {IR_LEFT_FIRST, IR_RIGHT_FIRST};
+static const uint8_t sensorLookup[SENSOR_AMOUNT] = {IR_LEFT_FIRST, IR_CENTER, IR_RIGHT_FIRST};
 
 static uint8_t calculateDeviation(uint8_t sensorArray);
 static uint8_t findClosestFiredSensor(uint8_t sensorArray, uint8_t lastSensorArr);
@@ -19,7 +20,7 @@ static uint8_t findClosestFiredSensor(uint8_t sensorArray, uint8_t lastSensorArr
 // initializeIR initialises IR sensors.
 void initializeIR(void) {
     for (uint8_t sensor = 0; sensor < SENSOR_AMOUNT; sensor++) {
-        pinMode(&PORTC, sensorLookup[sensor], INPUT);
+        pinMode(&PORTB, sensorLookup[sensor], INPUT);
     }
 }
 
@@ -38,18 +39,19 @@ int8_t updateIRReadings(void) {
     sensorArray = 0;
 
     for (uint8_t sensor = 0; sensor < SENSOR_AMOUNT; sensor++) {
-        sensorArray |= !digitalRead(&PORTC, sensorLookup[sensor]) << sensor;
+        sensorArray |= !digitalRead(&PORTB, sensorLookup[sensor]) << sensor;
     }
 
     // exactly one sensor saw the line
-    if (!(sensorArray & (sensorArray - 1))) {
+    if (sensorArray && !(sensorArray & (sensorArray - 1))) {
         deviation = calculateDeviation(sensorArray);
-        return deviation;
     }
 
     // none of the sensors saw the line
     if (sensorArray == 0) {
-        if (lastSensorArr && _BV(LEFTMOST_IR)) {
+        if (sensorArray == lastSensorArr) {
+            deviation = UNKNOWN;
+        } else if (lastSensorArr && _BV(LEFTMOST_IR)) {
             deviation = LINE_TOO_FAR_LEFT;
 
         } else if (lastSensorArr && _BV(RIGHTMOST_IR)) {
@@ -63,8 +65,13 @@ int8_t updateIRReadings(void) {
         }
     }
 
-    // more than one sensor saw the line
-    if (sensorArray & (sensorArray - 1)) {
+    // all sensors saw the line
+    if (sensorArray == _BV(SENSOR_AMOUNT) - 1) {
+        deviation = ALL;
+
+    } else if (sensorArray & (sensorArray - 1)) {
+        // more than one sensor saw the line
+
         // both sensors are in center
         if (SENSOR_AMOUNT % 2 == 0 &&
             (sensorArray & _BV(SENSOR_AMOUNT / 2 - 1) && sensorArray & _BV(SENSOR_AMOUNT / 2 + 1))) {
