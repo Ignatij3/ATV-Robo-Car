@@ -50,13 +50,13 @@ uint8_t mapValue(uint16_t myvalue) {
 uint8_t changeMode(void) {
     uint8_t mode = modeMenu_OLED();
     uint32_t startTime = millis(), currentTime = 0;
-    uint8_t xValue = mapValue(analogRead(VRX)), yValue = mapValue(analogRead(VRY));
+    uint8_t xValue = mapValue(analogRead(&PORTC, VRX)), yValue = mapValue(analogRead(&PORTC, VRY));
 
     while (!pressed()) {
         currentTime = millis();
         if (currentTime - startTime >= INTERVAL) {
             startTime = currentTime;
-            xValue = mapValue(analogRead(VRX)), yValue = mapValue(analogRead(VRY));
+            xValue = mapValue(analogRead(&PORTC, VRX)), yValue = mapValue(analogRead(&PORTC, VRY));
             if (UP.X + ZONE > xValue && UP.X - ZONE < xValue && UP.Y + ZONE > yValue && UP.Y - ZONE < yValue) {
                 mode = setMode_OLED(mode, 1);
             } else if (DOWN.X + ZONE > xValue && DOWN.X - ZONE < xValue && DOWN.Y + ZONE > yValue &&

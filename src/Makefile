@@ -69,9 +69,9 @@ flash: $(TARGET).hex
 	@$(AVRDUDE) $(PROGRAMMER_ARGS) -Uflash:w:$<:i
 
 # Mega 48, 88, 168, 328 default values
-LFUSE := 0x62
-HFUSE := 0xDF
-EFUSE := 0x00
+LFUSE := 0xE0
+HFUSE := 0xD6
+EFUSE := 0xFC
 
 # Generic
 FUSE_STRING = -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m

@@ -17,7 +17,6 @@
 #define TIMER2B 8
 
 static uint8_t pinToTimer(volatile uint8_t *PORT, uint8_t pin);
-static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 
 // initPWMTimers initializes timers 0, 1, 2 for phase Correct PWM signal.
 void initPWMTimers(void) {
@@ -31,10 +30,10 @@ void initPWMTimers(void) {
     // TIMSK1 |= _BV(TOIE1);
     // TIMSK2 |= _BV(TOIE2);
 
-    // enable PWM and prescaler to F_CPU/8
+    // enable PWM and set prescaler to F_CPU/8
     TCCR0B |= _BV(CS01);
-    TCCR1B |= _BV(CS11);
-    TCCR2B |= _BV(CS21);
+    // TCCR1B |= _BV(CS11);
+    // TCCR2B |= _BV(CS21);
 }
 
 // initADC initializes built-in analog-digital converter and sets needed prescaler;
@@ -85,55 +84,33 @@ uint8_t digitalRead(volatile uint8_t *PORT, uint8_t pin) {
 // PORT parameter must be a pointer to the according port register defined in avr/io.h.
 // PORT must represent port at which desired pin exists.
 // If passed pin is not PWM pin, function writes value/255 rounded to the nearest integer.
-void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
-    if (value == 0) {
-        digitalWrite(PORT, pin, LOW);
-    } else if (value == 255) {
-        digitalWrite(PORT, pin, HIGH);
-    } else {
-        writeToTimer(PORT, pin, value);
-    }
-}
-
-// writeToTimer sets PWM duty cycle for specific timer provided pin is using.
 // If pin is not on timer, function writes either 1 or 0,
 // depending on which is closer representation.
-static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
+void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     switch (pinToTimer(PORT, pin)) {
     case TIMER0A:
-        // connect pwm to pin on timer 0, channel A
-        sbi(TCCR0A, COM0A1);
-        OCR0A = value; // set pwm duty
+        // set pwm duty cycle
+        OCR0A = value;
         break;
 
     case TIMER0B:
-        // connect pwm to pin on timer 0, channel B
-        sbi(TCCR0A, COM0B1);
-        OCR0B = value; // set pwm duty
+        OCR0B = value;
         break;
 
     case TIMER1A:
-        // connect pwm to pin on timer 1, channel A
-        sbi(TCCR1A, COM1A1);
-        OCR1A = value; // set pwm duty
+        OCR1A = value;
         break;
 
     case TIMER1B:
-        // connect pwm to pin on timer 1, channel B
-        sbi(TCCR1A, COM1B1);
-        OCR1B = value; // set pwm duty
+        OCR1B = value;
         break;
 
     case TIMER2A:
-        // connect pwm to pin on timer 2, channel A
-        sbi(TCCR2A, COM2A1);
-        OCR2A = value; // set pwm duty
+        OCR2A = value;
         break;
 
     case TIMER2B:
-        // connect pwm to pin on timer 2, channel B
-        sbi(TCCR2A, COM2B1);
-        OCR2B = value; // set pwm duty
+        OCR2B = value;
         break;
 
     case NOT_ON_TIMER:
@@ -141,21 +118,57 @@ static void writeToTimer(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
     }
 }
 
-// analogRead reads analog signal from pin at PORT C.
-uint16_t analogRead(uint8_t pin) {
-    // set the analog reference (high two bits of ADMUX) and select the channel (low 4 bits).
-    // This also sets ADLAR (left-adjust result) to 0 (the default).
-    ADMUX = _BV(REFS0) | (pin & 0b00000111);
+// analogRead reads analog signal from pin at specified PORT.
+// PORT parameter must be a pointer to the according port register defined in avr/io.h.
+// PORT must represent port at which desired pin exists.
+// If pin is not on PWM timer and is not analog pin, function returns 0.
+uint16_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
+    uint16_t value = 0;
+    switch (pinToTimer(PORT, pin)) {
+    case TIMER0A:
+        // get pwm duty cycle
+        value = OCR0A;
+        break;
 
-    // Start the conversion
-    ADCSRA |= _BV(ADSC);
+    case TIMER0B:
+        value = OCR0B;
+        break;
 
-    // ADSC is cleared when the conversion finishes
-    while (ADCSRA & _BV(ADSC))
-        ;
+    case TIMER1A:
+        value = OCR1A;
+        break;
 
-    // reading result after conversion
-    return ADCL | (ADCH << 8);
+    case TIMER1B:
+        value = OCR1B;
+        break;
+
+    case TIMER2A:
+        value = OCR2A;
+        break;
+
+    case TIMER2B:
+        value = OCR2B;
+        break;
+
+    default:
+        if (PORT == &PORTC) {
+            // set the analog reference (high two bits of ADMUX) and select the channel (low 4 bits).
+            // This also sets ADLAR (left-adjust result) to 0 (the default).
+            ADMUX = _BV(REFS0) | (pin & 0b00000111);
+
+            // Start the conversion
+            ADCSRA |= _BV(ADSC);
+
+            // ADSC is cleared when the conversion finishes
+            while (ADCSRA & _BV(ADSC))
+                ;
+
+            // reading result after conversion
+            value = ADCL | (ADCH << 8);
+        }
+    }
+
+    return value;
 }
 
 // pulseIn waits for state change of pin at specified PORT.
