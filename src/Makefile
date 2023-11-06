@@ -26,9 +26,9 @@ clean:
 else
 SOURCES += $(shell find libs/ -type f -name '*.c')
 clean:
-	@cd $(BLDDIR) && rm -f *.elf *.hex *.map
 	@cd $(OBJDIR) && rm -rf ./*
-	@rmdir $(BLDDIR) $(OBJDIR)
+	@cd $(BLDDIR) && rm -f *.elf *.hex *.map
+	@rmdir $(OBJDIR) $(BLDDIR)
 
 endif
 
@@ -39,7 +39,15 @@ INCL_PATH := $(CURDIR)/libs
 INCLUDES  := -I$(INCL_PATH)/bool -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/speed_sensor -I$(INCL_PATH)/oled -I$(INCL_PATH)/global_constants -I$(INCL_PATH)/central_controller -I$(INCL_PATH)/engine_controller -I$(INCL_PATH)/ino_libs -I$(INCL_PATH)/serial_communication
 
 CPPFLAGS    := -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) $(INCLUDES)
-CFLAGS      := -Os -g -std=gnu99 -Wall -Wextra -Wdouble-promotion
+# -Wconversion
+CFLAGS      := -Os -g -Wall -Wextra -std=c11 -Wold-style-definition\
+ -Wno-missing-braces -Wno-missing-field-initializers -Wwrite-strings \
+ -Wformat=2 -Wswitch-default -Wswitch-enum -Wcast-align \
+ -Wpointer-arith -Wbad-function-cast -Wstrict-overflow=4 \
+ -Wstrict-prototypes -Winline -Wundef -Wnested-externs \
+ -Wcast-qual -Wshadow -Wunreachable-code -Wlogical-op \
+ -Wfloat-equal -Wstrict-aliasing=2 -Wredundant-decls \
+ -fno-omit-frame-pointer -ffloat-store -fno-common -fstrict-aliasing
 CFLAGS      += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 # Splits up object files per function
 CFLAGS      += -ffunction-sections -fdata-sections
