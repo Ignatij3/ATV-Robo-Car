@@ -1,5 +1,5 @@
-#include "../central_controller/central_controller.h"
 #include "../ino_libs/ino_libs.h"
+#include "../timer/timer.h"
 #include "speed_sensor.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>

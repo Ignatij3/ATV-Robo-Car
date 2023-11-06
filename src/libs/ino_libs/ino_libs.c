@@ -115,6 +115,9 @@ void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value) {
 
     case NOT_ON_TIMER:
         digitalWrite(PORT, pin, HIGH & (value >> 7)); // 0 if <128
+
+    default:
+        break;
     }
 }
 
@@ -178,7 +181,7 @@ uint16_t analogRead(volatile uint8_t *PORT, uint8_t pin) {
 // PORT must represent port at which desired pin exists.
 // If function times out, it returns 0. Otherwise, it returns time it took pulse to return in microseconds.
 // It is advised to use only HIGH and LOW as 'value' parameter, otherwise function may show unexpected behaviour.
-uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*sendPulse)()) {
+uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*sendPulse)(void)) {
     // cache the port and bit of the pin in order to speed up the
     // pulse width measuring loop and achieve finer resolution.  calling
     // digitalRead() instead yields much coarser resolution.

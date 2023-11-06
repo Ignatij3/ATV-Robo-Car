@@ -16,6 +16,6 @@ void digitalWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 void analogWrite(volatile uint8_t *PORT, uint8_t pin, uint8_t value);
 uint8_t digitalRead(volatile uint8_t *PORT, uint8_t pin);
 uint16_t analogRead(volatile uint8_t *PORT, uint8_t pin);
-uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*sendPulse)());
+uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t timeout, void (*sendPulse)(void));
 
 #endif // ATV_INO_LIBS_INO_LIBS_H

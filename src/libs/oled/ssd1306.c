@@ -1,6 +1,6 @@
 
 // @includes
-#include "../central_controller/central_controller.h"
+#include "../global_constants/global_constants.h"
 #include "font6x8.h"
 #include "ssd1306.h"
 #include "twi.h"
@@ -8,6 +8,8 @@
 #include <string.h> // memset function
 
 #define str(s) #s
+
+static uint16_t _counter;
 
 // @array Init command
 const uint8_t INIT_SSD1306[] PROGMEM = {
@@ -344,7 +346,7 @@ uint8_t SSD1306_DrawChar(char character) {
     return SSD1306_SUCCESS;
 }
 
-void SSD1306_DrawString(char *str) {
+void SSD1306_DrawString(const char *str) {
     // init
     int i = 0;
     // loop through character of string
@@ -522,7 +524,7 @@ uint8_t SSD1306_InvertPixel(uint8_t x, uint8_t y) {
 // The setDirection_OLED function is responsible for setting the direction
 // information to be displayed on an OLED screen.
 // It ensures that the direction information is correctly positioned and rendered on the screen.
-void setDirection_OLED(char *str) {
+void setDirection_OLED(const char *str) {
     SSD1306_SetPosition(DIRECTION_X_COORD, DIRECTION_Y_COORD);
     uint8_t i = 0;
     while (str[i] != '\0') {
@@ -596,7 +598,7 @@ void setDistance_OLED(uint8_t n) {
 // The setPower_OLED function is responsible for setting the power
 // information to be displayed on an OLED screen.
 // It ensures that the power information is correctly positioned and rendered on the screen.
-void setPower_OLED(char *str) {
+void setPower_OLED(const char *str) {
     SSD1306_SetPosition(POWER_X_COORD, POWER_Y_COORD);
     uint8_t i = 0;
     while (str[i] != '\0') {
@@ -611,7 +613,7 @@ void setPower_OLED(char *str) {
 // The modeMenu function is responsible for displaying a menu of modes on an OLED screen
 // and allowing the user to select one of them.
 // It sets the SLAVE mode as default and return its value(1)
-uint8_t modeMenu_OLED() {
+uint8_t modeMenu_OLED(void) {
     SSD1306_ClearScreen();
     SSD1306_SetPosition(0, 0);
     SSD1306_DrawString("SELECT MODE");
@@ -631,7 +633,7 @@ uint8_t modeMenu_OLED() {
 
 // The infoMenu function is responsible for displaying an information menu on an OLED screen.
 // It presents information related to various parameters such as direction, speed, time, distance and power.
-void infoMenu_OLED() {
+void infoMenu_OLED(void) {
     SSD1306_ClearScreen();
     // do not set position to 0,8 - results in overwrite of poweredOn variable (for some reason?)
     SSD1306_SetPosition(0, 0);
