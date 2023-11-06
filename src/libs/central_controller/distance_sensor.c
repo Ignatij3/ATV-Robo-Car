@@ -13,13 +13,13 @@ void _controllerInitDistanceSensor(uint8_t minimalDistance) {
 // isCollision returns whether vehicle is about to collide with object in front.
 // This is done by comparing closest object distance with minimal tolerable distance.
 bool isCollisionSoon(void) {
-    return measureDistanceCm() < minDist;
+    return measureDistanceCm() <= minDist;
 }
 
 // evadeCollision will tank turn clockwise until there is no objects in front of the car.
 void evadeCollision(void) {
     uint8_t temp = minDist;
-    minDist = 100;
-    tankTurnRight(isCollisionSoon);
+    minDist = 40;
+    tankTurn(isCollisionSoon, (measureDistanceCm() % 2) - 1);
     minDist = temp;
 }

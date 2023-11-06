@@ -7,7 +7,6 @@ int main(void) {
     enableCar();
 
     while (1) {
-        updateCarMetrics();
         // halt while car is turned off
         if (!isPoweredOn()) {
             disableCar();
@@ -41,13 +40,17 @@ int main(void) {
 
         // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it
         case SLAVE:
-            // updateLinePosition(); // holds back
+            accelerate(20);
+            updateLinePosition();
             adjustEnginesSpeed(30); // 30 - arbitrary constant, subject to change
             break;
 
         // if NONE mode is chosen, the car must halt
         case NONE:
             goto exit;
+
+        default:
+            break;
         }
         // delay not to change state too rapidly
         _delay_ms(10);

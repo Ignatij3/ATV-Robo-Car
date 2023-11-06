@@ -1,4 +1,3 @@
-#include "../central_controller/central_controller.h"
 #include "../global_constants/global_constants.h"
 #include "../ino_libs/ino_libs.h"
 #include "engine_controller.h"
@@ -61,35 +60,23 @@ void setEnginesDirection(bool reverse) {
 
 // turnOffEngines configures engines to not turn even if power is applied.
 void turnOffEngines(void) {
-    analogWrite(&PORTD, ENA, MIN_SPEED);
-    analogWrite(&PORTD, ENB, MIN_SPEED);
+    digitalWrite(&PORTC, IN1, LOW);
+    digitalWrite(&PORTC, IN2, LOW);
 }
 
-// tankTurnLeft stops the car to perform tank turn.
+// tankTurn stops the car to perform tank turn.
 // The function will constantly call cancelFunc until it returns false.
 // Once cancelFunc returns false, the function restores engine torque vector.
 // On function exit, car remains stationary.
-void tankTurnLeft(bool (*cancelFunc)(void)) {
+// direction argument is responsible for setting direction of the turning.
+// If direction is non negative, the car turns right, otherwise left.
+void tankTurn(bool (*cancelFunc)(void), int8_t direction) {
     decreaseSpeed(MAX_SPEED);
-    left();
-
-    increaseSpeed(MAX_SPEED);
-    // waiting for function to signal end of turning
-    while (cancelFunc()) {
-        updateCarMetrics();
+    if (direction >= 0) {
+        right();
+    } else {
+        left();
     }
-    decreaseSpeed(MAX_SPEED);
-
-    setEnginesDirection(car.reverse);
-}
-
-// tankTurnRight stops the car to perform tank turn.
-// The function will constantly call cancelFunc until it returns false.
-// Once cancelFunc returns false, the function restores engine torque vector.
-// On function exit, car remains stationary.
-void tankTurnRight(bool (*cancelFunc)(void)) {
-    decreaseSpeed(MAX_SPEED);
-    right();
 
     increaseSpeed(MAX_SPEED);
     // waiting for function to signal end of turning

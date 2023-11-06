@@ -1,7 +1,7 @@
 #ifndef ATV_IR_SENSOR_IR_SENSOR_H
 #define ATV_IR_SENSOR_IR_SENSOR_H
 
-#include <math.h>
+#include <stdint.h>
 
 #define UNKNOWN INT8_MIN
 #define LINE_TOO_FAR_LEFT INT8_MIN / 2

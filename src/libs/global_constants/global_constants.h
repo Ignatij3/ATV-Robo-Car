@@ -2,6 +2,13 @@
 #define ATV_GLOBAL_CONSTANTS_GLOBAL_CONSTANTS_H
 #include <stdint.h>
 
+typedef enum {
+    NONE,
+    SLAVE,
+    CONTROLLED,
+    AUTOMATIC
+} drivingMode;
+
 #define MAX_DISTANCE UINT8_MAX
 #define MAX_SPEED UINT8_MAX
 #define MIN_SPEED 0

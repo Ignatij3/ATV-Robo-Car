@@ -1,15 +1,9 @@
 #ifndef ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H
 #define ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H
 
+#include "../global_constants/global_constants.h"
 #include <stdbool.h>
 #include <stdint.h>
-
-typedef enum {
-    NONE,
-    SLAVE,
-    CONTROLLED,
-    AUTOMATIC
-} drivingMode;
 
 typedef enum {
     LEFT,
@@ -56,6 +50,7 @@ void readAndSetMovementVector(void);
 // ------------------------------------------------------------------------------------
 void _controllerInitOLED(void);
 void updateCarMetrics(void);
+void _setPowerStr(const char *power);
 
 // IR reflection sensor API
 // ------------------------------------------------------------------------------------
@@ -71,11 +66,5 @@ void _controllerInitSerial(void);
 // ------------------------------------------------------------------------------------
 void _controllerInitSpeedSensor(void);
 uint8_t getCarSpeedSensor(void);
-
-// Time library
-// ------------------------------------------------------------------------------------
-uint32_t millis(void);
-uint32_t micros(void);
-uint32_t _updateInternalTimer(void);
 
 #endif // ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H

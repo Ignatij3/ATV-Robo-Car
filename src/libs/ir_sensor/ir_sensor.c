@@ -39,7 +39,7 @@ int8_t updateIRReadings(void) {
     sensorArray = 0;
 
     for (uint8_t sensor = 0; sensor < SENSOR_AMOUNT; sensor++) {
-        sensorArray |= !digitalRead(&PORTB, sensorLookup[sensor]) << sensor;
+        sensorArray |= digitalRead(&PORTB, sensorLookup[sensor]) << sensor;
     }
 
     // exactly one sensor saw the line
@@ -51,10 +51,10 @@ int8_t updateIRReadings(void) {
     if (sensorArray == 0) {
         if (sensorArray == lastSensorArr) {
             deviation = UNKNOWN;
-        } else if (lastSensorArr && _BV(LEFTMOST_IR)) {
+        } else if (lastSensorArr & _BV(LEFTMOST_IR)) {
             deviation = LINE_TOO_FAR_LEFT;
 
-        } else if (lastSensorArr && _BV(RIGHTMOST_IR)) {
+        } else if (lastSensorArr & _BV(RIGHTMOST_IR)) {
             deviation = LINE_TOO_FAR_RIGHT;
 
         } else {

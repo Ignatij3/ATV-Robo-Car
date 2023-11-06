@@ -2,6 +2,7 @@
 #include "../engine_controller/engine_controller.h"
 #include "../oled/ssd1306.h"
 #include "../speed_sensor/speed_sensor.h"
+#include "../timer/timer.h"
 #include "central_controller.h"
 
 // update rate of 30Hz
@@ -23,7 +24,7 @@ void updateCarMetrics(void) {
         setDistance_OLED(measureDistanceCm());
 
         // update time
-        setTime_OLED(_updateInternalTimer());
+        setTime_OLED(millis() / 1000);
 
         // update showed direction
         if (isReverse()) {
@@ -41,4 +42,9 @@ void updateCarMetrics(void) {
             }
         }
     }
+}
+
+// _setPowerStr will write to screen whatever power mode the car is in.
+void _setPowerStr(const char *power) {
+    setPower_OLED(power);
 }

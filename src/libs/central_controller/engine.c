@@ -10,7 +10,7 @@ void _controllerInitEngines(void) {
 // enableCar enables cars engines.
 // Function configures engines to run forward.
 void enableCar(void) {
-    setPower_OLED("ON");
+    _setPowerStr("ON");
     setEnginesDirection(false);
     setSpeed(0, false);
 }
@@ -18,7 +18,7 @@ void enableCar(void) {
 // disableCar halts the car, disabling it's engines and setting PWM signal duty rate to 0.
 // To continue driving, call 'enableCar'.
 void disableCar(void) {
-    setPower_OLED("OFF");
+    _setPowerStr("OFF");
     setSpeed(0, false);
     turnOffEngines();
 }
