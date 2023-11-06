@@ -4,8 +4,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define TRIGGER_PIN PINB3
-#define ECHO_PIN PINB4
+#define TRIGGER_PIN PINB4
+#define ECHO_PIN PINB5
 
 #define MIN_DISTANCE 0
 

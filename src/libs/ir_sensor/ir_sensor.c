@@ -2,17 +2,18 @@
 #include "ir_sensor.h"
 #include <avr/io.h>
 
-#define SENSOR_AMOUNT 3
+#define SENSOR_AMOUNT 4
 #define LEFTMOST_IR 0
 #define RIGHTMOST_IR SENSOR_AMOUNT - 1
 
-#define IR_LEFT_FIRST PINB2
-#define IR_CENTER PINB1
-#define IR_RIGHT_FIRST PINB0
+#define IR_LEFT PINB3
+#define IR_CENTER_LEFT PINB2
+#define IR_CENTER_RIGHT PINB1
+#define IR_RIGHT PINB0
 
 // sensorLookup is an array containing information about physical sensor location.
 // Sensors are arranged so leftmost will be first and rightmost will be last.
-static const uint8_t sensorLookup[SENSOR_AMOUNT] = {IR_LEFT_FIRST, IR_CENTER, IR_RIGHT_FIRST};
+static const uint8_t sensorLookup[SENSOR_AMOUNT] = {IR_LEFT, IR_CENTER_LEFT, IR_RIGHT, IR_CENTER_RIGHT};
 
 static uint8_t calculateDeviation(uint8_t sensorArray);
 static uint8_t findClosestFiredSensor(uint8_t sensorArray, uint8_t lastSensorArr);
