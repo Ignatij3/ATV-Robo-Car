@@ -3,22 +3,22 @@
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
 
-#define SECOND 1000U
+#define SECOND 1000
 
 // EEPROM address for data storage
 #define EEPROM_ADDRESS *((uint16_t *)0x00)
 
 // the prescaler is set so that timer0 ticks every 8 clock cycles, and the overflow handler is called every 256 ticks.
-#define MICROSECONDS_PER_TIMER0_OVERFLOW (clockCyclesToMicroseconds(8U * 256U))
+#define MICROSECONDS_PER_TIMER0_OVERFLOW (clockCyclesToMicroseconds(8 * 256))
 
 // the whole number of milliseconds per timer0 overflow
-#define MILLIS_INC (MICROSECONDS_PER_TIMER0_OVERFLOW / 1000U)
+#define MILLIS_INC (MICROSECONDS_PER_TIMER0_OVERFLOW / 1000)
 
 // the fractional number of milliseconds per timer0 overflow. we shift right
 // by three to fit these numbers into a byte. (for the clock speeds we care
 // about - 8 and 16 MHz - this doesn't lose precision.)
-#define FRACT_INC ((MICROSECONDS_PER_TIMER0_OVERFLOW % 1000U) >> 3U)
-#define FRACT_MAX (1000U >> 3U)
+#define FRACT_INC ((MICROSECONDS_PER_TIMER0_OVERFLOW % 1000) >> 3)
+#define FRACT_MAX (1000 >> 3)
 
 static volatile uint32_t timer0_overflow_count = 0;
 static volatile uint32_t timer0_millis = 0;
