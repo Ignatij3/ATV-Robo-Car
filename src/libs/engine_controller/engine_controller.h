@@ -6,6 +6,7 @@
 void initializeEngines(void);
 void setEnginesDirection(bool reverse);
 void turnOffEngines(void);
+void enableTurning(int8_t direction);
 void tankTurn(bool (*cancelFunc)(void), int8_t direction);
 void setLeftSpeed(uint8_t speed, bool reverse);
 void setRightSpeed(uint8_t speed, bool reverse);

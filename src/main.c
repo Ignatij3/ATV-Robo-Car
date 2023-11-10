@@ -35,7 +35,7 @@ int main(void) {
 
         // in controlled mode, car receives and executes commands from DualShock PS4 controller
         case CONTROLLED:
-            readAndSetMovementVector();
+            readExecuteCommand();
             break;
 
         // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it

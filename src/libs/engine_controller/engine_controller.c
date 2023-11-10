@@ -46,7 +46,6 @@ void initializeEngines(void) {
     car.reverse = false;
     // stops the car, to be sure it doesn't move
     turnOffEngines();
-    setSpeed(MIN_SPEED, car.reverse);
 }
 
 // setEnginesDirection configures engines to turn either forward or backwards, depending on forward flag.
@@ -59,10 +58,20 @@ void setEnginesDirection(bool reverse) {
     }
 }
 
-// turnOffEngines configures engines to not turn even if power is applied.
+// turnOffEngines configures engines to not turn.
 void turnOffEngines(void) {
-    digitalWrite(&PORTC, IN1, LOW);
-    digitalWrite(&PORTC, IN2, LOW);
+    setSpeed(0, car.reverse);
+}
+
+// enableTurning will stop the car and set engines working in opposite to each other direction to tank turn.
+// direction argument is responsible for setting direction of the turning.
+// If direction > 0, the car turns right, otherwise left.
+void enableTurning(int8_t direction) {
+    if (direction >= 0) {
+        right();
+    } else {
+        left();
+    }
 }
 
 // tankTurn stops the car to perform tank turn.
@@ -70,14 +79,10 @@ void turnOffEngines(void) {
 // Once cancelFunc returns false, the function restores engine torque vector.
 // On function exit, car remains stationary.
 // direction argument is responsible for setting direction of the turning.
-// If direction is non negative, the car turns right, otherwise left.
+// If direction > 0, the car turns right, otherwise left.
 void tankTurn(bool (*cancelFunc)(void), int8_t direction) {
     decreaseSpeed(MAX_SPEED);
-    if (direction >= 0) {
-        right();
-    } else {
-        left();
-    }
+    enableTurning(direction);
 
     increaseSpeed(MAX_SPEED);
     // waiting for function to signal end of turning
