@@ -91,7 +91,6 @@ int8_t updateIRReadings(void) {
 // maxDeviation returns maximal deviation under normal conditions.
 // This value represents rightmost sensor seeing the black line.
 // If the car wandered left off the line and it is not found by sensors,
-// the deviation returned is equal to LINE_TOO_FAR_RIGHT.
 int8_t maxDeviation(void) {
     return SENSOR_AMOUNT / 2;
 }
@@ -99,7 +98,6 @@ int8_t maxDeviation(void) {
 // maxDeviation returns minimal deviation under normal conditions.
 // This value represents leftmost sensor seeing the black line, and is always negative.
 // If the car wandered right off the line and it is not found by sensors,
-// the deviation returned is equal to LINE_TOO_FAR_LEFT.
 int8_t minDeviation(void) {
     return -(SENSOR_AMOUNT / 2);
 }
