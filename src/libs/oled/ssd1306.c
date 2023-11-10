@@ -657,9 +657,9 @@ uint8_t setMode_OLED(uint8_t previous_mode, uint8_t vector) {
     SSD1306_DrawChar(' ');
     SSD1306_UpdateScreen(OLED_ADDRESS);
     if (current_Mode < SLAVE) {
-        current_Mode = SLAVE;
-    } else if (current_Mode > AUTOMATIC) {
         current_Mode = AUTOMATIC;
+    } else if (current_Mode > AUTOMATIC) {
+        current_Mode = SLAVE;
     }
     SSD1306_SetPosition(100, 2 * current_Mode);
     SSD1306_DrawChar('<');
