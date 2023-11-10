@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 bool pairWithModule(void);
-void readMovementVector(void);
-void vectorToEngineSpeed(uint8_t *left, uint8_t *right);
+void readMovementCommand(void);
+void setCarDirection(void);
 
 #endif // ATV_REMOTE_CONTROL_REMOTE_CONTROL_H

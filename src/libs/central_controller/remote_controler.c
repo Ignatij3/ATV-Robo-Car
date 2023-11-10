@@ -1,4 +1,3 @@
-#include "../engine_controller/engine_controller.h"
 #include "../global_constants/global_constants.h"
 #include "../remote_control/remote_control.h"
 #include "../serial_communication/serial_communication.h"
@@ -11,15 +10,11 @@ void _controllerPairWithBluetooth(void) {
     serialInit(MYUBRR(SERIAL_BAUD));
     // while (!pairWithModule())
     //     ;
+    // writeString("\r\ndone\r\n");
 }
 
-// readAndSetMovementVector will read updated input vector from the module and update engines to reflect it.
-void readAndSetMovementVector(void) {
-    readMovementVector();
-
-    uint8_t leftEngine, rightEngine;
-    vectorToEngineSpeed(&leftEngine, &rightEngine);
-
-    setLeftSpeed(leftEngine, isReverse());
-    setRightSpeed(rightEngine, isReverse());
+// readExecuteCommand will read command entered into serial interface, then update engines to reflect command.
+void readExecuteCommand(void) {
+    readMovementCommand();
+    setCarDirection();
 }
