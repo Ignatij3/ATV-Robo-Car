@@ -291,10 +291,10 @@ static void left(void) {
     digitalWrite(&PORTC, IN1, LOW);
     digitalWrite(&PORTC, IN2, HIGH);
     */
-    digitalWrite(&PORTC, IN1, LOW);
-    digitalWrite(&PORTC, IN2, HIGH);
-    digitalWrite(&PORTD, IN3, HIGH);
-    digitalWrite(&PORTD, IN4, LOW);
+    digitalWrite(&PORTC, IN1, HIGH);
+    digitalWrite(&PORTC, IN2, LOW);
+    digitalWrite(&PORTD, IN3, LOW);
+    digitalWrite(&PORTD, IN4, HIGH);
     // -----------TEMPORARY-----------
 }
 
@@ -306,9 +306,9 @@ static void right(void) {
     digitalWrite(&PORTC, IN1, HIGH);
     digitalWrite(&PORTC, IN2, LOW);
     */
-    digitalWrite(&PORTC, IN1, HIGH);
-    digitalWrite(&PORTC, IN2, LOW);
-    digitalWrite(&PORTD, IN3, LOW);
-    digitalWrite(&PORTD, IN4, HIGH);
+    digitalWrite(&PORTC, IN1, LOW);
+    digitalWrite(&PORTC, IN2, HIGH);
+    digitalWrite(&PORTD, IN3, HIGH);
+    digitalWrite(&PORTD, IN4, LOW);
     // -----------TEMPORARY-----------
 }
