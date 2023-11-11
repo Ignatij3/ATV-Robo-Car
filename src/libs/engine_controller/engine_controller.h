@@ -18,4 +18,6 @@ uint8_t getLeftSpeed(void);
 uint8_t getRightSpeed(void);
 bool isReverse(void);
 
+void TESTING(void);
+
 #endif // ATV_ENGINE_CONTROLLER_ENGINE_CONTROLLER_H

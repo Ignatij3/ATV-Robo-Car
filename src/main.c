@@ -1,10 +1,13 @@
 #include "libs/central_controller/central_controller.h"
+#include "libs/engine_controller/engine_controller.h"
 #include <util/delay.h>
 
 int main(void) {
     initializeModules(20);
-    updateMode();
+    // updateMode();
     enableCar();
+
+    TESTING();
 
     while (1) {
         // halt while car is turned off
