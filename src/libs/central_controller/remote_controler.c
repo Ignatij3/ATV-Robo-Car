@@ -5,16 +5,27 @@
 
 #define MYUBRR(baud) CPU_CLOCK / 16 / baud - 1
 
-// _controllerPairWithBluetooth will try to pair with remote controller communication device.
-void _controllerPairWithBluetooth(void) {
+static void pairWithBluetooth(void);
+
+// _controllerInitSerial will initialize UART communication.
+void _controllerInitSerial(void) {
     serialInit(MYUBRR(SERIAL_BAUD));
-    // while (!pairWithModule())
-    //     ;
-    // writeString("\r\ndone\r\n");
+}
+
+// pairWithBluetooth will try to pair with remote controller communication device.
+static void pairWithBluetooth(void) {
+    static bool paired = false;
+    if (!paired) {
+        if (pairWithModule()) {
+            paired = true;
+            writeString("\r\ndone\r\n");
+        }
+    }
 }
 
 // readExecuteCommand will read command entered into serial interface, then update engines to reflect command.
 void readExecuteCommand(void) {
+    pairWithBluetooth();
     readMovementCommand();
     setCarDirection();
 }
