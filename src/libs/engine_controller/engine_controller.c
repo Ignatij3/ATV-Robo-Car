@@ -288,8 +288,8 @@ static void left(void) {
     condwr;
     // -----------TEMPORARY-----------
     /*
-    digitalWrite(&PORTC, IN1, HIGH);
-    digitalWrite(&PORTC, IN2, LOW);
+    digitalWrite(&PORTC, IN1, LOW);
+    digitalWrite(&PORTC, IN2, HIGH);
     */
     digitalWrite(&PORTC, IN1, LOW);
     digitalWrite(&PORTC, IN2, HIGH);
@@ -303,8 +303,8 @@ static void right(void) {
     condwr;
     // -----------TEMPORARY-----------
     /*
-    digitalWrite(&PORTC, IN1, LOW);
-    digitalWrite(&PORTC, IN2, HIGH);
+    digitalWrite(&PORTC, IN1, HIGH);
+    digitalWrite(&PORTC, IN2, LOW);
     */
     digitalWrite(&PORTC, IN1, HIGH);
     digitalWrite(&PORTC, IN2, LOW);
