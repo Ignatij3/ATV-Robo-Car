@@ -210,12 +210,12 @@ static void backwards(void) {
 
 // left configures left engines to turn backwards and right engines to turn forward.
 static void left(void) {
-    digitalWrite(&PORTC, IN1, HIGH);
-    digitalWrite(&PORTC, IN2, LOW);
+    digitalWrite(&PORTC, IN1, LOW);
+    digitalWrite(&PORTC, IN2, HIGH);
 }
 
 // right configures left engines to turn forward and right engines to turn backwards.
 static void right(void) {
-    digitalWrite(&PORTC, IN1, LOW);
-    digitalWrite(&PORTC, IN2, HIGH);
+    digitalWrite(&PORTC, IN1, HIGH);
+    digitalWrite(&PORTC, IN2, LOW);
 }
