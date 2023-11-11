@@ -5,7 +5,14 @@
 #include <avr/io.h>
 
 #define SPEED_SENSOR_1 PIND2
+
+// -----------TEMPORARY-----------
+/*
 #define SPEED_SENSOR_2 PIND4
+*/
+#define SPEED_SENSOR_2 PIND2
+// -----------TEMPORARY-----------
+
 #define SECOND 1000000 // hw many microseconds are in second
 #define LENGTH 5       // the length of our obstacle in mm
 

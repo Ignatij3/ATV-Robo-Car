@@ -21,6 +21,12 @@ static carspeed car;
 // motor pins
 #define IN1 PINC3
 #define IN2 PINC2
+
+// -----------TEMPORARY-----------
+#define IN3 PIND3
+#define IN4 PIND4
+// -----------TEMPORARY-----------
+
 // PWM signal pins
 #define ENA PIND6
 #define ENB PIND5
@@ -37,6 +43,11 @@ static void setSpeedEngines(bool reverse);
 void initializeEngines(void) {
     pinMode(&PORTC, IN1, OUTPUT);
     pinMode(&PORTC, IN2, OUTPUT);
+
+    // -----------TEMPORARY-----------
+    pinMode(&PORTD, IN4, OUTPUT);
+    pinMode(&PORTD, IN3, OUTPUT);
+    // -----------TEMPORARY-----------
 
     pinMode(&PORTD, ENA, OUTPUT);
     pinMode(&PORTD, ENB, OUTPUT);
@@ -198,24 +209,56 @@ static void setDutyCycle(void) {
 
 // forward configures engines to turn forward.
 static void forward(void) {
+    // -----------TEMPORARY-----------
+    /*
     digitalWrite(&PORTC, IN1, HIGH);
     digitalWrite(&PORTC, IN2, HIGH);
+    */
+    digitalWrite(&PORTC, IN1, HIGH);
+    digitalWrite(&PORTC, IN2, LOW);
+    digitalWrite(&PORTD, IN3, HIGH);
+    digitalWrite(&PORTD, IN4, LOW);
+    // -----------TEMPORARY-----------
 }
 
 // backwards configures engines to turn backwards.
 static void backwards(void) {
+    // -----------TEMPORARY-----------
+    /*
     digitalWrite(&PORTC, IN1, LOW);
     digitalWrite(&PORTC, IN2, LOW);
+    */
+    digitalWrite(&PORTC, IN1, LOW);
+    digitalWrite(&PORTC, IN2, HIGH);
+    digitalWrite(&PORTD, IN3, LOW);
+    digitalWrite(&PORTD, IN4, HIGH);
+    // -----------TEMPORARY-----------
 }
 
 // left configures left engines to turn backwards and right engines to turn forward.
 static void left(void) {
+    // -----------TEMPORARY-----------
+    /*
     digitalWrite(&PORTC, IN1, LOW);
     digitalWrite(&PORTC, IN2, HIGH);
+    */
+    digitalWrite(&PORTC, IN1, HIGH);
+    digitalWrite(&PORTC, IN2, LOW);
+    digitalWrite(&PORTD, IN3, LOW);
+    digitalWrite(&PORTD, IN4, HIGH);
+    // -----------TEMPORARY-----------
 }
 
 // right configures left engines to turn forward and right engines to turn backwards.
 static void right(void) {
+    // -----------TEMPORARY-----------
+    /*
     digitalWrite(&PORTC, IN1, HIGH);
     digitalWrite(&PORTC, IN2, LOW);
+    */
+    digitalWrite(&PORTC, IN1, LOW);
+    digitalWrite(&PORTC, IN2, HIGH);
+    digitalWrite(&PORTD, IN3, HIGH);
+    digitalWrite(&PORTD, IN4, LOW);
+    // -----------TEMPORARY-----------
 }
