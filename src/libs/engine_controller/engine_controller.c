@@ -31,58 +31,12 @@ static carspeed car;
 #define ENA PIND6
 #define ENB PIND5
 
-#define DEBUG
-#ifdef DEBUG
-#include "../oled/ssd1306.h"
-#include <stdio.h>
-#include <stdlib.h>
-#define condwr                                                                                                         \
-    {                                                                                                                  \
-        char *s = malloc(sizeof(char) * 5);                                                                            \
-        sprintf(s, "l%ur%u", digitalRead(&PORTC, IN1), digitalRead(&PORTC, IN2));                                      \
-        SSD1306_SetPosition(0, 7);                                                                                     \
-        SSD1306_DrawString(s);                                                                                         \
-        free(s);                                                                                                       \
-        SSD1306_UpdateScreen(OLED_ADDRESS);                                                                            \
-    }
-#else
-#define condwr
-#endif
-
 static void forward(void);
 static void backwards(void);
 static void left(void);
 static void right(void);
 static void setDutyCycle(void);
 static void setSpeedEngines(bool reverse);
-
-#include "../serial_communication/serial_communication.h"
-#include <util/delay.h>
-void TESTING(void) {
-    setSpeed(255, false);
-    pinMode(&PORTB, PINB5, OUTPUT);
-
-start:
-    digitalWrite(&PORTB, PINB5, HIGH);
-    forward();
-    writeStringF("forward: 1010\r\n");
-    _delay_ms(4000);
-
-    digitalWrite(&PORTB, PINB5, LOW);
-    left();
-    writeStringF("left: 0110\r\n");
-    _delay_ms(4000);
-
-    backwards();
-    writeStringF("backwards: 0101\r\n");
-    _delay_ms(4000);
-
-    right();
-    writeStringF("right: 1001\r\n");
-    _delay_ms(4000);
-
-    goto start;
-}
 
 // initializeEngines sets up input and enable pins.
 // After setting up, the function makes sure engines do not move.
@@ -255,7 +209,6 @@ static void setDutyCycle(void) {
 
 // forward configures engines to turn forward.
 static void forward(void) {
-    condwr;
     // -----------TEMPORARY-----------
     /*
     digitalWrite(&PORTC, IN1, HIGH);
@@ -270,7 +223,6 @@ static void forward(void) {
 
 // backwards configures engines to turn backwards.
 static void backwards(void) {
-    condwr;
     // -----------TEMPORARY-----------
     /*
     digitalWrite(&PORTC, IN1, LOW);
@@ -285,7 +237,6 @@ static void backwards(void) {
 
 // left configures left engines to turn backwards and right engines to turn forward.
 static void left(void) {
-    condwr;
     // -----------TEMPORARY-----------
     /*
     digitalWrite(&PORTC, IN1, LOW);
@@ -300,7 +251,6 @@ static void left(void) {
 
 // right configures left engines to turn forward and right engines to turn backwards.
 static void right(void) {
-    condwr;
     // -----------TEMPORARY-----------
     /*
     digitalWrite(&PORTC, IN1, HIGH);
