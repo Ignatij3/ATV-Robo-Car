@@ -26,29 +26,33 @@ void sendPulse(void) {
     digitalWrite(&PORTB, TRIGGER_PIN, LOW);
 }
 
+// -----------TEMPORARY-----------
+#include "../oled/ssd1306.h"
+#include <stdio.h>
+#include <stdlib.h>
+// -----------TEMPORARY-----------
+
 // measureDistanceCm return distance in cm from nearest object in front.
 uint8_t measureDistanceCm(void) {
     // Measure the length of echo signal, which is equal to the time needed for sound to go there and back.
     // Using timeout since we can't measure beyond max distance.
     // Compute max delay based on max distance with 25% margin in microseconds.
     // 18586.0035551 = 2.5 * MAX_DISTANCE / 0.0343000042 (rounded up to nearest tenth thousand)
-    uint16_t durationMicroSec = (uint16_t)(pulseIn(&PORTB, ECHO_PIN, HIGH, 20000, sendPulse));
+    uint16_t distanceCm = (uint16_t)((pulseIn(&PORTB, ECHO_PIN, HIGH, 20000, sendPulse) * 1715) / 100000);
 
-    uint16_t distanceCm = (uint16_t)((durationMicroSec * 1715) / 100000);
+    // static uint16_t lastMeasure = 0;
+    // if (lastMeasure == 0) {
+    //     lastMeasure = distanceCm;
+    // }
 
-    static uint16_t lastMeasure = 0;
-    if (lastMeasure == 0) {
-        lastMeasure = distanceCm;
-    }
-
-    // evening out the fluctuations in sensors' readings
-    if (distanceCm > lastMeasure && distanceCm - lastMeasure >= 10) {
-        lastMeasure++;
-        distanceCm = lastMeasure;
-    } else if (lastMeasure - distanceCm >= 10) {
-        lastMeasure--;
-        distanceCm = lastMeasure;
-    }
+    // // evening out the fluctuations in sensors' readings
+    // if (distanceCm > lastMeasure && distanceCm - lastMeasure >= 10) {
+    //     lastMeasure++;
+    //     distanceCm = lastMeasure;
+    // } else if (lastMeasure - distanceCm >= 10) {
+    //     lastMeasure--;
+    //     distanceCm = lastMeasure;
+    // }
 
     if (distanceCm == MIN_DISTANCE || distanceCm > MAX_DISTANCE) {
         return MIN_DISTANCE;
