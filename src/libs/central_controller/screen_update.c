@@ -17,6 +17,9 @@ void _controllerInitOLED(void) {
 void updateCarMetrics(void) {
     static uint32_t lastUpdate;
     if (millis() - lastUpdate > INTERVAL_MS && !isChoosingMode()) {
+        // temporary, to show IR sensors working
+        updateLinePosition();
+
         // update speed reading
         setSpeed_OLED(getSensorSpeedReading());
 
