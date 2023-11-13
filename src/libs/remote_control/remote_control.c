@@ -9,28 +9,18 @@ typedef struct {
 
 static volatile moveVector vec;
 
-// pairWithModule will send 'init' to bluetooth module, expecting answer.
-// The function returns whether received answer matches expected answer.
-// Expected answer is 'start'.
-bool pairWithModule(void) {
-    writeString("init\r\n");
-    char answer[6];
-    while (readCount() < 5)
-        ;
-
-    readNBytes(&answer[0], 5);
-    writeString(&answer[0]);
-    vec.direction = '0';
-    return strcmp(answer, "start") == 0;
+// initModule will initialize variables to start listening for commands.
+void initModule(void) {
+    vec.direction = ' ';
 }
 
 // readMovementCommand will read byte from serial indicating what direction is to drive.
 void readMovementCommand(void) {
-    uint8_t newDir = '0';
+    uint8_t newDir = 0;
     if (readCount() > 0) {
         newDir = readByte();
     }
-    if (newDir == 'w' || newDir == 'a' || newDir == 's' || newDir == 'd') {
+    if (newDir == 'w' || newDir == 'a' || newDir == 's' || newDir == 'd' || newDir == ' ') {
         vec.direction = newDir;
     }
 }
@@ -42,5 +32,9 @@ void setCarDirection(void) {
     } else if (vec.direction == 'a' || vec.direction == 'd') {
         enableTurning((vec.direction == 'd') - (vec.direction == 'a'));
     }
+
     setSpeed(255, isReverse());
+    if (vec.direction == ' ') {
+        setSpeed(0, isReverse());
+    }
 }

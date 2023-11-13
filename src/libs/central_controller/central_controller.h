@@ -44,6 +44,7 @@ bool isChoosingMode(void);
 // Communication with bluetooth module
 // ------------------------------------------------------------------------------------
 void _controllerInitSerial(void);
+void _controllerInitRemote(void);
 void readExecuteCommand(void);
 
 // OLED screen API
