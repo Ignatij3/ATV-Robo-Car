@@ -1,7 +1,11 @@
+#include "remote_control.h"
 #include "../engine_controller/engine_controller.h"
 #include "../serial_communication/serial_communication.h"
-#include "remote_control.h"
+#include <stdlib.h>
 #include <string.h>
+#include <util/delay.h>
+
+#define COMMAND_COOLDOWN_MS 1200
 
 typedef struct {
     uint8_t direction;
@@ -9,19 +13,40 @@ typedef struct {
 
 static volatile moveVector vec;
 
-// pairWithModule will send 'init' to bluetooth module, expecting answer.
-// The function returns whether received answer matches expected answer.
-// Expected answer is 'start'.
-bool pairWithModule(void) {
-    writeString("init\r\n");
-    char answer[6];
+// initModule will initialize variables to start listening for commands.
+void initModule(void) {
+    writeString("AT");
+    _delay_ms(COMMAND_COOLDOWN_MS);
+    writeString("AT+NAMEcar_controller");
+    _delay_ms(COMMAND_COOLDOWN_MS);
+    writeString("AT+PIN7800");
+    _delay_ms(COMMAND_COOLDOWN_MS);
+    vec.direction = '\0';
+}
+
+void _OLD_initModule(void) {
+    char *s = malloc(sizeof(char) * 10);
+
+    writeString("AT");
+    _delay_ms(COMMAND_COOLDOWN_MS);
+    while (readCount() < 2)
+        ;
+    readNBytes(s, 2);
+
+    writeString("AT+NAMEcar_controller");
+    _delay_ms(COMMAND_COOLDOWN_MS);
+    while (readCount() < 6)
+        ;
+    readNBytes(s, 9);
+
+    writeString("AT+PIN7400");
+    _delay_ms(COMMAND_COOLDOWN_MS);
     while (readCount() < 5)
         ;
+    readNBytes(s, 8);
 
-    readNBytes(&answer[0], 5);
-    writeString(&answer[0]);
-    vec.direction = '0';
-    return strcmp(answer, "start") == 0;
+    vec.direction = ' ';
+    free(s);
 }
 
 // readMovementCommand will read byte from serial indicating what direction is to drive.
@@ -30,7 +55,7 @@ void readMovementCommand(void) {
     if (readCount() > 0) {
         newDir = readByte();
     }
-    if (newDir == 'w' || newDir == 'a' || newDir == 's' || newDir == 'd') {
+    if (newDir == 'w' || newDir == 'a' || newDir == 's' || newDir == 'd' || newDir == ' ') {
         vec.direction = newDir;
     }
 }
@@ -41,6 +66,8 @@ void setCarDirection(void) {
         setEnginesDirection(vec.direction == 's');
     } else if (vec.direction == 'a' || vec.direction == 'd') {
         enableTurning((vec.direction == 'd') - (vec.direction == 'a'));
+    } else if (vec.direction == ' ') {
+        setSpeed(0, isReverse());
     }
-    setSpeed(255, isReverse());
+    increaseSpeed(10);
 }
