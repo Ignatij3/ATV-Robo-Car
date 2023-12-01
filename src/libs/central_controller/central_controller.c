@@ -17,7 +17,7 @@ void initializeModules(uint8_t minDistance) {
     setupPowerSwitchInterrupts();
 
     // initialize other modules
-    _controllerPairWithBluetooth();
+    _controllerInitSerial();
     _controllerInitEngines();
     _controllerInitDistanceSensor(minDistance);
     _controllerInitIRSensor();

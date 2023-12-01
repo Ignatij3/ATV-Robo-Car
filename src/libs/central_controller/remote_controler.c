@@ -13,6 +13,7 @@ void _controllerInitRemote(void) {
 
 // readExecuteCommand will read command entered into serial interface, then update engines to reflect command.
 void readExecuteCommand(void) {
+    pairWithBluetooth();
     readMovementCommand();
     setCarDirection();
 }

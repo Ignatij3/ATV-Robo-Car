@@ -3,10 +3,8 @@
 
 int main(void) {
     initializeModules(20);
-    // updateMode();
+    updateMode();
     enableCar();
-
-    TESTING();
 
     while (1) {
         // halt while car is turned off

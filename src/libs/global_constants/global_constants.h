@@ -10,7 +10,8 @@ typedef enum {
 } drivingMode;
 
 #define MAX_DISTANCE UINT8_MAX
-#define MAX_SPEED UINT8_MAX
+// #define MAX_SPEED UINT8_MAX
+#define MAX_SPEED 200
 #define MIN_SPEED 0
 #define CPU_CLOCK 16000000UL // Clock speed
 #define clockCyclesPerMicrosecond() (CPU_CLOCK / 1000000L)

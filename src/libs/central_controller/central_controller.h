@@ -43,7 +43,7 @@ bool isChoosingMode(void);
 
 // Communication with bluetooth module
 // ------------------------------------------------------------------------------------
-void _controllerPairWithBluetooth(void);
+void _controllerInitSerial(void);
 void readExecuteCommand(void);
 
 // OLED screen API
@@ -57,10 +57,6 @@ void _setPowerStr(const char *power);
 void _controllerInitIRSensor(void);
 linePosition updateLinePosition(void);
 void adjustEnginesSpeed(uint8_t adjustmentFactor);
-
-// Serial communication wrappers
-// ------------------------------------------------------------------------------------
-void _controllerInitSerial(void);
 
 // Speed sensor API
 // ------------------------------------------------------------------------------------
