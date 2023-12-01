@@ -2,7 +2,7 @@
 #include "../joystick/joystick.h"
 #include "central_controller.h"
 
-static drivingMode mode;
+static drivingMode mode = AUTOMATIC;
 static bool choosingMode;
 
 // _controllerInit initializes on-board joystick.
