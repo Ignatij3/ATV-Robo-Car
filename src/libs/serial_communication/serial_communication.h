@@ -3,9 +3,9 @@
 #include <stdint.h>
 
 #define NEWLINE "\r\n"
-#define SERIAL_BAUD 9600 // communication speed
+#define DEFAULT_SERIAL_BAUD 9600 // default communication speed
 
-void serialInit(uint32_t ubrr);
+void serialInit(uint32_t baud);
 void writeUint(uint32_t n);
 void writeBinary(uint32_t n);
 void writeByte(const char c);
