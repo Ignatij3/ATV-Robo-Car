@@ -1,5 +1,5 @@
-#include "../ino_libs/ino_libs.h"
 #include "ir_sensor.h"
+#include "../ino_libs/ino_libs.h"
 #include <avr/io.h>
 
 #define SENSOR_AMOUNT 4
@@ -10,34 +10,6 @@
 #define IR_CENTER_LEFT PINB2
 #define IR_CENTER_RIGHT PINB1
 #define IR_RIGHT PINB0
-
-#define DEBUG
-#ifdef DEBUG
-#include "../oled/ssd1306.h"
-#include <stdio.h>
-#include <stdlib.h>
-void convertToBinary(char *s, uint8_t n) {
-    for (int8_t i = 0; i <= 3; i++) {
-        *s = '0' + ((n >> i) & 1);
-        s++;
-    }
-    *s = '\0';
-}
-#define condwr(arr)                                                                                                    \
-    {                                                                                                                  \
-        char *s = malloc(sizeof(char) * 10);                                                                           \
-        char *bs = malloc(sizeof(char) * 5);                                                                           \
-        convertToBinary(bs, arr);                                                                                      \
-        sprintf(s, "l_%s_r", bs);                                                                                      \
-        SSD1306_SetPosition(0, 7);                                                                                     \
-        SSD1306_DrawString(s);                                                                                         \
-        free(s);                                                                                                       \
-        free(bs);                                                                                                      \
-        SSD1306_UpdateScreen(OLED_ADDRESS);                                                                            \
-    }
-#else
-#define condwr(a)
-#endif
 
 // sensorLookup is an array containing information about physical sensor location.
 // Sensors are arranged so leftmost will be first and rightmost will be last.
@@ -70,8 +42,6 @@ int8_t updateIRReadings(void) {
     for (uint8_t sensor = 0; sensor < SENSOR_AMOUNT; sensor++) {
         sensorArray |= digitalRead(&PORTB, sensorLookup[sensor]) << sensor;
     }
-
-    condwr(sensorArray);
 
     // exactly one sensor saw the line
     if (sensorArray && !(sensorArray & (sensorArray - 1))) {

@@ -1,7 +1,8 @@
-#include "../ino_libs/ino_libs.h"
 #include "serial_communication.h"
 #include "../global_constants/global_constants.h"
+#include "../ino_libs/ino_libs.h"
 #include <avr/interrupt.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 

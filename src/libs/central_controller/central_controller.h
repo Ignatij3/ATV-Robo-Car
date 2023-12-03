@@ -60,7 +60,6 @@ void adjustEnginesSpeed(uint8_t adjustmentFactor);
 
 // Speed sensor API
 // ------------------------------------------------------------------------------------
-void _controllerInitSpeedSensor(void);
 uint8_t getCarSpeedSensor(void);
 
 #endif // ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H
