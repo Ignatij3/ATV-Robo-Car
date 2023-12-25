@@ -1,7 +1,7 @@
+#include "joystick.h"
 #include "../ino_libs/ino_libs.h"
 #include "../oled/ssd1306.h"
 #include "../timer/timer.h"
-#include "joystick.h"
 #include <avr/io.h>
 #include <util/delay.h>
 

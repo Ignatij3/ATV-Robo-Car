@@ -1,5 +1,5 @@
-#include "../global_constants/global_constants.h"
 #include "ino_libs.h"
+#include "../global_constants/global_constants.h"
 #include <avr/cpufunc.h>
 #include <avr/interrupt.h>
 
@@ -200,7 +200,7 @@ uint32_t pulseIn(volatile uint8_t *PORT, uint8_t pin, uint8_t state, uint32_t ti
         }
     }
 
-    // initialize sensore measure process
+    // start pulse to measure
     sendPulse();
 
     // wait for the pulse to start

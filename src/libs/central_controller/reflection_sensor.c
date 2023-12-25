@@ -52,14 +52,18 @@ void adjustEnginesSpeed(uint8_t adjustmentFactor) {
         deviation = -deviation;
     }
 
-    if (outerSideSpeed == MAX_SPEED) {
-        setInnerSpeed(innerSideSpeed - deviation * adjustmentFactor, reverse);
+    uint8_t delta = deviation * adjustmentFactor * 0.5;
 
-    } else if (innerSideSpeed == MIN_SPEED) {
-        setOuterSpeed(outerSideSpeed + deviation * adjustmentFactor, reverse);
-
-    } else {
-        setInnerSpeed(innerSideSpeed - deviation * adjustmentFactor / 2, reverse);
-        setOuterSpeed(outerSideSpeed + deviation * adjustmentFactor / 2, reverse);
+    // set inner speed to MIN_SPEED if new speed underflows
+    if (innerSideSpeed < MIN_SPEED + delta) {
+        innerSideSpeed = MIN_SPEED + delta;
     }
+
+    // set outer speed to MAX_SPEED if new speed overflows
+    if (outerSideSpeed > MAX_SPEED - delta) {
+        outerSideSpeed = MAX_SPEED - delta;
+    }
+
+    setInnerSpeed(innerSideSpeed - delta, reverse);
+    setOuterSpeed(outerSideSpeed + delta, reverse);
 }

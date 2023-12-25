@@ -13,14 +13,14 @@ typedef enum {
 
 // General API
 // ------------------------------------------------------------------------------------
-void initializeModules(uint8_t minDistance);
+void initializeModules(void);
 bool isPoweredOn(void);
 
 // Ultrasonic distance sensor API
 // ------------------------------------------------------------------------------------
-void _controllerInitDistanceSensor(uint8_t minimalDistance);
-bool isCollisionSoon(void);
-void evadeCollision(void);
+void _controllerInitDistanceSensor(void);
+bool isCollisionSoon(uint8_t minDist);
+void evadeCollision(uint8_t minDist);
 
 // Engine API
 // ------------------------------------------------------------------------------------
@@ -61,7 +61,6 @@ void adjustEnginesSpeed(uint8_t adjustmentFactor);
 
 // Speed sensor API
 // ------------------------------------------------------------------------------------
-void _controllerInitSpeedSensor(void);
 uint8_t getCarSpeedSensor(void);
 
 #endif // ATV_CENTRAL_CONTROLLER_CENTRAL_CONTROLLER_H

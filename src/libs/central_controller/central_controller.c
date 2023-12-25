@@ -1,5 +1,5 @@
-#include "../ino_libs/ino_libs.h"
 #include "central_controller.h"
+#include "../ino_libs/ino_libs.h"
 #include <avr/interrupt.h>
 
 static void setupPowerSwitchInterrupts(void);
@@ -10,7 +10,7 @@ static bool poweredOn = false;
 // minDistance is minimal distance between car and object in front,
 // to be able to evade collision, imperatively calculated.
 // The function sets initial vehicle mode to NONE.
-void initializeModules(uint8_t minDistance) {
+void initializeModules(void) {
     // initialize microcontroller
     initPWMTimers();
     initADC();
@@ -20,11 +20,10 @@ void initializeModules(uint8_t minDistance) {
     _controllerInitSerial();
     _controllerInitRemote();
     _controllerInitEngines();
-    _controllerInitDistanceSensor(minDistance);
+    _controllerInitDistanceSensor();
     _controllerInitIRSensor();
     _controllerInitOLED();
     _controllerInitJoystick();
-    _controllerInitSpeedSensor();
 }
 
 // captures interrupt from switch pin, switches power to the wheels on or off.
