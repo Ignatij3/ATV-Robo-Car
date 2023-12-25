@@ -2,6 +2,10 @@
 #include "../engine_controller/engine_controller.h"
 #include "central_controller.h"
 
+uint8_t minimalDistance;
+
+static bool isCollisionSoonOld(void);
+
 // _controllerInitDistanceSensor initializes ultrasonic distance sensor.
 void _controllerInitDistanceSensor(void) {
     registerDistanceSensor();
@@ -19,7 +23,14 @@ bool isCollisionSoon(uint8_t minDist) {
 void evadeCollision(uint8_t minDist) {
     if (isCollisionSoon(minDist)) {
         minDist <<= 1;
-        tankTurn(isCollisionSoon, (measureDistanceCm() % 2) - 1);
+        minimalDistance = minDist;
+        tankTurn(isCollisionSoonOld, (measureDistanceCm() % 2) - 1);
         minDist >>= 1;
     }
+}
+
+// isCollisionSoonOld returns result of isCollisionSoon, but with minimalDistance as argument.
+// The reason for creating this function is to retain compatibility with engineController API.
+static bool isCollisionSoonOld(void) {
+    return isCollisionSoon(minimalDistance);
 }
