@@ -13,14 +13,14 @@ typedef enum {
 
 // General API
 // ------------------------------------------------------------------------------------
-void initializeModules(uint8_t minDistance);
+void initializeModules(void);
 bool isPoweredOn(void);
 
 // Ultrasonic distance sensor API
 // ------------------------------------------------------------------------------------
-void _controllerInitDistanceSensor(uint8_t minimalDistance);
-bool isCollisionSoon(void);
-void evadeCollision(void);
+void _controllerInitDistanceSensor(void);
+bool isCollisionSoon(uint8_t minDist);
+void evadeCollision(uint8_t minDist);
 
 // Engine API
 // ------------------------------------------------------------------------------------
