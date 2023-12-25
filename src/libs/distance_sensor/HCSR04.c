@@ -1,13 +1,11 @@
+#include "HCSR04.h"
 #include "../global_constants/global_constants.h"
 #include "../ino_libs/ino_libs.h"
-#include "HCSR04.h"
 #include <avr/io.h>
 #include <util/delay.h>
 
 #define TRIGGER_PIN PINB4
 #define ECHO_PIN PINB5
-
-#define MIN_DISTANCE 0
 
 // registerDistanceSensor initializes HCSR04 sensor's pins.
 void registerDistanceSensor(void) {

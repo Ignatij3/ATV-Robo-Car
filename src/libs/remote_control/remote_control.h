@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-bool pairWithModule(void);
+void initModule(void);
 void readMovementCommand(void);
 void setCarDirection(void);
 

@@ -1,6 +1,8 @@
-#include "../ino_libs/ino_libs.h"
 #include "serial_communication.h"
+#include "../global_constants/global_constants.h"
+#include "../ino_libs/ino_libs.h"
 #include <avr/interrupt.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,6 +17,8 @@
         va_start(varArgs, arg);                                                                                        \
         varArgs;                                                                                                       \
     })
+
+#define BAUD_TO_UBRR(baud) CPU_CLOCK / 16 / baud - 1
 
 static volatile uint8_t rx_buffer[RX_BUFFER_SIZE] = {0};
 static volatile uint16_t rx_count = 0;
@@ -42,7 +46,9 @@ ISR(USART_TX_vect) {
 }
 
 // serialInit sets microchip's registers for serial communication.
-void serialInit(uint32_t ubrr) {
+void serialInit(uint32_t baud) {
+    uint32_t ubrr = BAUD_TO_UBRR(baud);
+
     UBRR0H = (ubrr & 0x0F00) >> 8;
     UBRR0L = (ubrr & 0x00FF);
 

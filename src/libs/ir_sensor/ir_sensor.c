@@ -1,5 +1,5 @@
-#include "../ino_libs/ino_libs.h"
 #include "ir_sensor.h"
+#include "../ino_libs/ino_libs.h"
 #include <avr/io.h>
 
 #define SENSOR_AMOUNT 4
@@ -8,36 +8,8 @@
 
 #define IR_LEFT PINB3
 #define IR_CENTER_LEFT PINB2
-#define IR_CENTER_RIGHT PINB1
-#define IR_RIGHT PINB0
-
-#define DEBUG
-#ifdef DEBUG
-#include "../oled/ssd1306.h"
-#include <stdio.h>
-#include <stdlib.h>
-void convertToBinary(char *s, uint8_t n) {
-    for (int8_t i = 0; i <= 3; i++) {
-        *s = '0' + ((n >> i) & 1);
-        s++;
-    }
-    *s = '\0';
-}
-#define condwr(arr)                                                                                                    \
-    {                                                                                                                  \
-        char *s = malloc(sizeof(char) * 10);                                                                           \
-        char *bs = malloc(sizeof(char) * 5);                                                                           \
-        convertToBinary(bs, arr);                                                                                      \
-        sprintf(s, "l_%s_r", bs);                                                                                      \
-        SSD1306_SetPosition(0, 7);                                                                                     \
-        SSD1306_DrawString(s);                                                                                         \
-        free(s);                                                                                                       \
-        free(bs);                                                                                                      \
-        SSD1306_UpdateScreen(OLED_ADDRESS);                                                                            \
-    }
-#else
-#define condwr(a)
-#endif
+#define IR_CENTER_RIGHT PINB0 // fix for incorrect sensor connection
+#define IR_RIGHT PINB1        // fix for incorrect sensor connection
 
 // sensorLookup is an array containing information about physical sensor location.
 // Sensors are arranged so leftmost will be first and rightmost will be last.
@@ -61,7 +33,7 @@ int8_t updateIRReadings(void) {
     // sensorArray is a bit mask, where each bit represents one sensor.
     // Leftmost sensor is in the least significant bit.
     static uint8_t sensorArray;
-    static int8_t deviation;
+    static int8_t deviation = UNKNOWN;
 
     // save and clear previous value
     uint8_t lastSensorArr = sensorArray;
@@ -71,8 +43,6 @@ int8_t updateIRReadings(void) {
         sensorArray |= digitalRead(&PORTB, sensorLookup[sensor]) << sensor;
     }
 
-    condwr(sensorArray);
-
     // exactly one sensor saw the line
     if (sensorArray && !(sensorArray & (sensorArray - 1))) {
         deviation = calculateDeviation(sensorArray);
@@ -80,15 +50,13 @@ int8_t updateIRReadings(void) {
 
     // none of the sensors saw the line
     if (sensorArray == 0) {
-        if (sensorArray == lastSensorArr) {
-            deviation = UNKNOWN;
-        } else if (lastSensorArr & _BV(LEFTMOST_IR)) {
+        if (deviation == LINE_TOO_FAR_LEFT || lastSensorArr & _BV(LEFTMOST_IR)) {
             deviation = LINE_TOO_FAR_LEFT;
 
-        } else if (lastSensorArr & _BV(RIGHTMOST_IR)) {
+        } else if (deviation == LINE_TOO_FAR_RIGHT || lastSensorArr & _BV(RIGHTMOST_IR)) {
             deviation = LINE_TOO_FAR_RIGHT;
 
-        } else {
+        } else if (deviation != UNKNOWN) {
             // trying to find out on which side sensor has last seen line
             sensorArray = findClosestFiredSensor(_BV(1) | _BV(SENSOR_AMOUNT), lastSensorArr);
             // assuming deviation is equal to the found sensor
@@ -105,7 +73,7 @@ int8_t updateIRReadings(void) {
 
         // both sensors are in center
         if (SENSOR_AMOUNT % 2 == 0 &&
-            (sensorArray & _BV(SENSOR_AMOUNT / 2 - 1) && sensorArray & _BV(SENSOR_AMOUNT / 2 + 1))) {
+            (sensorArray & _BV(SENSOR_AMOUNT / 2 - 1) && sensorArray & _BV(SENSOR_AMOUNT / 2))) {
             deviation = LINE_CENTERED;
             sensorArray = _BV(SENSOR_AMOUNT / 2 - 1);
 
@@ -139,6 +107,10 @@ static uint8_t calculateDeviation(uint8_t sensorArray) {
     uint8_t devn = minDeviation();
     while (sensorArray != 1) {
         devn++;
+        // without this condition, deviation may end up as zero
+        if (SENSOR_AMOUNT % 2 == 0 && devn == 0) {
+            devn++;
+        }
         sensorArray >>= 1;
     }
     return devn;

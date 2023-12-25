@@ -1,7 +1,7 @@
+#include "engine_controller.h"
 #include "../central_controller/central_controller.h"
 #include "../global_constants/global_constants.h"
 #include "../ino_libs/ino_libs.h"
-#include "engine_controller.h"
 #include <avr/io.h>
 
 typedef struct {
@@ -12,24 +12,25 @@ typedef struct {
 
 static carspeed car;
 
-//  IN1	  IN2	driving direction
-//    0	    0	backwards
-//    0	    1	right
-//    1	    0	left
-//    1	    1	forward
+//  ENA   ENB
+//   5V    5V
+//
+//  IN1	  IN2	IN3	  IN4	driving direction
+//  REV	    1	REV	    1	backwards
+//  REV	    0	FOR	    0	right
+//  FOR	    0	REV	    1	left
+//  PWM	    0	PWM	    0	forward
+//
+//  PWM - engine speed is determined by duty cycle of PWM signal.
+//  REV - engine speed is determined by difference of maximum duty cycle value and
+//        current duty cycle (dc) of PWM signal (255-dc).
 
 // motor pins
-#define IN1 PINC3
+// IN1, IN3 are connected to wave generators
+#define IN1 PIND6
 #define IN2 PINC2
-
-// -----------TEMPORARY-----------
-#define IN3 PIND3
-#define IN4 PIND4
-// -----------TEMPORARY-----------
-
-// PWM signal pins
-#define ENA PIND6
-#define ENB PIND5
+#define IN3 PIND5
+#define IN4 PINC3
 
 static void forward(void);
 static void backwards(void);
@@ -37,24 +38,31 @@ static void left(void);
 static void right(void);
 static void setDutyCycle(void);
 static void setSpeedEngines(bool reverse);
+static bool isOverflow(uint8_t speed, uint8_t delta);
+static bool isUnderflow(uint8_t speed, uint8_t delta);
+
+typedef enum {
+    D_FORWARD,
+    D_LEFT,
+    D_RIGHT,
+    D_BACKWARDS,
+} drDirection;
+
+static drDirection dir;
 
 // initializeEngines sets up input and enable pins.
 // After setting up, the function makes sure engines do not move.
 void initializeEngines(void) {
-    pinMode(&PORTC, IN1, OUTPUT);
+    pinMode(&PORTD, IN1, OUTPUT);
     pinMode(&PORTC, IN2, OUTPUT);
-
-    // -----------TEMPORARY-----------
-    pinMode(&PORTD, IN4, OUTPUT);
     pinMode(&PORTD, IN3, OUTPUT);
-    // -----------TEMPORARY-----------
-
-    pinMode(&PORTD, ENA, OUTPUT);
-    pinMode(&PORTD, ENB, OUTPUT);
+    pinMode(&PORTC, IN4, OUTPUT);
 
     car.leftSpeed = MIN_SPEED;
     car.rightSpeed = MIN_SPEED;
+
     car.reverse = false;
+    dir = D_FORWARD;
     // stops the car, to be sure it doesn't move
     turnOffEngines();
 }
@@ -137,47 +145,23 @@ static void setSpeedEngines(bool reverse) {
 }
 
 // increaseSpeed increases speed by 'step'.
-// If the speed of both sides is at maximum, it does nothing.
+// If the speed of at least one side is at maximum, it does nothing.
 void increaseSpeed(uint8_t step) {
-    if (car.leftSpeed == MAX_SPEED && car.rightSpeed == MAX_SPEED) {
-        return;
-    }
-
-    if (car.leftSpeed > MAX_SPEED - step) {
-        car.leftSpeed = MAX_SPEED;
-    } else {
+    if (!isOverflow(car.leftSpeed, step) && !isOverflow(car.rightSpeed, step)) {
         car.leftSpeed += step;
-    }
-
-    if (car.rightSpeed > MAX_SPEED - step) {
-        car.rightSpeed = MAX_SPEED;
-    } else {
         car.rightSpeed += step;
+        setDutyCycle();
     }
-
-    setDutyCycle();
 }
 
 // decreaseSpeed decreases speed by 'step'.
-// If the speed of both sides is 0, it does nothing.
+// If the speed of at least one side is 0, it does nothing.
 void decreaseSpeed(uint8_t step) {
-    if (car.leftSpeed == MIN_SPEED && car.rightSpeed == MIN_SPEED) {
-        return;
+    if (!isUnderflow(car.leftSpeed, step) && !isUnderflow(car.rightSpeed, step)) {
+        car.leftSpeed += step;
+        car.rightSpeed += step;
+        setDutyCycle();
     }
-
-    if (car.leftSpeed < step) {
-        car.leftSpeed = MIN_SPEED;
-    } else {
-        car.leftSpeed -= step;
-    }
-
-    if (car.rightSpeed < step) {
-        car.rightSpeed = MIN_SPEED;
-    } else {
-        car.rightSpeed -= step;
-    }
-
-    setDutyCycle();
 }
 
 // getSpeed returns engines' average speed.
@@ -201,64 +185,71 @@ bool isReverse(void) {
 }
 
 // setDutyCycle sets motor duty cycle equivalent to speed of the car.
-// As a side-effect, this function will enable or disable turn signals.
 static void setDutyCycle(void) {
-    analogWrite(&PORTD, ENA, car.leftSpeed);
-    analogWrite(&PORTD, ENB, car.rightSpeed);
+    // for explanation of function's duty cycle consult with comment at
+    // the beginning of the file
+    switch (dir) {
+    case D_FORWARD:
+        analogWrite(&PORTD, IN1, car.leftSpeed);
+        analogWrite(&PORTD, IN3, car.rightSpeed);
+        break;
+
+    case D_BACKWARDS:
+        analogWrite(&PORTD, IN1, MAX_SPEED - car.leftSpeed);
+        analogWrite(&PORTD, IN3, MAX_SPEED - car.rightSpeed);
+        break;
+
+    case D_LEFT:
+        analogWrite(&PORTD, IN1, car.leftSpeed);
+        analogWrite(&PORTD, IN3, MAX_SPEED - car.rightSpeed);
+        break;
+
+    case D_RIGHT:
+        analogWrite(&PORTD, IN1, MAX_SPEED - car.leftSpeed);
+        analogWrite(&PORTD, IN3, car.rightSpeed);
+        break;
+
+    default:
+        analogWrite(&PORTD, IN1, MIN_SPEED);
+        analogWrite(&PORTD, IN3, MIN_SPEED);
+        break;
+    }
 }
 
 // forward configures engines to turn forward.
 static void forward(void) {
-    // -----------TEMPORARY-----------
-    /*
-    digitalWrite(&PORTC, IN1, HIGH);
-    digitalWrite(&PORTC, IN2, HIGH);
-    */
-    digitalWrite(&PORTC, IN1, HIGH);
     digitalWrite(&PORTC, IN2, LOW);
-    digitalWrite(&PORTD, IN3, HIGH);
-    digitalWrite(&PORTD, IN4, LOW);
-    // -----------TEMPORARY-----------
+    digitalWrite(&PORTC, IN4, LOW);
+    dir = D_FORWARD;
 }
 
 // backwards configures engines to turn backwards.
 static void backwards(void) {
-    // -----------TEMPORARY-----------
-    /*
-    digitalWrite(&PORTC, IN1, LOW);
-    digitalWrite(&PORTC, IN2, LOW);
-    */
-    digitalWrite(&PORTC, IN1, LOW);
     digitalWrite(&PORTC, IN2, HIGH);
-    digitalWrite(&PORTD, IN3, LOW);
-    digitalWrite(&PORTD, IN4, HIGH);
-    // -----------TEMPORARY-----------
+    digitalWrite(&PORTC, IN4, HIGH);
+    dir = D_BACKWARDS;
 }
 
 // left configures left engines to turn backwards and right engines to turn forward.
 static void left(void) {
-    // -----------TEMPORARY-----------
-    /*
-    digitalWrite(&PORTC, IN1, LOW);
-    digitalWrite(&PORTC, IN2, HIGH);
-    */
-    digitalWrite(&PORTC, IN1, HIGH);
     digitalWrite(&PORTC, IN2, LOW);
-    digitalWrite(&PORTD, IN3, LOW);
-    digitalWrite(&PORTD, IN4, HIGH);
-    // -----------TEMPORARY-----------
+    digitalWrite(&PORTC, IN4, HIGH);
+    dir = D_LEFT;
 }
 
 // right configures left engines to turn forward and right engines to turn backwards.
 static void right(void) {
-    // -----------TEMPORARY-----------
-    /*
-    digitalWrite(&PORTC, IN1, HIGH);
-    digitalWrite(&PORTC, IN2, LOW);
-    */
-    digitalWrite(&PORTC, IN1, LOW);
     digitalWrite(&PORTC, IN2, HIGH);
-    digitalWrite(&PORTD, IN3, HIGH);
-    digitalWrite(&PORTD, IN4, LOW);
-    // -----------TEMPORARY-----------
+    digitalWrite(&PORTC, IN4, LOW);
+    dir = D_RIGHT;
+}
+
+// isOverflow checks if sum of speed and delta overflows MAX_SPEED.
+static bool isOverflow(uint8_t speed, uint8_t delta) {
+    return speed > MAX_SPEED - delta;
+}
+
+// isUnderflow checks if difference of speed and delta underflows MIN_SPEED.
+static bool isUnderflow(uint8_t speed, uint8_t delta) {
+    return speed < MIN_SPEED + delta;
 }

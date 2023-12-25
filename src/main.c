@@ -1,9 +1,14 @@
 #include "libs/central_controller/central_controller.h"
-#include "libs/engine_controller/engine_controller.h"
 #include <util/delay.h>
 
+// arbitrary constants, subject to change
+#define COLLISION_DISTANCE 20
+#define ACCELERATION_RATE 20
+#define ENGINE_ADJUSTMENT 40
+#define REFRESH_RATE 100
+
 int main(void) {
-    initializeModules(20);
+    initializeModules();
     updateMode();
     enableCar();
 
@@ -28,9 +33,9 @@ int main(void) {
         // in automatic mode, car drives forward until colliding
         // afterwards, it turns around and continues forward
         case AUTOMATIC:
-            accelerate(20);
-            if (isCollisionSoon()) {
-                evadeCollision();
+            accelerate(ACCELERATION_RATE);
+            if (isCollisionSoon(COLLISION_DISTANCE)) {
+                evadeCollision(COLLISION_DISTANCE);
             }
             break;
 
@@ -41,9 +46,12 @@ int main(void) {
 
         // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it
         case SLAVE:
-            accelerate(20);
+            accelerate(ACCELERATION_RATE);
+            if (isCollisionSoon(COLLISION_DISTANCE)) {
+                decelerate(ACCELERATION_RATE);
+            }
             updateLinePosition();
-            adjustEnginesSpeed(30); // 30 - arbitrary constant, subject to change
+            adjustEnginesSpeed(ENGINE_ADJUSTMENT);
             break;
 
         // if NONE mode is chosen, the car must halt
@@ -53,8 +61,9 @@ int main(void) {
         default:
             break;
         }
-        // delay not to change state too rapidly
-        _delay_ms(10);
+
+        // calculating delay to take in milliseconds
+        _delay_ms(1000 / REFRESH_RATE);
     }
 
 exit:

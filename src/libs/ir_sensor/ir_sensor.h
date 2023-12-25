@@ -3,10 +3,10 @@
 
 #include <stdint.h>
 
-#define UNKNOWN INT8_MIN
+#define UNKNOWN INT8_MIN // only is set at the beginning and persists until at least one sensor sees the line
 #define LINE_TOO_FAR_LEFT INT8_MIN / 2
 #define LINE_CENTERED 0
-#define LINE_TOO_FAR_RIGHT INT8_MAX / 2
+#define LINE_TOO_FAR_RIGHT (INT8_MAX + 1) / 2
 #define ALL INT8_MAX
 
 void initializeIR(void);

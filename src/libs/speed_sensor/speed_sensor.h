@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-void registerSpeedSensor(void);
 uint8_t getSensorSpeedReading(void);
 
 #endif // ATV_SPEED_SENSOR_SPEED_SENSOR_H
