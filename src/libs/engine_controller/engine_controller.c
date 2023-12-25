@@ -38,6 +38,8 @@ static void left(void);
 static void right(void);
 static void setDutyCycle(void);
 static void setSpeedEngines(bool reverse);
+static bool isOverflow(uint8_t speed, uint8_t delta);
+static bool isUnderflow(uint8_t speed, uint8_t delta);
 
 typedef enum {
     D_FORWARD,
@@ -143,47 +145,23 @@ static void setSpeedEngines(bool reverse) {
 }
 
 // increaseSpeed increases speed by 'step'.
-// If the speed of both sides is at maximum, it does nothing.
+// If the speed of at least one side is at maximum, it does nothing.
 void increaseSpeed(uint8_t step) {
-    if (car.leftSpeed == MAX_SPEED && car.rightSpeed == MAX_SPEED) {
-        return;
-    }
-
-    if (car.leftSpeed > MAX_SPEED - step) {
-        car.leftSpeed = MAX_SPEED;
-    } else {
+    if (!isOverflow(car.leftSpeed, step) && !isOverflow(car.rightSpeed, step)) {
         car.leftSpeed += step;
-    }
-
-    if (car.rightSpeed > MAX_SPEED - step) {
-        car.rightSpeed = MAX_SPEED;
-    } else {
         car.rightSpeed += step;
+        setDutyCycle();
     }
-
-    setDutyCycle();
 }
 
 // decreaseSpeed decreases speed by 'step'.
-// If the speed of both sides is 0, it does nothing.
+// If the speed of at least one side is 0, it does nothing.
 void decreaseSpeed(uint8_t step) {
-    if (car.leftSpeed == MIN_SPEED && car.rightSpeed == MIN_SPEED) {
-        return;
+    if (!isUnderflow(car.leftSpeed, step) && !isUnderflow(car.rightSpeed, step)) {
+        car.leftSpeed += step;
+        car.rightSpeed += step;
+        setDutyCycle();
     }
-
-    if (car.leftSpeed < step) {
-        car.leftSpeed = MIN_SPEED;
-    } else {
-        car.leftSpeed -= step;
-    }
-
-    if (car.rightSpeed < step) {
-        car.rightSpeed = MIN_SPEED;
-    } else {
-        car.rightSpeed -= step;
-    }
-
-    setDutyCycle();
 }
 
 // getSpeed returns engines' average speed.
@@ -264,4 +242,14 @@ static void right(void) {
     digitalWrite(&PORTC, IN2, HIGH);
     digitalWrite(&PORTC, IN4, LOW);
     dir = D_RIGHT;
+}
+
+// isOverflow checks if sum of speed and delta overflows MAX_SPEED.
+static bool isOverflow(uint8_t speed, uint8_t delta) {
+    return speed > MAX_SPEED - delta;
+}
+
+// isUnderflow checks if difference of speed and delta underflows MIN_SPEED.
+static bool isUnderflow(uint8_t speed, uint8_t delta) {
+    return speed < MIN_SPEED + delta;
 }

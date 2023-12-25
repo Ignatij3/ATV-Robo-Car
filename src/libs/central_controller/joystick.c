@@ -1,5 +1,5 @@
-#include "../engine_controller/engine_controller.h"
 #include "../joystick/joystick.h"
+#include "../engine_controller/engine_controller.h"
 #include "central_controller.h"
 
 static drivingMode mode = AUTOMATIC;
