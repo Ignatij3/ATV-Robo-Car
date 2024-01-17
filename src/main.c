@@ -4,7 +4,7 @@
 // arbitrary constants, subject to change
 #define COLLISION_DISTANCE 20
 #define ACCELERATION_RATE 20
-#define ENGINE_ADJUSTMENT 40
+#define ENGINE_ADJUSTMENT 100
 #define REFRESH_RATE 100
 
 int main(void) {
@@ -47,7 +47,7 @@ int main(void) {
         // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it
         case SLAVE:
             accelerate(ACCELERATION_RATE);
-            if (isCollisionSoon(COLLISION_DISTANCE)) {
+            while (isCollisionSoon(COLLISION_DISTANCE)) {
                 decelerate(ACCELERATION_RATE);
             }
             updateLinePosition();

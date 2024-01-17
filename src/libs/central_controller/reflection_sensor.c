@@ -5,6 +5,9 @@
 
 int8_t deviation;
 
+#define MAX_LINE_SPEED MAX_SPEED - 55
+#define MIN_LINE_SPEED MIN_SPEED + 100
+
 // _controllerInitIRSensor initializes IR reflectivity sensor.
 void _controllerInitIRSensor(void) {
     initializeIR();
@@ -27,7 +30,11 @@ linePosition updateLinePosition(void) {
 // adjustEnginesSpeed adjusts each side's engine speed to turn the Car in direction of the line.
 // Resulting engine power difference is adjustmentFactor multiplied by deviation factor.
 void adjustEnginesSpeed(uint8_t adjustmentFactor) {
-    if (deviation == 0 || deviation == UNKNOWN) {
+    if (deviation == UNKNOWN) {
+        return;
+    } else if (deviation == 0) {
+        setLeftSpeed(MAX_LINE_SPEED, isReverse());
+        setRightSpeed(MAX_LINE_SPEED, isReverse());
         return;
     }
 
@@ -38,30 +45,30 @@ void adjustEnginesSpeed(uint8_t adjustmentFactor) {
     void (*setOuterSpeed)(uint8_t, bool);
     void (*setInnerSpeed)(uint8_t, bool);
 
-    if (deviation > 0) {
+    if (deviation < 0) {
         outerSideSpeed = getLeftSpeed();
         *(&setOuterSpeed) = setLeftSpeed;
         innerSideSpeed = getRightSpeed();
         *(&setInnerSpeed) = setRightSpeed;
+        deviation = -deviation;
 
     } else {
         outerSideSpeed = getRightSpeed();
         *(&setOuterSpeed) = setRightSpeed;
         innerSideSpeed = getLeftSpeed();
         *(&setInnerSpeed) = setLeftSpeed;
-        deviation = -deviation;
     }
 
     uint8_t delta = deviation * adjustmentFactor * 0.5;
 
     // set inner speed to MIN_SPEED if new speed underflows
-    if (innerSideSpeed < MIN_SPEED + delta) {
-        innerSideSpeed = MIN_SPEED + delta;
+    if (innerSideSpeed < MIN_LINE_SPEED + delta) {
+        innerSideSpeed = MIN_LINE_SPEED + delta;
     }
 
     // set outer speed to MAX_SPEED if new speed overflows
-    if (outerSideSpeed > MAX_SPEED - delta) {
-        outerSideSpeed = MAX_SPEED - delta;
+    if (outerSideSpeed > MAX_LINE_SPEED - delta) {
+        outerSideSpeed = MAX_LINE_SPEED - delta;
     }
 
     setInnerSpeed(innerSideSpeed - delta, reverse);
