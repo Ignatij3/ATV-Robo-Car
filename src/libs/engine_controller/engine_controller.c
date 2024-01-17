@@ -32,6 +32,9 @@ static carspeed car;
 #define IN3 PIND5
 #define IN4 PINC3
 
+#define LEFT_TURN_LED PIND4
+#define RIGHT_TURN_LED PIND2
+
 static void forward(void);
 static void backwards(void);
 static void left(void);
@@ -40,6 +43,8 @@ static void setDutyCycle(void);
 static void setSpeedEngines(bool reverse);
 static bool isOverflow(uint8_t speed, uint8_t delta);
 static bool isUnderflow(uint8_t speed, uint8_t delta);
+static void setLeftLED(void);
+static void setRightLED(void);
 
 typedef enum {
     D_FORWARD,
@@ -141,6 +146,10 @@ static void setSpeedEngines(bool reverse) {
         car.reverse = reverse;
         setEnginesDirection(car.reverse);
     }
+    if (!car.reverse) {
+        setLeftLED();
+        setRightLED();
+    }
     setDutyCycle();
 }
 
@@ -195,17 +204,17 @@ static void setDutyCycle(void) {
         break;
 
     case D_BACKWARDS:
-        analogWrite(&PORTD, IN1, MAX_SPEED - car.leftSpeed);
-        analogWrite(&PORTD, IN3, MAX_SPEED - car.rightSpeed);
+        analogWrite(&PORTD, IN1, 0); // MAX_SPEED - car.leftSpeed
+        analogWrite(&PORTD, IN3, 0); // MAX_SPEED - car.rightSpeed
         break;
 
     case D_LEFT:
         analogWrite(&PORTD, IN1, car.leftSpeed);
-        analogWrite(&PORTD, IN3, MAX_SPEED - car.rightSpeed);
+        analogWrite(&PORTD, IN3, 0); // MAX_SPEED - car.rightSpeed
         break;
 
     case D_RIGHT:
-        analogWrite(&PORTD, IN1, MAX_SPEED - car.leftSpeed);
+        analogWrite(&PORTD, IN1, 0); // MAX_SPEED - car.leftSpeed
         analogWrite(&PORTD, IN3, car.rightSpeed);
         break;
 
@@ -252,4 +261,20 @@ static bool isOverflow(uint8_t speed, uint8_t delta) {
 // isUnderflow checks if difference of speed and delta underflows MIN_SPEED.
 static bool isUnderflow(uint8_t speed, uint8_t delta) {
     return speed < MIN_SPEED + delta;
+}
+
+static void setLeftLED(void) {
+    if (getLeftSpeed() > 0 && getLeftSpeed() > getRightSpeed()) {
+        digitalWrite(&PORTD, LEFT_TURN_LED, HIGH);
+    } else {
+        digitalWrite(&PORTD, LEFT_TURN_LED, LOW);
+    }
+}
+
+static void setRightLED(void) {
+    if (getRightSpeed() > 0 && getRightSpeed() > getLeftSpeed()) {
+        digitalWrite(&PORTD, RIGHT_TURN_LED, HIGH);
+    } else {
+        digitalWrite(&PORTD, RIGHT_TURN_LED, LOW);
+    }
 }
