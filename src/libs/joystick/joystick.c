@@ -58,10 +58,10 @@ uint8_t changeMode(void) {
             startTime = currentTime;
             xValue = mapValue(analogRead(&PORTC, VRX)), yValue = mapValue(analogRead(&PORTC, VRY));
             if (UP.X + ZONE > xValue && UP.X - ZONE < xValue && UP.Y + ZONE > yValue && UP.Y - ZONE < yValue) {
-                mode = setMode_OLED(mode, 1);
+                mode = setMode_OLED(mode, -1);
             } else if (DOWN.X + ZONE > xValue && DOWN.X - ZONE < xValue && DOWN.Y + ZONE > yValue &&
                        DOWN.Y - ZONE < yValue) {
-                mode = setMode_OLED(mode, -1);
+                mode = setMode_OLED(mode, 1);
             }
         }
     }
