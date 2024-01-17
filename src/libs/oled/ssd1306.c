@@ -1,8 +1,8 @@
 
 // @includes
+#include "ssd1306.h"
 #include "../global_constants/global_constants.h"
 #include "font6x8.h"
-#include "ssd1306.h"
 #include "twi.h"
 #include <stdio.h>
 #include <string.h> // memset function
