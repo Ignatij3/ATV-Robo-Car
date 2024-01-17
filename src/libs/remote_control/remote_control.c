@@ -5,8 +5,6 @@
 #include <string.h>
 #include <util/delay.h>
 
-#define COMMAND_COOLDOWN_MS 1200
-
 typedef struct {
     uint8_t direction;
 } moveVector;
