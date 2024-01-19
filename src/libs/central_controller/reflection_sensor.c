@@ -6,7 +6,7 @@
 int8_t deviation;
 
 #define MAX_LINE_SPEED MAX_SPEED - 55
-#define MIN_LINE_SPEED MIN_SPEED + 100
+#define MIN_LINE_SPEED MIN_SPEED
 
 // _controllerInitIRSensor initializes IR reflectivity sensor.
 void _controllerInitIRSensor(void) {
