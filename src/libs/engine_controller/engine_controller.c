@@ -80,6 +80,7 @@ void setEnginesDirection(bool reverse) {
     } else {
         backwards();
     }
+    setDutyCycle();
 }
 
 // turnOffEngines configures engines to not turn.
@@ -96,6 +97,7 @@ void enableTurning(int8_t direction) {
     } else {
         left();
     }
+    setDutyCycle();
 }
 
 // tankTurn stops the car to perform tank turn.
