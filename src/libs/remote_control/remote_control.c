@@ -22,7 +22,7 @@ void readMovementCommand(void) {
     if (readCount() > 0) {
         newDir = readByte();
     }
-    if (newDir == 'w' || newDir == 'a' || newDir == 's' || newDir == 'd' || newDir == ' ') {
+    if (newDir == 'w' || newDir == 'a' || newDir == 's' || newDir == 'd' || newDir == 'p') {
         vec.direction = newDir;
     }
 }
@@ -38,7 +38,7 @@ void setCarDirection(void) {
         setEnginesDirection(vec.direction == 's');
     } else if (vec.direction == 'a' || vec.direction == 'd') {
         enableTurning((vec.direction == 'd') - (vec.direction == 'a'));
-    } else if (vec.direction == ' ') {
+    } else if (vec.direction == 'p') {
         setSpeed(0, isReverse());
     }
 }
