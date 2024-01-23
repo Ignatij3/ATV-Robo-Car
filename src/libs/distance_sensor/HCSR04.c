@@ -32,9 +32,7 @@ uint8_t measureDistanceCm(void) {
     // 18586.0035551 = 2.5 * MAX_DISTANCE / 0.0343000042 (rounded up to nearest tenth thousand)
     uint16_t distanceCm = (uint16_t)((pulseIn(&PORTB, ECHO_PIN, HIGH, 20000, sendPulse) * 1715) / 100000);
 
-    if (distanceCm <= 2) {
-        return MAX_DISTANCE - 1;
-    } else if (distanceCm <= MIN_DISTANCE) {
+    if (distanceCm <= MIN_DISTANCE) {
         return MIN_DISTANCE;
     } else if (distanceCm >= MAX_DISTANCE) {
         return MAX_DISTANCE;

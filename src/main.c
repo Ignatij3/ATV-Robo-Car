@@ -1,6 +1,7 @@
 // version 1.0
 
 #include "libs/central_controller/central_controller.h"
+#include "libs/distance_sensor/HCSR04.h"
 #include <util/delay.h>
 
 // arbitrary constants, subject to change
@@ -49,8 +50,10 @@ int main(void) {
         // in slave mode, car follows black line. If there is predecessor on a line, the car tailgates it
         case SLAVE:
             accelerate(ACCELERATION_RATE);
-            while (isCollisionSoon(COLLISION_DISTANCE)) {
-                decelerate(ACCELERATION_RATE);
+            if (measureDistanceCm() > 2) {
+                while (isCollisionSoon(COLLISION_DISTANCE / 2)) {
+                    decelerate(ACCELERATION_RATE);
+                }
             }
             updateLinePosition();
             adjustEnginesSpeed(ENGINE_ADJUSTMENT);
